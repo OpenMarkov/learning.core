@@ -9,11 +9,15 @@
 
 package org.openmarkov.learning.core.io;
 
+import java.util.List;
+
 import org.openmarkov.core.model.network.ProbNet;
+import org.openmarkov.core.model.network.Variable;
 
 public class CaseDatabase
 {
     private ProbNet probNet;
+    private List<Variable> variables;
     private int[][] cases;
 
     /**
@@ -25,6 +29,7 @@ public class CaseDatabase
     {
         super ();
         this.probNet = probNet;
+        this.variables = probNet.getVariables ();
         this.cases = cases;
     }
     
@@ -43,6 +48,15 @@ public class CaseDatabase
     public int[][] getCases ()
     {
         return cases;
+    }
+
+    /**
+     * Returns the variables.
+     * @return the variables.
+     */
+    public List<Variable> getVariables ()
+    {
+        return variables;
     }
 
 }

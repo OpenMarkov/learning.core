@@ -29,11 +29,14 @@ import org.openmarkov.core.model.graph.Link;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.State;
+import org.openmarkov.core.model.network.Variable;
+import org.openmarkov.core.model.network.potential.Potential;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmManager;
 import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
 import org.openmarkov.learning.core.editionsgenerator.EditAndScorePair;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
+import org.openmarkov.learning.core.io.CaseDatabase;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /** This class launches the learning algorithm and receives the results of
@@ -58,7 +61,7 @@ public class LearningManager {
     private ModelNetUse modelNetUse;
     
     /** Case database */
-    private int[][] cases = null;
+    private CaseDatabase caseDatabase = null;
 
     
     /**
@@ -78,7 +81,7 @@ public class LearningManager {
      * @throws NotEnoughMemoryException
      */
     public LearningManager (ProbNet preprocessedNet,
-                            int[][] cases,
+                            CaseDatabase caseDatabase,
                             String algorithmName,
                             List<Object> parameters, 
                             ProbNet modelNet,
@@ -91,7 +94,7 @@ public class LearningManager {
         NotEnoughMemoryException
     {
         LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
-        this.cases = cases;
+        this.caseDatabase = caseDatabase;
         /* Maybe there's no modelNet to work with */
         if ((modelNetUse.isUseModelNet ()))
         {
@@ -106,7 +109,7 @@ public class LearningManager {
             this.learnedNet = preprocessedNet;
         }     
         parameters.add (0, learnedNet);
-        parameters.add (1, cases);
+        parameters.add (1, caseDatabase.getCases ());
         this.learningAlgorithm = learningAlgorithmManager.getByName (algorithmName, parameters);
         this.addElviraProperties (learnedNet);
         this.modelNetUse = modelNetUse;
@@ -149,7 +152,7 @@ public class LearningManager {
      * @return <code>double</code> score of the net 
      */
     public double getScore()  {
-			return learningAlgorithm.getScore(this.learnedNet, this.cases);
+			return learningAlgorithm.getScore(this.learnedNet, this.caseDatabase.getCases ());
     }
     
     /**
@@ -158,7 +161,7 @@ public class LearningManager {
      * @return <code>double</code> score of the net with the given edition
      */
     public double getScore(PNEdit edit)  {
-        return learningAlgorithm.getScore (this.learnedNet, this.cases, edit);
+        return learningAlgorithm.getScore (this.learnedNet, this.caseDatabase.getCases (), edit);
     }
     
     /**
@@ -207,7 +210,7 @@ public class LearningManager {
         DoEditException, NormalizeNullVectorException
     {
         this.learnedNet.doEdit (edit);
-        learningAlgorithm.parametricLearning (learnedNet, cases);
+        learningAlgorithm.parametricLearning ();
     }
     
     /**
@@ -245,6 +248,18 @@ public class LearningManager {
          */
         if (modelNet != null && !modelNetUse.isOnlyUseNodes ())
         {
+            // If the model net includes nodes/variables that are not in the database, add them along with their potentials 
+            for (Variable modelNetVariable : modelNet.getVariables ())
+            {
+                ProbNode modelNetNode = modelNet.getProbNode (modelNetVariable);
+                if(!learnedNet.containsVariable (modelNetVariable.getName ()))
+                {
+                    ProbNode newNode = learnedNet.addVariable (modelNetVariable,
+                                                               modelNetNode.getNodeType ());
+                    newNode.setPotentials (modelNetNode.getPotentials ());
+                }
+            }
+            
             for (Link link : modelNet.getGraph ().getLinks ())
             {
                 learnedNet.addLink (learnedNet.getVariable (((ProbNode) link.getNode1 ().getObject ()).getVariable ().getName ()),

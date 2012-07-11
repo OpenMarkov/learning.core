@@ -23,6 +23,7 @@ import org.openmarkov.core.model.network.potential.TablePotential;
 import org.openmarkov.core.model.network.potential.operation.DiscretePotentialOperations;
 import org.openmarkov.learning.core.editionsgenerator.EditAndScorePair;
 import org.openmarkov.learning.core.editionsgenerator.EditionsGenerator;
+import org.openmarkov.learning.core.io.CaseDatabase;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /**
@@ -33,13 +34,13 @@ public abstract class LearningAlgorithm {
     /** Edition generator */
     protected EditionsGenerator editionsGenerator;
     /** Parameter for the parametric learning. */
-    private double alpha;    
+    protected double alpha;    
     
     /** Net to learn */
     protected ProbNet probNet;
     
     /** Case database */
-    int[][] cases;
+    protected CaseDatabase caseDatabase;
     
     
     // Constructor
@@ -47,10 +48,10 @@ public abstract class LearningAlgorithm {
      * @param editionsGenerator <code>EditionsGenerator</code> The object that
      * gives the best operation in each iteration of the algorithm.
      **/
-    public LearningAlgorithm (ProbNet probNet, int[][] cases, EditionsGenerator editionsGenerator, double alpha)
+    public LearningAlgorithm (ProbNet probNet, CaseDatabase caseDatabase, EditionsGenerator editionsGenerator, double alpha)
     {
         this.probNet = probNet;
-        this.cases = cases;
+        this.caseDatabase = caseDatabase;
         this.editionsGenerator = editionsGenerator;
         this.alpha = alpha;
     }
@@ -75,7 +76,7 @@ public abstract class LearningAlgorithm {
             bestEdition = editionsGenerator.getBest (true, true);
         }
        /* Parametric Learning */
-       parametricLearning(probNet, cases);
+       parametricLearning();
     }
     
     /**
@@ -132,22 +133,23 @@ public abstract class LearningAlgorithm {
      * @throws openmarkov.exceptions.NotEnoughMemoryException
      * @throws NormalizeNullVectorException 
      */
-    public ProbNet parametricLearning(ProbNet learnedNet, int[][] cases) 
+    public ProbNet parametricLearning() 
             throws NotEnoughMemoryException, NormalizeNullVectorException{
+        int[][] cases = caseDatabase.getCases ();
         TablePotential absoluteFrequencies;
         
-        for (ProbNode node : learnedNet.getProbNodes()) {
+        for (ProbNode node : probNet.getProbNodes()) {
             if(!node.getPotentials ().isEmpty ())
             {
-                learnedNet.removePotential (node.getPotentials ().get (0));
+                probNet.removePotential (node.getPotentials ().get (0));
             }
-            absoluteFrequencies = calculateAbsoluteFrequencies(learnedNet, cases, node);
+            absoluteFrequencies = calculateAbsoluteFrequencies(probNet, cases, node);
             for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
                 absoluteFrequencies.values[j] += alpha;
-            learnedNet.addPotential (DiscretePotentialOperations.normalize(absoluteFrequencies));
+            probNet.addPotential (DiscretePotentialOperations.normalize(absoluteFrequencies));
         }
         
-        return learnedNet;
+        return probNet;
     }
     
     /**
