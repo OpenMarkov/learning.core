@@ -25,18 +25,17 @@ import org.openmarkov.core.exception.NormalizeNullVectorException;
 import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
+import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.graph.Link;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
-import org.openmarkov.core.model.network.potential.Potential;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmManager;
 import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
 import org.openmarkov.learning.core.editionsgenerator.EditAndScorePair;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
-import org.openmarkov.learning.core.io.CaseDatabase;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /** This class launches the learning algorithm and receives the results of
