@@ -108,7 +108,7 @@ public class LearningManager {
             this.learnedNet = preprocessedNet;
         }     
         parameters.add (0, learnedNet);
-        parameters.add (1, caseDatabase.getCases ());
+        parameters.add (1, caseDatabase);
         this.learningAlgorithm = learningAlgorithmManager.getByName (algorithmName, parameters);
         this.addElviraProperties (learnedNet);
         this.modelNetUse = modelNetUse;
@@ -241,6 +241,8 @@ public class LearningManager {
         throws ProbNodeNotFoundException,
         NodeNotFoundException
     {
+        
+        copyNodePositionsFromModelNet(modelNet, learnedNet);
         /*
          * If the option "Use only nodes" is not selected, we add the links of
          * the model net to the learnedNet we are going to learn.
@@ -309,6 +311,30 @@ public class LearningManager {
 	 */
 	public ArrayList<PNEdit> getBlockedEdits() {
 		return learningAlgorithm.getBlockedEdits();
-	}      
+	}   
+	
+    /** Given a modelNet, applies the node positions of the modelNet to the
+     * nodes of the current probNet
+     * @param modelNet - the modelNet to copy the node positions from
+     */
+    private void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learnedNet)
+    {
+        ProbNode positionNode = null;
+        
+        /* Take the positions of the nodes */
+        if(modelNet != null){
+            for (ProbNode node : modelNet.getProbNodes()){
+                try {
+                    positionNode = learnedNet.getProbNode(node.getVariable().getName());
+                    if (positionNode != null){
+                        positionNode.getNode().setCoordinateX(node.getNode().
+                                getCoordinateX());
+                        positionNode.getNode().setCoordinateY(node.getNode().
+                                getCoordinateY());
+                    }
+                } catch (ProbNodeNotFoundException e) {}
+            }
+        }        
+    }	
 	
 }
