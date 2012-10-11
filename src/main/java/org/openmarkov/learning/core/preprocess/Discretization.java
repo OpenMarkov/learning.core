@@ -1,5 +1,5 @@
 /*
-* Copyright 2011 CISIAD, UNED, Spain
+* Copyright 2012 CISIAD, UNED, Spain
 *
 * Licensed under the European Union Public Licence, version 1.1 (EUPL)
 *
@@ -13,13 +13,15 @@ package org.openmarkov.learning.core.preprocess;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
+import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;
@@ -36,197 +38,123 @@ import org.openmarkov.learning.core.util.Util;
  * @author joliva
  * @author manuel
  * @author fjdiez
+ * @author ibermejo
  * @version 1.0
  * @since OpenMarkov 1.0 */
 public class Discretization {
 
-    /** Discretization options */
-    private static final String[] options = {"No discretizar",
-                "Según red modelo", "Igual frecuencia", "Igual anchura"};
-
-    public static final String defaultOption = "Especificar para cada variable";
-    public static final int NOTHING = 0;
-    public static final int MODELNET = 1;
-    public static final int EQUAL_FREQ = 2;
-    public static final int EQUAL_WIDTH = 3;
-
-    /** Array to know wether the variables are numeric or not */
-    public static boolean[] isNumeric;
-
-    /** Array to know wether the variables have ausent values or not */
-    public static boolean[] hasAusentValues;
-
-    /** Arrays to store the min and max values of the numeric variables */
-    static double[] max;
-    static double[] min;
-
-    /** ArrayList with the number of intervals to use in the discretization of
-     * each variable */
-    static ArrayList<Integer> selectedNumIntervals;
-
-    static ProbNet probNet = null;
-    static HashMap<String, String> newIONet;
-
-    /** database cases adaptated after preprocessing */
-    static int[][] newCases = null;
-    
-    /**
-     * This function find the numeric variables of a probNet
-     * @param probNet <code>ProbNet</code>
-     * @return <code>boolean[]</code> the i-th field of the array is true if
-     * the i-th variable of the probNet is numeric
-     */
-    public static boolean[] numericAttributes(ProbNet probNet){
-        int i = 0;
-        isNumeric = new boolean[probNet.getNumNodes()];
-        hasAusentValues = new boolean[probNet.getNumNodes()];
-        max = new double[probNet.getNumNodes()];
-        min = new double[probNet.getNumNodes()];
-
-        for (int j = 0; j < probNet.getNumNodes(); j++)
-            hasAusentValues[i] = false;
-
-        for (Variable var : probNet.getChanceAndDecisionVariables()){
-            isNumeric[i] = isNumeric(var.getStates(), i); 
-            i++;
-        }
-        return isNumeric;
+    public enum Option {
+        NOTHING,
+        MODELNET,
+        EQUAL_FREQ,
+        EQUAL_WIDTH;
     }
 
     /**
-     * This function takes a set of states and determines wether they are
+     * Global number of intervals
+     */
+    private int numIntervals;
+
+    /**
+     * Discretization options
+     */
+    private Map<Variable, Option> discretizeOptions = null;
+
+    /**
+     * Num intervals per variable
+     */
+    private Map<Variable, Integer> numIntervalsPerVariable = null;
+    
+    /**
+     * Constructor for Discretization.
+     * @param numIntervals
+     */
+    public Discretization (int numIntervals)
+    {
+        this.numIntervals = numIntervals;
+    }
+
+    /**
+     * 
+     * Constructor for Discretization.
+     * @param discretizeTreatments
+     */
+    public Discretization (Map<Variable, Option> discretizeOptions, Map<Variable, Integer> numIntervalsPerVariable)
+    {
+        this.discretizeOptions = discretizeOptions;
+        this.numIntervalsPerVariable = numIntervalsPerVariable;
+    }
+
+    /**
+     * This function takes a set of states and determines whether they are
      * numeric or not
      * @param states <code>String[]</code> states to verify
      * @param index <code>int</code> variable index
      * @return true if the states are numeric
      */
-    private static boolean isNumeric(State[] states, int index){
-        double value;
-        double maxValue = Double.NEGATIVE_INFINITY;
-        double minValue = Double.POSITIVE_INFINITY;
+    public static boolean isNumeric(State[] states){
 
-        for (int i = 0; i < states.length; i++){
-            try{
-                value = Double.parseDouble(states[i].getName());
-                if (value > maxValue)
-                    maxValue = value;
-                if (value < minValue)
-                    minValue = value;
-            } catch (NumberFormatException e){
-                if (!states[i].equals(new State("?")))
-                    return false; 
-                else
-                    hasAusentValues[index] = true;
+        boolean hasMissingValues = false;
+        for (int i = 0; i < states.length; i++)
+        {
+            try
+            {
+                if (!states[i].getName ().equals ("?"))
+                {
+                    Double.parseDouble (states[i].getName ());
+                }else
+                {
+                    hasMissingValues = true;
+                }
+            }
+            catch (NumberFormatException e)
+            {
+                return false;
             }
         }
 
-        /* If the attribute only has two states, we state that
-         * it is not numeric.*/
-        if (((hasAusentValues[index]) && (states.length < 4)) ||
-                (states.length < 3))
-            return false;
-
-        max[index] = maxValue;
-        min[index] = minValue;
-        return true;
+        return states.length > 4 || (!hasMissingValues && states.length == 3);
     }
 
     /**
-     * This function makes all the preprocessing related to discretization.
+     * This function discretizes the database.
      *
-     * @param variables <code>ArrayList</code> variables to preprocess
-     * @param discretizeOption <code>ArrayList</code> containing the
-     * discretization option selected for each variable
-     * @param preprocessOption <code>ArrayList</code> containing the preprocess
-     * option selected for each variable
-     * @param numIntervals <code>ArrayList</code> containing the number of
-     * interval selected for each variable
-     * @param oldProbNet <code>ProbNet</code> original probNet
-     * @param cases <code>int[][]</code> original database cases.
-     * @param modelNet <code>ProbNet</code> net from wich to take the
-     * discretization
-     * @return <code>ProbNet</code> updated probNet
-     * @throws ProbNodeNotFoundException 
-     * @throws InvalidStateException 
-     * @throws NotEnoughMemoryException 
-     * @throws WrongDiscretizationLimitException 
-     * @throws java.lang.Exception
+     * @return <code>CaseDatabase</code> updated database
      */
-    public static ProbNet discretize(ArrayList<Variable> variables,
-            ArrayList<Integer> discretizeOption, ArrayList<Integer>
-            preprocessOption, ArrayList<Integer> numIntervals,
-            ProbNet oldProbNet, int[][] cases, ProbNet modelNet) throws 
-            NotEnoughMemoryException, InvalidStateException, 
-            ProbNodeNotFoundException, WrongDiscretizationLimitException{
+    public CaseDatabase discretize (CaseDatabase database,
+                                    Map<Variable, MissingValues.Option> preprocessOptions,
+                                    ProbNet modelNet)
+        throws NotEnoughMemoryException,
+        InvalidStateException,
+        ProbNodeNotFoundException,
+        WrongDiscretizationLimitException
+    {
 
-        ArrayList<String> variableNames = new ArrayList<String>();
-        int index = 0;
-        selectedNumIntervals = numIntervals;
-        newIONet = new HashMap<String, String>();
-
-        probNet = oldProbNet.copy();
-
-        if ((variables == null) || (variables.size() == 0))
-            return null;
-
-        for (Variable var : variables){
-            variableNames.add(var.getName());
-        }
-
-        for (Variable oldVariable : probNet.getVariables(NodeType.CHANCE)){
-            if(!variables.contains(oldVariable)){
-                probNet.removeProbNode(probNet.getProbNode(oldVariable));
-            }
-            else {
-                index = variables.indexOf(oldVariable);
-
-                /* If the user selected to discretize and keep absent values,
-                 * show an error message and don't discretize the variable*/
-                if((preprocessOption.get(index) ==
-                        AbsentValues.INPUT) && (discretizeOption.get(index) != NOTHING)){
-
-                	Logger.getLogger(Discretization.class).error("La variable " + 
-                			variableNames.get(index) +
-                			" no ha sido discretizada. No se " +
-                            "permite la discretización manteniendo los " +
-                            "valores ausentes.");
-                    noDiscretize(oldVariable, oldProbNet);
-                    continue;
-                }
-                switch(discretizeOption.get(index)){
-                    case (EQUAL_WIDTH):
-                        discretizeEqualWidth(oldVariable, oldProbNet, index,
-                                preprocessOption.get(index));
+        List<Variable> newVariables = new ArrayList<> (); 
+                
+        for (Variable variable : database.getVariables()){
+            Variable newVariable = null;
+                int numIntervals = (numIntervalsPerVariable != null)? numIntervalsPerVariable.get (variable) : this.numIntervals;
+                switch(discretizeOptions.get (variable)){
+                    case EQUAL_WIDTH:
+                        newVariable = discretizeEqualWidth(variable, numIntervals);
                         break;
-                    case (EQUAL_FREQ):
-                        discretizeEqualFreq(oldVariable, oldProbNet, cases,
-                                index, preprocessOption.get(index));
+                    case EQUAL_FREQ:
+                        newVariable = discretizeEqualFreq(variable, numIntervals);
                         break;
-                    case (MODELNET):
-                        discretizeFromModelNet(oldVariable, modelNet,
-                                oldProbNet);
+                    case MODELNET:
+                        newVariable = discretizeFromModelNet(variable, modelNet);
                         break;
                     default:
-                        noDiscretize(oldVariable, oldProbNet);
+                        newVariable = variable;
                         break;
                 }
-            }
         }
-
-        for (Entry<String, String> property : (Set<Entry<String, String>>)
-                oldProbNet.additionalProperties.entrySet())
-                newIONet.put((String)property.getKey(), 
-                        property.getValue().toString());
-
-        for (int i = 0; i < variableNames.size(); i++) {
-            newIONet.put("VariableOrder[" + i + "]", variableNames.get(i)); 
-        }
-        probNet.additionalProperties = newIONet;
 
         /* construct the new cases array */
-        setCases(cases, oldProbNet, discretizeOption);
+        int[][] newCases = discretizeCases(database, newVariables);
 
-        return probNet;
+        return new CaseDatabase (newVariables, newCases);
     }
 
      /**
@@ -239,9 +167,10 @@ public class Discretization {
      * @throws ProbNodeNotFoundException 
      * @throws WrongDiscretizationLimitException 
       */
-    private static void setCases(int[][] cases, ProbNet oldProbNet,
-            ArrayList<Integer> discretizeOption) throws 
-                ProbNodeNotFoundException, WrongDiscretizationLimitException{
+    private int[][] discretizeCases (int[][] cases, ProbNet oldProbNet, List<Integer> discretizeOption)
+        throws ProbNodeNotFoundException,
+        WrongDiscretizationLimitException
+    {
         int index;
         String value = "";
         int countCases = 0;
@@ -332,54 +261,38 @@ public class Discretization {
      * @param oldProbNet <code>ProbNet</code> original probNet
      * @throws java.lang.Exception
      */
-    private static void discretizeFromModelNet(Variable oldVariable,
-            ProbNet modelNet, ProbNet oldProbNet) throws ProbNodeNotFoundException{
-        HashMap<String, String> ioNode = new HashMap<String, String>();
-        ProbNode newNode;
+    private Variable discretizeFromModelNet (Variable oldVariable,
+                                                ProbNet modelNet)
+        throws ProbNodeNotFoundException
+    {
+        
+        Variable newVariable = oldVariable;
 
         if (modelNet != null){
-            Variable modelVariable = modelNet.getProbNode(oldVariable.
-                    getName()).getVariable();
-            if (modelVariable.getVariableType() == 
-                    VariableType.DISCRETIZED){
-                probNet.removeProbNode(probNet.getProbNode(oldVariable));
-                newNode = probNet.addVariable(modelVariable, 
-                        NodeType.CHANCE);
-                ioNode = oldProbNet.getProbNode(oldVariable).
-                        additionalProperties;
-                newNode.additionalProperties = ioNode;
-                return;
+            Variable modelNetVariable = modelNet.getVariable(oldVariable.getName());
+            if (modelNetVariable.getVariableType() == VariableType.DISCRETIZED){
+                newVariable = modelNetVariable;
             }
         }
+        
+        return newVariable;
     }
 
-    /**
-     * This function makes the discretization of a variable using equal width
-     * intervals.
-     * @param oldVariable <code>Variable</code> variable to discretize
-     * @param oldProbNet <code>ProbNet</code> original probNet
-     * @param ind <code>int</code> index of the variable in the array of
-     * variables of interest
-     * @param ausentValOp <code>int</code> selected option to manage absent
-     * values
-     * @throws java.lang.Exception
-     */
-    public static void discretizeEqualWidth(Variable oldVariable,
-            ProbNet oldProbNet, int ind, int ausentValOp){
-        HashMap<String, String> ioNode = new HashMap<String, String>();
-        ProbNode newNode;
-        Variable newVariable;
-        int index = oldProbNet.getVariables(NodeType.CHANCE).
-                indexOf(oldVariable);
-        int numStates = selectedNumIntervals.get(ind);
+
+    public Variable discretizeEqualWidth (Variable variable,
+                                             int numInterval)
+    {
+        Variable newVariable = null;
+        
+        int numStates = numInterval;
         State[] states = new State[numStates];
         boolean[] belongsToLeftSide;
         double[] limits;
 
         //Create a new discretized variable
-        if((hasAusentValues[oldProbNet.getVariables(NodeType.CHANCE).
+        if((hasMissingValues[oldProbNet.getVariables(NodeType.CHANCE).
                 indexOf(oldVariable)]) &&
-                (ausentValOp != AbsentValues.ELIMINATE)){
+                (ausentValOp != MissingValues.ELIMINATE)){
             newVariable = new Variable(oldVariable.getName(), numStates + 1);
             try {
                 newVariable.renameState("" + numStates, "?");
@@ -409,14 +322,12 @@ public class Discretization {
                     new PartitionedInterval(limits, belongsToLeftSide), 0.001);
         }
 
-        probNet.removeProbNode(probNet.getProbNode(oldVariable));
         newNode = probNet.addVariable(newVariable, NodeType.CHANCE);
         newNode.getVariable().setStates(states);
         newNode.getVariable().setPartitionedInterval(
                 newVariable.getPartitionedInterval());
-        ioNode = (HashMap<String,String>) oldProbNet.getProbNode(oldVariable)
-            .additionalProperties.clone();
-        newNode.additionalProperties = ioNode;
+        
+        return newVariable;
     }
 
     /**
@@ -437,8 +348,11 @@ public class Discretization {
      * @throws ProbNodeNotFoundException 
      * @throws java.lang.Exception
      */
-    public static void discretizeEqualFreq(Variable oldVariable, ProbNet
-            oldProbNet, int[][] cases, int ind, int ausentValOp)
+    public Variable discretizeEqualFreq (Variable oldVariable,
+                                         ProbNet oldProbNet,
+                                         int[][] cases,
+                                         int ind,
+                                         int ausentValOp)
             throws NotEnoughMemoryException, InvalidStateException, 
             ProbNodeNotFoundException{
 
@@ -524,7 +438,7 @@ public class Discretization {
 
         //Create a new discretized variable
         int numStates = varIntervalLimit.size() - 1;
-        if((hasAusentValues[index]) && (ausentValOp != AbsentValues.ELIMINATE)){
+        if((hasMissingValues[index]) && (ausentValOp != MissingValues.ELIMINATE)){
             newVariable = new Variable(oldVariable.getName(), numStates + 1);
             try {
                 newVariable.renameState("" + numStates,
@@ -560,32 +474,12 @@ public class Discretization {
         newNode.getVariable().setPartitionedInterval(
                 newVariable.getPartitionedInterval());
         
-        ioNode = (HashMap<String,String>) oldProbNet.getProbNode(oldVariable.
-                getName()).additionalProperties.clone();
+        ioNode = new HashMap<String,String> (oldProbNet.getProbNode(oldVariable.
+                getName()).additionalProperties);
         newNode.additionalProperties = ioNode;
     }
 
-    /**
-     * This function just adds the old variable in the new probNet
-     * @param oldVariable <code>Variable</code> variable to add
-     * @param oldProbNet <code>ProbNet</code> probNet to take the info of
-     * the variable
-     * @throws java.lang.Exception
-     */
-    public static void noDiscretize(Variable oldVariable, ProbNet oldProbNet){
-        HashMap<String, String> ioNode = new HashMap<String, String>();
-        ProbNode newNode;
-
-        newNode = probNet.addVariable(oldVariable, NodeType.CHANCE);
-        ioNode = oldProbNet.getProbNode(oldVariable).additionalProperties;
-        newNode.additionalProperties = ioNode;
-    }
-
-    public static String[] getOptions(){
-        return options;
-    }
-
-    public static int[][] getCases(){
-        return newCases;
+    public static Discretization.Option[] getOptions(){
+        return Discretization.Option.values ();
     }
 }
