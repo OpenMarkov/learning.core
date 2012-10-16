@@ -43,28 +43,38 @@ public class MissingValues {
      * @param preprocessOption <code>Map<Variable, MissingValues.Option></code> containing the preprocess
      * option selected for each variable
      */
-    public static CaseDatabase preprocess (CaseDatabase database,
+    public static CaseDatabase process (CaseDatabase database,
                                            Map<Variable, MissingValues.Option> preprocessOption)
     {
         // remove the "?" state
-        List<Variable> preprocessedVariables = removeMissingState (preprocessOption,
-                                                                   database.getVariables ());
+        List<Variable> oldVariables = database.getVariables ();
+        List<Variable> preprocessedVariables = removeMissingState (preprocessOption, oldVariables);
         /* Remove the cases with an absent value, if this option was selected. */
-        int[][] newCases = new int[database.getCases ().length][database.getVariables ().size ()];
         int[][] oldCases = database.getCases ();
+        boolean[] keepCase = new boolean[oldCases.length];
+        int numCasesToKeep = 0;
         for (int i = 0; i < oldCases.length; i++)
         {
-            if (preprocessOption.get (preprocessedVariables.get (i)) == MissingValues.Option.ELIMINATE
-                && containsMissingValues (preprocessedVariables, oldCases[i]))
+            keepCase[i] = true;
+            for (int j = 0; j < database.getVariables ().size (); j++)
             {
-                newCases[i] = null;
+                keepCase[i] &= preprocessOption.get (oldVariables.get (j)) != MissingValues.Option.ELIMINATE
+                    || !containsMissingValues (oldVariables, oldCases[i]);
             }
-            else
+            if(keepCase[i]) ++numCasesToKeep;
+        }
+        int[][] newCases = new int[numCasesToKeep][database.getVariables ().size ()];
+        
+        int newIndex = 0;
+        for (int i = 0; i < oldCases.length; i++)
+        {
+            if(keepCase[i])
             {
                 for (int j = 0; j < database.getVariables ().size (); j++)
                 {
-                    newCases[i][j] = oldCases[i][j];
+                        newCases[newIndex][j] = oldCases[i][j];
                 }
+                ++newIndex;
             }
         }
         return new CaseDatabase (preprocessedVariables, newCases);
