@@ -44,7 +44,7 @@ public class MissingValues {
      * option selected for each variable
      */
     public static CaseDatabase process (CaseDatabase database,
-                                           Map<Variable, MissingValues.Option> preprocessOption)
+                                           Map<String, MissingValues.Option> preprocessOption)
     {
         // remove the "?" state
         List<Variable> oldVariables = database.getVariables ();
@@ -58,7 +58,7 @@ public class MissingValues {
             keepCase[i] = true;
             for (int j = 0; j < database.getVariables ().size (); j++)
             {
-                keepCase[i] &= preprocessOption.get (oldVariables.get (j)) != MissingValues.Option.ELIMINATE
+                keepCase[i] &= preprocessOption.get (oldVariables.get (j).getName ()) != MissingValues.Option.ELIMINATE
                     || !containsMissingValues (oldVariables, oldCases[i]);
             }
             if(keepCase[i]) ++numCasesToKeep;
@@ -104,12 +104,12 @@ public class MissingValues {
      * variable
      * @param variables <code>List</code> of variables
      */
-    private static List<Variable> removeMissingState (Map<Variable, MissingValues.Option> preprocessOptions, List<Variable> variables)
+    private static List<Variable> removeMissingState (Map<String, MissingValues.Option> preprocessOptions, List<Variable> variables)
     {
         List<Variable> preprocessedVariables = new ArrayList<> ();
         
         for(Variable variable : variables){
-            if (preprocessOptions.get (variable) == MissingValues.Option.ELIMINATE){
+            if (preprocessOptions.get (variable.getName ()) == MissingValues.Option.ELIMINATE){
                 Variable newVariable = new Variable (variable.getName (),
                                                      removeMissingState (variable.getStates ()));
                 preprocessedVariables.add (newVariable);

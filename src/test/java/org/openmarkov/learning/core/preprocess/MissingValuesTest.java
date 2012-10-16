@@ -35,9 +35,9 @@ public class MissingValuesTest
     @Test
     public void testKeepMissingValues ()
     {
-        Map<Variable, MissingValues.Option> preprocessOption = new HashMap<>();
-        preprocessOption.put (varA, MissingValues.Option.KEEP);
-        preprocessOption.put (varB, MissingValues.Option.KEEP);
+        Map<String, MissingValues.Option> preprocessOption = new HashMap<>();
+        preprocessOption.put ("A", MissingValues.Option.KEEP);
+        preprocessOption.put ("B", MissingValues.Option.KEEP);
         
         CaseDatabase newDatabase = MissingValues.process (database, preprocessOption); 
 
@@ -49,9 +49,9 @@ public class MissingValuesTest
     @Test
     public void testRemoveMissingValues ()
     {
-        Map<Variable, MissingValues.Option> preprocessOption = new HashMap<>();
-        preprocessOption.put (varA, MissingValues.Option.ELIMINATE);
-        preprocessOption.put (varB, MissingValues.Option.ELIMINATE);
+        Map<String, MissingValues.Option> preprocessOption = new HashMap<>();
+        preprocessOption.put ("A", MissingValues.Option.ELIMINATE);
+        preprocessOption.put ("B", MissingValues.Option.ELIMINATE);
         CaseDatabase newDatabase = MissingValues.process (database, preprocessOption);
         
         Assert.assertEquals (3, newDatabase.getCases ().length);

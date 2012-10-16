@@ -46,13 +46,13 @@ public class DiscretizationTests
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
-        Map<Variable, Discretization.Option> discretizeOptions = new HashMap<> ();
-        discretizeOptions.put (varA, Discretization.Option.NONE);
-        discretizeOptions.put (varB, Discretization.Option.NONE);
+        Map<String, Discretization.Option> discretizeOptions = new HashMap<> ();
+        discretizeOptions.put ("A", Discretization.Option.NONE);
+        discretizeOptions.put ("B", Discretization.Option.NONE);
         
-        Map<Variable, Integer> numIntervalsPerVariable = new HashMap<> ();
-        numIntervalsPerVariable.put (varA, 5000);
-        numIntervalsPerVariable.put (varB, 1);
+        Map<String, Integer> numIntervalsPerVariable = new HashMap<> ();
+        numIntervalsPerVariable.put ("A", 5000);
+        numIntervalsPerVariable.put ("B", 1);
         
         CaseDatabase newDatabase = Discretization.process (database, discretizeOptions, numIntervalsPerVariable);
         
@@ -67,13 +67,13 @@ public class DiscretizationTests
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
-        Map<Variable, Discretization.Option> discretizeOptions = new HashMap<> ();
-        discretizeOptions.put (varA, Discretization.Option.EQUAL_WIDTH);
-        discretizeOptions.put (varB, Discretization.Option.EQUAL_WIDTH);
+        Map<String, Discretization.Option> discretizeOptions = new HashMap<> ();
+        discretizeOptions.put ("A", Discretization.Option.EQUAL_WIDTH);
+        discretizeOptions.put ("B", Discretization.Option.EQUAL_WIDTH);
         
-        Map<Variable, Integer> numIntervalsPerVariable = new HashMap<> ();
-        numIntervalsPerVariable.put (varA, 3);
-        numIntervalsPerVariable.put (varB, 4);
+        Map<String, Integer> numIntervalsPerVariable = new HashMap<> ();
+        numIntervalsPerVariable.put ("A", 3);
+        numIntervalsPerVariable.put ("B", 4);
         
         
         CaseDatabase newDatabase = Discretization.process (database, discretizeOptions, numIntervalsPerVariable);
@@ -99,13 +99,13 @@ public class DiscretizationTests
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
-        Map<Variable, Discretization.Option> discretizeOptions = new HashMap<> ();
-        discretizeOptions.put (varA, Discretization.Option.EQUAL_FREQ);
-        discretizeOptions.put (varB, Discretization.Option.EQUAL_FREQ);
+        Map<String, Discretization.Option> discretizeOptions = new HashMap<> ();
+        discretizeOptions.put ("A", Discretization.Option.EQUAL_FREQ);
+        discretizeOptions.put ("B", Discretization.Option.EQUAL_FREQ);
         
-        Map<Variable, Integer> numIntervalsPerVariable = new HashMap<> ();
-        numIntervalsPerVariable.put (varA, 4);
-        numIntervalsPerVariable.put (varB, 2);
+        Map<String, Integer> numIntervalsPerVariable = new HashMap<> ();
+        numIntervalsPerVariable.put ("A", 4);
+        numIntervalsPerVariable.put ("B", 2);
         
         
         CaseDatabase newDatabase = Discretization.process (database, discretizeOptions, numIntervalsPerVariable);

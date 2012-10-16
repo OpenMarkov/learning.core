@@ -86,8 +86,8 @@ public class Discretization {
      * @return <code>CaseDatabase</code> updated database
      */
     public static CaseDatabase process (CaseDatabase database,
-                                    Map<Variable, Option> discretizeOptions,
-                                    Map<Variable, Integer> numIntervalsPerVariable,
+                                    Map<String, Option> discretizeOptions,
+                                    Map<String, Integer> numIntervalsPerVariable,
                                     ProbNet modelNet)
         throws NotEnoughMemoryException,
         InvalidStateException,
@@ -100,8 +100,8 @@ public class Discretization {
         for (Variable variable : database.getVariables ())
         {
             Variable newVariable = variable;
-            int numIntervals = numIntervalsPerVariable.get (variable);
-            switch (discretizeOptions.get (variable))
+            int numIntervals = numIntervalsPerVariable.get (variable.getName ());
+            switch (discretizeOptions.get (variable.getName ()))
             {
                 case EQUAL_WIDTH :
                     newVariable = discretizeEqualWidth (variable, numIntervals);
@@ -131,8 +131,8 @@ public class Discretization {
      * @return <code>CaseDatabase</code> updated database
      */
     public static CaseDatabase process (CaseDatabase database,
-                                    Map<Variable, Option> discretizeOptions,
-                                    Map<Variable, Integer> numIntervalsPerVariable)
+                                    Map<String, Option> discretizeOptions,
+                                    Map<String, Integer> numIntervalsPerVariable)
         throws NotEnoughMemoryException,
         InvalidStateException,
         ProbNodeNotFoundException,
@@ -159,13 +159,13 @@ public class Discretization {
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
-        Map<Variable, Option> discretizeOptions = new HashMap<>();
-        Map<Variable, Integer> numIntervalsPerVariable = new HashMap<>();
+        Map<String, Option> discretizeOptions = new HashMap<>();
+        Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
         
         for(Variable variable : database.getVariables ())
         {
-            discretizeOptions.put (variable, discretizationOption);
-            numIntervalsPerVariable.put (variable, numIntervals);
+            discretizeOptions.put (variable.getName (), discretizationOption);
+            numIntervalsPerVariable.put (variable.getName (), numIntervals);
         }
         
         return process (database, discretizeOptions, numIntervalsPerVariable, null);
@@ -187,13 +187,13 @@ public class Discretization {
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
-        Map<Variable, Option> discretizeOptions = new HashMap<>();
-        Map<Variable, Integer> numIntervalsPerVariable = new HashMap<>();
+        Map<String, Option> discretizeOptions = new HashMap<>();
+        Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
         
         for(Variable variable : database.getVariables ())
         {
-            discretizeOptions.put (variable, Discretization.Option.MODEL_NET);
-            numIntervalsPerVariable.put (variable, -1);
+            discretizeOptions.put (variable.getName(), Discretization.Option.MODEL_NET);
+            numIntervalsPerVariable.put (variable.getName (), -1);
         }
         
         return process (database, discretizeOptions, numIntervalsPerVariable, modelNet);
@@ -397,7 +397,7 @@ public class Discretization {
     * @throws WrongDiscretizationLimitException 
      * @throws InvalidStateException 
      */
-   private static int[][] discretizeCases (CaseDatabase database, List<Variable> newVariables, Map<Variable, Option> discretizeOptions)
+   private static int[][] discretizeCases (CaseDatabase database, List<Variable> newVariables, Map<String, Option> discretizeOptions)
        throws ProbNodeNotFoundException,
        WrongDiscretizationLimitException, InvalidStateException
    {
@@ -427,7 +427,7 @@ public class Discretization {
            for(int i = 0; i < oldCases.length; i++){
 
                if (isNumeric){
-                   switch(discretizeOptions.get(oldVariable)){
+                   switch(discretizeOptions.get(oldVariable.getName ())){
                        case NONE:
                            newCases[i][j] = oldCases[i][indexOfNewVariable];
                            break;
