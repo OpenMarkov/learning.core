@@ -27,6 +27,7 @@ import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.graph.Link;
+import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.State;
@@ -79,8 +80,7 @@ public class LearningManager {
      * @throws NodeNotFoundException
      * @throws NotEnoughMemoryException
      */
-    public LearningManager (ProbNet preprocessedNet,
-                            CaseDatabase caseDatabase,
+    public LearningManager (CaseDatabase caseDatabase,
                             String algorithmName,
                             List<Object> parameters, 
                             ProbNet modelNet,
@@ -101,11 +101,15 @@ public class LearningManager {
             {
                 throw new EmptyModelNetException ();
             }
-            this.learnedNet = applyModelNet (preprocessedNet, modelNet, modelNetUse);
+            this.learnedNet = applyModelNet (caseDatabase, modelNet, modelNetUse);
         }
         else
         {
-            this.learnedNet = preprocessedNet;
+            this.learnedNet = new ProbNet ();
+            for (Variable variable : caseDatabase.getVariables ())
+            {
+                learnedNet.addProbNode (variable, NodeType.CHANCE);
+            }
         }     
         parameters.add (0, learnedNet);
         parameters.add (1, caseDatabase);
@@ -235,50 +239,47 @@ public class LearningManager {
      * @throws ProbNodeNotFoundException
      * @throws NodeNotFoundException
      */
-    private ProbNet applyModelNet (ProbNet learnedNet,
+    private ProbNet applyModelNet (CaseDatabase database,
                                    ProbNet modelNet,
                                    ModelNetUse modelNetUse)
         throws ProbNodeNotFoundException,
         NodeNotFoundException
     {
-        
-        copyNodePositionsFromModelNet(modelNet, learnedNet);
+        ProbNet probNet = null;
         /*
          * If the option "Use only nodes" is not selected, we add the links of
          * the model net to the learnedNet we are going to learn.
          */
-        if (modelNet != null && !modelNetUse.isOnlyUseNodes ())
+        if (modelNetUse.isOnlyUseNodes ())
         {
-            // If the model net includes nodes/variables that are not in the database, add them along with their potentials 
-            for (Variable modelNetVariable : modelNet.getVariables ())
+            probNet = new ProbNet ();
+            for (Variable variable : database.getVariables ())
             {
-                ProbNode modelNetNode = modelNet.getProbNode (modelNetVariable);
-                if(!learnedNet.containsVariable (modelNetVariable.getName ()))
+                probNet.addProbNode (variable, NodeType.CHANCE);
+            }
+            copyNodePositionsFromModelNet(modelNet, probNet);
+        }else {
+            probNet = modelNet.copy ();
+        
+            // If the databse includes variables that are not in the model net, add them 
+            for (Variable databaseVariable : database.getVariables ())
+            {
+                if(!probNet.containsVariable (databaseVariable.getName ()))
                 {
-                    ProbNode newNode = learnedNet.addVariable (modelNetVariable,
-                                                               modelNetNode.getNodeType ());
-                    newNode.setPotentials (modelNetNode.getPotentials ());
+                    probNet.addProbNode (databaseVariable, NodeType.CHANCE);
                 }
             }
             
-            for (Link link : modelNet.getGraph ().getLinks ())
+            // ModelNetworkConstraint
+            try
             {
-                learnedNet.addLink (learnedNet.getVariable (((ProbNode) link.getNode1 ().getObject ()).getVariable ().getName ()),
-                                    learnedNet.getVariable (((ProbNode) link.getNode2 ().getObject ()).getVariable ().getName ()),
-                                    link.isDirected ());
+                probNet.addConstraint (new ModelNetworkConstraint (modelNetUse, modelNet), false);
+            }
+            catch (ConstraintViolationException e)
+            {
             }
         }
-        // ModelNetworkConstraint
-        try
-        {
-            learnedNet.addConstraint (new ModelNetworkConstraint (modelNetUse,
-                                                                  modelNet),
-                                      false);
-        }
-        catch (ConstraintViolationException e)
-        {
-        }
-        return learnedNet;
+        return probNet;
     }
     
     public static Set<String> getAlgorithmNames ()

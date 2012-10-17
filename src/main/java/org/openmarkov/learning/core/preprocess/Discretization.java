@@ -24,8 +24,6 @@ import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
-import org.openmarkov.core.model.network.VariableType;
-import org.openmarkov.learning.core.preprocess.Discretization.Option;
 import org.openmarkov.learning.core.preprocess.exception.WrongDiscretizationLimitException;
 
 /** This class implements the routines to manage the discretization of the
@@ -114,6 +112,15 @@ public class Discretization {
                     break;
                 default :
                     newVariable = variable;
+                    if(modelNet != null)
+                    {
+                        try{
+                            newVariable = discretizeFromModelNet (variable, modelNet);
+                        }catch(Exception e)
+                        {
+                            newVariable = variable;
+                        }
+                    }
                     break;
             }
             newVariables.add (newVariable);
@@ -429,7 +436,8 @@ public class Discretization {
                if (isNumeric){
                    switch(discretizeOptions.get(oldVariable.getName ())){
                        case NONE:
-                           newCases[i][j] = oldCases[i][indexOfNewVariable];
+                           State state = oldVariable.getStates ()[oldCases[i][j]];
+                           newCases[i][indexOfNewVariable] = newVariable.getStateIndex (state.getName ());
                            break;
                        default:
                            if(oldStates[oldCases[i][j]].getName ().equals ("?"))
