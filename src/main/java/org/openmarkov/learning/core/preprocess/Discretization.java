@@ -112,15 +112,6 @@ public class Discretization {
                     break;
                 default :
                     newVariable = variable;
-                    if(modelNet != null)
-                    {
-                        try{
-                            newVariable = discretizeFromModelNet (variable, modelNet);
-                        }catch(Exception e)
-                        {
-                            newVariable = variable;
-                        }
-                    }
                     break;
             }
             newVariables.add (newVariable);
@@ -224,7 +215,42 @@ public class Discretization {
 
         if (modelNet != null){
             Variable modelNetVariable = modelNet.getVariable(oldVariable.getName());
-            newVariable = modelNetVariable;
+            
+            boolean missingValuesInDB = false;
+            try
+            {
+                oldVariable.getStateIndex ("?");
+                missingValuesInDB = true;                
+            }
+            catch (InvalidStateException e)
+            {
+                // Do nothing
+            }
+            boolean missingValuesInModelNet = false;
+            try
+            {
+                modelNetVariable.getStateIndex ("?");
+                missingValuesInModelNet = true;                
+            }
+            catch (InvalidStateException e)
+            {
+                // Do nothing
+            }
+            State[] newStates = null;
+            if(missingValuesInDB && !missingValuesInModelNet)
+            {
+                // Add "missing value" state
+                newStates = new State[modelNetVariable.getNumStates () + 1];
+                for(int i = 0; i < modelNetVariable.getNumStates (); ++i)
+                {
+                    newStates[i] = modelNetVariable.getStates ()[i];
+                }
+                newStates[newStates.length -1] = new State("?");
+            }else
+            {
+                newStates = modelNetVariable.getStates ();
+            }
+            newVariable = new Variable(oldVariable.getName(), newStates);
         }
         
         return newVariable;
