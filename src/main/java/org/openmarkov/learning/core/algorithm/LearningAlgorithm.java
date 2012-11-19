@@ -10,6 +10,7 @@
 package org.openmarkov.learning.core.algorithm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
@@ -22,8 +23,9 @@ import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.model.network.potential.PotentialRole;
 import org.openmarkov.core.model.network.potential.TablePotential;
 import org.openmarkov.core.model.network.potential.operation.DiscretePotentialOperations;
-import org.openmarkov.learning.core.editionsgenerator.EditAndScorePair;
 import org.openmarkov.learning.core.editionsgenerator.EditionsGenerator;
+import org.openmarkov.learning.core.editionsgenerator.LearningEditMotivation;
+import org.openmarkov.learning.core.editionsgenerator.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /**
@@ -69,7 +71,7 @@ public abstract class LearningAlgorithm {
     {
         init(modelNetUse);
         /* Main loop */
-       EditAndScorePair bestEdition = editionsGenerator.getBest(true,true);
+       LearningEditProposal bestEdition = editionsGenerator.getBest(true,true);
         while (bestEdition != null)
         {
             step (bestEdition.getEdition ());
@@ -100,7 +102,7 @@ public abstract class LearningAlgorithm {
      * @param edit <code>PNEdit</code> 
      * @return <code>double</code> score of the net with the given edition
      */    
-    public abstract double getScore (ProbNet probNet, int[][] cases, PNEdit edit); 
+    public abstract LearningEditMotivation getMotivation (ProbNet probNet, int[][] cases, PNEdit edit); 
     
     /** Takes a step in the algorithm
      * 
@@ -254,7 +256,7 @@ public abstract class LearningAlgorithm {
      * @param onlyPositiveEdits
      * @return
      */    
-    public EditAndScorePair getBestEdition(boolean onlyAllowedEdits, boolean onlyPositiveEdits)
+    public LearningEditProposal getBestEdition(boolean onlyAllowedEdits, boolean onlyPositiveEdits)
     {
     	return editionsGenerator.getBest(onlyAllowedEdits, onlyPositiveEdits);
     }
@@ -265,7 +267,7 @@ public abstract class LearningAlgorithm {
      * @param onlyPositiveEdits
      * @return
      */    
-    public EditAndScorePair getNextEdition(boolean onlyAllowedEdits, boolean onlyPositiveEdits)
+    public LearningEditProposal getNextEdition(boolean onlyAllowedEdits, boolean onlyPositiveEdits)
     {
     	return editionsGenerator.getNext(onlyAllowedEdits, onlyPositiveEdits);    
     }
@@ -291,7 +293,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * @return the blocked edits
 	 */
-	public ArrayList<PNEdit> getBlockedEdits() {
+	public List<PNEdit> getBlockedEdits() {
 		return editionsGenerator.getBlockedEdits();
 	}
 }

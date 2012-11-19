@@ -12,7 +12,7 @@ package org.openmarkov.learning.core.editionsgenerator;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
 
-/** An <code>EditAndScorePair</code> stores a <code>PNEdit</code> and the
+/** An <code>LearningEditProposal</code> stores a <code>PNEdit</code> and the
  * increment of score associated to this edition. Also it stores a pointer
  * to the constraint violated by this edition.
  * @author joliva
@@ -20,22 +20,22 @@ import org.openmarkov.core.exception.ConstraintViolationException;
  * @author fjdiez
  * @version 1.0
  * @since Carmen 1.0 */
-public class EditAndScorePair {
+public class LearningEditProposal {
 
     protected PNEdit edition;
     
-    protected double score;
+    protected LearningEditMotivation motivation;
     
     protected ConstraintViolationException violatedConstraint;
     
-    public EditAndScorePair(PNEdit edition, double score){
+    public LearningEditProposal(PNEdit edition, LearningEditMotivation motivation){
         this.edition = edition; 
-        this.score = score;
+        this.motivation = motivation;
         this.violatedConstraint = null;
     }
     
-    public EditAndScorePair(PNEdit edition, double score, ConstraintViolationException  e){
-        this(edition, score);
+    public LearningEditProposal(PNEdit edit, LearningEditMotivation motivation, ConstraintViolationException e){
+        this(edit, motivation);
         this.violatedConstraint = e;
     }    
     
@@ -43,16 +43,12 @@ public class EditAndScorePair {
         return edition;
     }
     
-    public double getScore(){
-        return score;
+    public LearningEditMotivation getMotivation(){
+        return motivation;
     }
     
     public Exception getViolatedConstraint(){
     	return violatedConstraint;
-    }
-    
-    public void setViolatedConstraint(ConstraintViolationException violatedConstraint){
-    	this.violatedConstraint = violatedConstraint;
     }
     
     public boolean isAllowed()
@@ -65,11 +61,11 @@ public class EditAndScorePair {
             return true;
         if((obj == null) || (obj.getClass() != this.getClass()))
             return false;
-        return (this.edition.equals(((EditAndScorePair)obj).edition));
+        return (this.edition.equals(((LearningEditProposal)obj).edition));
     }
     
     public String toString()
     {
-        return new StringBuilder().append (edition.toString () + " " + score).toString (); 
+        return new StringBuilder().append (edition.toString () + " " + motivation).toString (); 
     }
 }

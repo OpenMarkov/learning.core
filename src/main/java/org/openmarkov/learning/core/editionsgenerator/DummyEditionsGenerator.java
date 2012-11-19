@@ -17,13 +17,13 @@ public class DummyEditionsGenerator extends EditionsGenerator
 {
 
     @Override
-    public EditAndScorePair getBest (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
+    public LearningEditProposal getBest (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
     {
         return null;
     }
 
     @Override
-    public EditAndScorePair getNext (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
+    public LearningEditProposal getNext (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
     {
         return null;
     }

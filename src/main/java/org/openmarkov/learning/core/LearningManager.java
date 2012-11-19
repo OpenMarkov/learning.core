@@ -10,7 +10,6 @@
 
 package org.openmarkov.learning.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +25,6 @@ import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
-import org.openmarkov.core.model.graph.Link;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
@@ -35,7 +33,8 @@ import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmManager;
 import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
-import org.openmarkov.learning.core.editionsgenerator.EditAndScorePair;
+import org.openmarkov.learning.core.editionsgenerator.LearningEditMotivation;
+import org.openmarkov.learning.core.editionsgenerator.LearningEditProposal;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
@@ -163,8 +162,8 @@ public class LearningManager {
      * @param edit <code>PNEdit</code> 
      * @return <code>double</code> score of the net with the given edition
      */
-    public double getScore(PNEdit edit)  {
-        return learningAlgorithm.getScore (this.learnedNet, this.caseDatabase.getCases (), edit);
+    public LearningEditMotivation getMotivation(PNEdit edit)  {
+        return learningAlgorithm.getMotivation (this.learnedNet, this.caseDatabase.getCases (), edit);
     }
     
     /**
@@ -172,7 +171,7 @@ public class LearningManager {
      * @param onlyAllowedEdits
      * @param onlyPositiveEdits
      */
-    public EditAndScorePair getBestEdition (boolean onlyAllowedEdits,
+    public LearningEditProposal getBestEdition (boolean onlyAllowedEdits,
                                  boolean onlyPositiveEdits)
     {
         
@@ -185,7 +184,7 @@ public class LearningManager {
      * @param onlyAllowedEdits
      * @param onlyPositiveEdits
      */
-    public EditAndScorePair getNextEdition (boolean onlyAllowedEdits,
+    public LearningEditProposal getNextEdition (boolean onlyAllowedEdits,
                                  boolean onlyPositiveEdits)
     {
         
@@ -310,7 +309,7 @@ public class LearningManager {
 	/**
 	 * @return the blocked edits
 	 */
-	public ArrayList<PNEdit> getBlockedEdits() {
+	public List<PNEdit> getBlockedEdits() {
 		return learningAlgorithm.getBlockedEdits();
 	}   
 	

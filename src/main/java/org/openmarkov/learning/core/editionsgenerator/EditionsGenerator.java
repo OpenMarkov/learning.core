@@ -10,6 +10,7 @@
 package org.openmarkov.learning.core.editionsgenerator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openmarkov.core.action.PNEdit;
 
@@ -27,7 +28,7 @@ public abstract class EditionsGenerator {
 	
 
     /** List of blocked edits */
-    private ArrayList<PNEdit> blockedEdits = new ArrayList<PNEdit>();	
+    private List<PNEdit> blockedEdits = new ArrayList<PNEdit>();	
 
 	/**
 	 * This method returns the best edition (and its associated score)
@@ -37,9 +38,9 @@ public abstract class EditionsGenerator {
 	 * that do not provoke a ConstraintViolationException are returned
 	 * @param onlyPositiveEditions If this parameter is true, only those 
 	 * editions with a positive associated score are returned.
-	 * @return <code>EditAndScorePair</code> with the best edition and its score. 
+	 * @return <code>LearningEditProposal</code> with the best edition and its score. 
 	 */
-    public abstract EditAndScorePair getBest (boolean onlyAllowedEdits,
+    public abstract LearningEditProposal getBest (boolean onlyAllowedEdits,
                                      boolean onlyPositiveEdits);
     
     /**
@@ -50,9 +51,9 @@ public abstract class EditionsGenerator {
      * that do not provoke a ConstraintViolationException are returned
      * @param onlyPositiveEditions If this parameter is true, only those 
      * editions with a positive associated score are returned.
-     * @return <code>EditAndScorePair</code> with the best edition and its score. 
+     * @return <code>LearningEditProposal</code> with the best edition and its score. 
      */
-    public abstract EditAndScorePair getNext (boolean onlyAllowedEdits,
+    public abstract LearningEditProposal getNext (boolean onlyAllowedEdits,
                                      boolean onlyPositiveEdits);
     
     /**
@@ -76,7 +77,7 @@ public abstract class EditionsGenerator {
 	/**
 	 * @return the blockedEdits
 	 */
-	public ArrayList<PNEdit> getBlockedEdits() {
+	public List<PNEdit> getBlockedEdits() {
 		return blockedEdits;
 	}    
 	
