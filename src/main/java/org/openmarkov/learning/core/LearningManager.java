@@ -134,16 +134,9 @@ public class LearningManager {
      */
     public void learn ()
         throws NotEnoughMemoryException,
-        NodeNotFoundException,
-        NormalizeNullVectorException,
-        ProbNodeNotFoundException
+        NormalizeNullVectorException
     {
         learningAlgorithm.run (modelNetUse);
-        if(!modelNetUse.isOnlyUseNodes ())
-        {
-            // Place nodes in a sensible way
-            placeNodes(learnedNet);
-        }        
     }
 
     /**
@@ -341,62 +334,5 @@ public class LearningManager {
             }
         }        
     }
-    
-    
-    /**
-     * Places the nodes in a sensible way instead of putting them all in the same point 
-     * @param learnedNet
-     */
-    private void placeNodes (ProbNet learnedNet)
-    {
-        double top =  0.0;
-        double bottom =  600.0;
-        double left =  100.0;
-        double right =  800.0;
-        
-        Graph graph = learnedNet.getGraph ().copy ();
-        List<List<Node>> nodesInLevels = new ArrayList<List<Node>>(); 
-        while (!graph.getNodes ().isEmpty ())
-        {
-            // Look for the leaves
-            List<Node> leaves = new ArrayList<> ();
-            for(Node node : graph.getNodes ())
-            {
-                if(node.getChildren ().isEmpty ())
-                {
-                    leaves.add (node);
-                }
-            }
-            for(Node leave : leaves)
-            {
-                graph.removeNode (leave);
-            }            
-            nodesInLevels.add (leaves);
-        }
-        
-        double verticalStep  = (bottom - top) / nodesInLevels.size ();
-        double currentY = bottom;
-        for(List<Node> nodes : nodesInLevels)
-        {
-            double currentX = left;
-            double horizontalStep = (right - left) / nodes.size ();
-            for(Node node : nodes)
-            {
-                Node realNode = null;
-                try
-                {
-                    realNode = learnedNet.getProbNode (((ProbNode)node.getObject ()).getName ()).getNode ();
-                    realNode.setCoordinateX (currentX);
-                    realNode.setCoordinateY (currentY);
-                }
-                catch (ProbNodeNotFoundException e)
-                {
-                }
-                currentX += horizontalStep;
-            }
-            currentY -= verticalStep;
-        }
-        
-    }    
 	
 }
