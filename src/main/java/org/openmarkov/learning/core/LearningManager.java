@@ -10,6 +10,7 @@
 
 package org.openmarkov.learning.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,8 @@ import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.graph.Graph;
+import org.openmarkov.core.model.graph.Node;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
@@ -50,9 +53,6 @@ public class LearningManager {
     /**  Learning algorithm */
     private LearningAlgorithm learningAlgorithm = null;    
     
-    /** Implemented independence tester. */
-    public static final String[] independenceTesters = {"Entropía cruzada"};
-
     /** ProbNet to learn. */
     private ProbNet learnedNet = null;
     
@@ -61,7 +61,6 @@ public class LearningManager {
     
     /** Case database */
     private CaseDatabase caseDatabase = null;
-
     
     /**
      * Constructor
@@ -109,7 +108,8 @@ public class LearningManager {
             {
                 learnedNet.addProbNode (variable, NodeType.CHANCE);
             }
-        }     
+        }
+            
         parameters.add (0, learnedNet);
         parameters.add (1, caseDatabase);
         this.learningAlgorithm = learningAlgorithmManager.getByName (algorithmName, parameters);
@@ -139,6 +139,11 @@ public class LearningManager {
         ProbNodeNotFoundException
     {
         learningAlgorithm.run (modelNetUse);
+        if(!modelNetUse.isOnlyUseNodes ())
+        {
+            // Place nodes in a sensible way
+            placeNodes(learnedNet);
+        }        
     }
 
     /**
@@ -335,6 +340,63 @@ public class LearningManager {
                 } catch (ProbNodeNotFoundException e) {}
             }
         }        
-    }	
+    }
+    
+    
+    /**
+     * Places the nodes in a sensible way instead of putting them all in the same point 
+     * @param learnedNet
+     */
+    private void placeNodes (ProbNet learnedNet)
+    {
+        double top =  0.0;
+        double bottom =  600.0;
+        double left =  100.0;
+        double right =  800.0;
+        
+        Graph graph = learnedNet.getGraph ().copy ();
+        List<List<Node>> nodesInLevels = new ArrayList<List<Node>>(); 
+        while (!graph.getNodes ().isEmpty ())
+        {
+            // Look for the leaves
+            List<Node> leaves = new ArrayList<> ();
+            for(Node node : graph.getNodes ())
+            {
+                if(node.getChildren ().isEmpty ())
+                {
+                    leaves.add (node);
+                }
+            }
+            for(Node leave : leaves)
+            {
+                graph.removeNode (leave);
+            }            
+            nodesInLevels.add (leaves);
+        }
+        
+        double verticalStep  = (bottom - top) / nodesInLevels.size ();
+        double currentY = bottom;
+        for(List<Node> nodes : nodesInLevels)
+        {
+            double currentX = left;
+            double horizontalStep = (right - left) / nodes.size ();
+            for(Node node : nodes)
+            {
+                Node realNode = null;
+                try
+                {
+                    realNode = learnedNet.getProbNode (((ProbNode)node.getObject ()).getName ()).getNode ();
+                    realNode.setCoordinateX (currentX);
+                    realNode.setCoordinateY (currentY);
+                }
+                catch (ProbNodeNotFoundException e)
+                {
+                }
+                currentX += horizontalStep;
+            }
+            currentY -= verticalStep;
+        }
+        
+    }    
 	
 }
