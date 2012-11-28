@@ -10,6 +10,7 @@
 package org.openmarkov.learning.core.algorithm.statistics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
@@ -42,8 +43,8 @@ public class ConfigurationsOperations {
 	 *   <code>interestVariables</code> given the rest of the
 	 *   variables in <code>interestVariables</code>. */
 	public static TablePotential getCPT(int[][] data, 
-    		ArrayList<Variable> interestVariables, 
-    		ArrayList<Variable> allVariables) throws Exception {
+	                                    List<Variable> interestVariables, 
+	                                    List<Variable> allVariables) throws Exception {
     	TablePotential potential = new TablePotential(
     			interestVariables, PotentialRole.CONDITIONAL_PROBABILITY);
     	TablePotential count = count(data, interestVariables, allVariables);
@@ -72,8 +73,8 @@ public class ConfigurationsOperations {
 	 * @return A <code>TablePotential</code> containing in its table the number
 	 *   of times that each configuration appears in <code>data</code> */
     public static TablePotential count(int[][] data, 
-    		ArrayList<Variable> interestVariables, 
-    		ArrayList<Variable> allVariables) throws Exception {
+                                       List<Variable> interestVariables, 
+                                       List<Variable> allVariables) throws Exception {
     	// Store number of configurations in a TablePotential
     	TablePotential potential = new TablePotential(
     			interestVariables, PotentialRole.CONDITIONAL_PROBABILITY);
@@ -114,7 +115,7 @@ public class ConfigurationsOperations {
     	// Write variables names in a box
     	int[] variablesNumChars = getVariablesNumChars(potential);
     	String line = getSeparationLine(potential, variablesNumChars);
-    	ArrayList<Variable> variables = potential.getVariables();
+    	List<Variable> variables = potential.getVariables();
     	int numVariables = variables.size();
     	out += line;
     	for (int i = 0; i < numVariables; i++) {
@@ -158,7 +159,7 @@ public class ConfigurationsOperations {
      *   including its name. <code>int[]</code>. The array has a length = 
      *   numVariables + 1 to store the string configuration title. */
 	private static int[] getVariablesNumChars(TablePotential potential) {
-    	ArrayList<Variable> variables = potential.getVariables();
+	    List<Variable> variables = potential.getVariables();
     	int numVariables = variables.size();
     	int[] variablesNumChars = new int[numVariables + 1];
     	for (int i = 0; i < numVariables; i++) {
@@ -190,7 +191,7 @@ public class ConfigurationsOperations {
      *   <code>String</code> */
 	private static String getSeparationLine(TablePotential potential, 
 			int[] variablesNumChars) {
-    	ArrayList<Variable> variables = potential.getVariables();
+	    List<Variable> variables = potential.getVariables();
     	int numVariables = variables.size();
     	String line = new String();
     	for (int i = 0; i < numVariables; i++) {

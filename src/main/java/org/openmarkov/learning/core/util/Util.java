@@ -10,6 +10,7 @@
 package org.openmarkov.learning.core.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.model.network.ProbNet;
@@ -45,7 +46,7 @@ public class Util
     private static TablePotential getAbsoluteFrequencies (ProbNet probNet,
                                            int[][] cases,
                                            ProbNode probNode,
-                                           ArrayList<Variable> variables)
+                                           List<Variable> variables)
     {
         
         int parentsConfigurations = 1;
@@ -79,7 +80,7 @@ public class Util
         // Compute the absolute frequencies
         int iCPT;
         int iParent, iNode = probNet.getProbNodes ().indexOf (probNet.getProbNode (probNode.getVariable ()));
-        ArrayList<ProbNode> nodes = probNet.getProbNodes (variables);
+        List<ProbNode> nodes = probNet.getProbNodes (variables);
         for (int i = 0; i < cases.length; i++)
         {
             iCPT = 0;
@@ -164,10 +165,10 @@ public class Util
                                                                             ProbNode node,
                                                                             ProbNode removedParent)
     {
-        ArrayList<Variable> variables = new ArrayList<Variable> ();
+        List<Variable> variables = new ArrayList<Variable> ();
         variables.add (node.getVariable ());
         
-        ArrayList<ProbNode> parents = ProbNet.getProbNodesOfNodes (node.getNode ().getParents ());
+        List<ProbNode> parents = ProbNet.getProbNodesOfNodes (node.getNode ().getParents ());
         for (ProbNode parent : parents)
         {
             if (parent.getVariable () != removedParent.getVariable ())

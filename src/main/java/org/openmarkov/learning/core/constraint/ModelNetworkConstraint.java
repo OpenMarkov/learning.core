@@ -10,6 +10,7 @@
 package org.openmarkov.learning.core.constraint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openmarkov.core.action.AddLinkEdit;
 import org.openmarkov.core.action.InvertLinkEdit;
@@ -59,7 +60,7 @@ public class ModelNetworkConstraint extends PNConstraint {
 	public boolean checkEdit(ProbNet probNet, PNEdit edit)  
 	throws NotEnoughMemoryException, NonProjectablePotentialException, 
 	WrongCriterionException {
-        ArrayList<PNEdit> edits = new ArrayList<PNEdit> ();
+        List<PNEdit> edits = new ArrayList<PNEdit> ();
         Node source, destination;
         if (!modelNetUse.isOnlyUseNodes ())
         {
