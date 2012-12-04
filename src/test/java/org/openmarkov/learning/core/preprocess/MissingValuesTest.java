@@ -55,7 +55,11 @@ public class MissingValuesTest
         CaseDatabase newDatabase = MissingValues.process (database, preprocessOption);
         
         Assert.assertEquals (3, newDatabase.getCases ().length);
+        // When eliminating the records with missing values, delete missing state  
         Assert.assertEquals (2, newDatabase.getVariables ().get (0).getStates ().length);
+        // When eliminating the records with missing values, update indexes of cases to match the new states  
+        Assert.assertEquals (1, newDatabase.getCases ()[2][0]);        
+        Assert.assertEquals (0, newDatabase.getCases ()[0][0]);        
         
     }
     

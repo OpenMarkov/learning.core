@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
@@ -48,6 +49,7 @@ public class MissingValues {
     {
         // remove the "?" state
         List<Variable> oldVariables = database.getVariables ();
+        int[] missingStatesIndices = getMissingStateIndices(oldVariables);
         List<Variable> preprocessedVariables = removeMissingState (preprocessOption, oldVariables);
         /* Remove the cases with an absent value, if this option was selected. */
         int[][] oldCases = database.getCases ();
@@ -61,7 +63,9 @@ public class MissingValues {
                 keepCase[i] &= preprocessOption.get (oldVariables.get (j).getName ()) != MissingValues.Option.ELIMINATE
                     || !containsMissingValues (oldVariables, oldCases[i]);
             }
-            if(keepCase[i]) ++numCasesToKeep;
+            if(keepCase[i]){
+                ++numCasesToKeep;
+            }
         }
         int[][] newCases = new int[numCasesToKeep][database.getVariables ().size ()];
         
@@ -73,11 +77,33 @@ public class MissingValues {
                 for (int j = 0; j < database.getVariables ().size (); j++)
                 {
                         newCases[newIndex][j] = oldCases[i][j];
+                        // update the indices after deleting the missing state
+                        if(missingStatesIndices[j] >= 0 && newCases[newIndex][j] > missingStatesIndices[j])
+                        {
+                            --newCases[newIndex][j];
+                        }
                 }
                 ++newIndex;
             }
         }
         return new CaseDatabase (preprocessedVariables, newCases);
+    }
+
+    private static int[] getMissingStateIndices (List<Variable> variables)
+    {
+        int[] missingStateIndices = new int[variables.size ()];
+        for(int i=0; i <variables.size (); ++i)
+        {
+            try
+            {
+                missingStateIndices[i] = variables.get (i).getStateIndex ("?");
+            }
+            catch (InvalidStateException e)
+            {
+                missingStateIndices[i] = -1;
+            }
+        }
+        return missingStateIndices;
     }
 
     /**
