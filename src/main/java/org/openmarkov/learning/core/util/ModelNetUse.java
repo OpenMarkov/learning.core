@@ -12,19 +12,19 @@ package org.openmarkov.learning.core.util;
 public class ModelNetUse {
 	
 	private boolean useModelNet;
-	private boolean useNodesModelNet;
-	private boolean addLinkModelNet;
-	private boolean deleteLinksModelNet;
-	private boolean invertLinksModelNet;
+	private boolean useNodePositions;
+	private boolean allowLinkAddition;
+	private boolean allowLinkRemoval;
+	private boolean allowLinkInversion;
 	
-	public ModelNetUse(boolean useModelNet, boolean useNodesModelNet, boolean addLinkModelNet, 
-						boolean deleteLinksModelNet, boolean invertLinksModelNet)
+	public ModelNetUse(boolean useModelNet, boolean useNodePositions, boolean allowLinkAddition, 
+						boolean allowLinkRemoval, boolean allowLinkInversion)
 	{
 		this.useModelNet = useModelNet;
-		this.useNodesModelNet = useNodesModelNet;
-		this.addLinkModelNet = addLinkModelNet;
-		this.deleteLinksModelNet = deleteLinksModelNet;
-		this.invertLinksModelNet = invertLinksModelNet;
+		this.useNodePositions = useNodePositions;
+		this.allowLinkAddition = allowLinkAddition;
+		this.allowLinkRemoval = allowLinkRemoval;
+		this.allowLinkInversion = allowLinkInversion;
 	}
 	
     public ModelNetUse()
@@ -49,57 +49,57 @@ public class ModelNetUse {
 	/**
 	 * @return the useNodesModelNet
 	 */
-	public boolean isOnlyUseNodes() {
-		return useNodesModelNet;
+	public boolean isOnlyUseNodePositions() {
+		return useNodePositions;
 	}
 
 	/**
 	 * @param useOnlyNodes the useNodesModelNet to set
 	 */
-	public void setOnlyUseNodes(boolean useOnlyNodes) {
-		this.useNodesModelNet = useOnlyNodes;
+	public void setOnlyUseNodePositions(boolean useOnlyNodePositions) {
+		this.useNodePositions = useOnlyNodePositions;
 	}
 
 	/**
 	 * @return the addLinkModelNet
 	 */
-	public boolean isAddLinksAllowed() {
-		return addLinkModelNet;
+	public boolean isLinkAdditionAllowed() {
+		return allowLinkAddition;
 	}
 
 	/**
 	 * @param addLinkModelNet the addLinkModelNet to set
 	 */
-	public void setAddLinksAllowed(boolean addLinkModelNet) {
-		this.addLinkModelNet = addLinkModelNet;
+	public void setLinkAdditionAllowed(boolean allowLinkAddition) {
+		this.allowLinkAddition = allowLinkAddition;
 	}
 
 	/**
 	 * @return the deleteLinksModelNet
 	 */
-	public boolean isDeleteLinksAllowed() {
-		return deleteLinksModelNet;
+	public boolean isLinkRemovalAllowed() {
+		return allowLinkRemoval;
 	}
 
 	/**
 	 * @param deleteLinksModelNet the deleteLinksModelNet to set
 	 */
-	public void setDeleteLinksAllowed(boolean deleteLinksModelNet) {
-		this.deleteLinksModelNet = deleteLinksModelNet;
+	public void setLinkRemovalAllowed(boolean allowLinkRemoval) {
+		this.allowLinkRemoval = allowLinkRemoval;
 	}
 
 	/**
-	 * @return the invertLinksModelNet
+	 * @return the allowLinkInversion
 	 */
-	public boolean isInvertLinksAllowed() {
-		return invertLinksModelNet;
+	public boolean isLinkInversionAllowed() {
+		return allowLinkInversion;
 	}
 
 	/**
-	 * @param invertLinksModelNet the invertLinksModelNet to set
+	 * @param allowLinkInversion the allowLinkInversion to set
 	 */
-	public void setInvertLinksAllowed(boolean invertLinksModelNet) {
-		this.invertLinksModelNet = invertLinksModelNet;
+	public void setLinkInversionAllowed(boolean allowLinkInversion) {
+		this.allowLinkInversion = allowLinkInversion;
 	}
 	
 }

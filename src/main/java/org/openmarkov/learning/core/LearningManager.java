@@ -87,7 +87,7 @@ public class LearningManager {
         LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
         this.caseDatabase = caseDatabase;
         /* Maybe there's no modelNet to work with */
-        if ((modelNetUse.isUseModelNet ()))
+        if (modelNetUse != null && modelNetUse.isUseModelNet ())
         {
             if (modelNet == null)
             {
@@ -239,7 +239,7 @@ public class LearningManager {
          * If the option "Use only nodes" is not selected, we add the links of
          * the model net to the learnedNet we are going to learn.
          */
-        if (modelNetUse.isOnlyUseNodes ())
+        if (modelNetUse.isOnlyUseNodePositions ())
         {
             probNet = new ProbNet ();
             for (Variable variable : database.getVariables ())

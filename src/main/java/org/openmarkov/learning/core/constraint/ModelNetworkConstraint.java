@@ -61,7 +61,7 @@ public class ModelNetworkConstraint extends PNConstraint {
 	WrongCriterionException {
         List<PNEdit> edits = new ArrayList<PNEdit> ();
         Node source, destination;
-        if (!modelNetUse.isOnlyUseNodes ())
+        if (!modelNetUse.isOnlyUseNodePositions ())
         {
             try
             {
@@ -69,7 +69,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                  * Check for prohibited additions. If the link we want to add
                  * was not present in the model net, it is not allowed.
                  */
-                if (!modelNetUse.isAddLinksAllowed ())
+                if (!modelNetUse.isLinkAdditionAllowed ())
                 {
                     edits = UtilConstraints.getSimpleEditsByType (edit, AddLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
@@ -87,7 +87,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                  * Check for prohibited deletions. If the link we want to remove
                  * was in the model net, the elimination is not allowed.
                  */
-                if (!modelNetUse.isDeleteLinksAllowed ())
+                if (!modelNetUse.isLinkRemovalAllowed ())
                 {
                     edits = UtilConstraints.getSimpleEditsByType (edit, RemoveLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
@@ -105,7 +105,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                  * Check for prohibited inversions. If the link we want to
                  * invert was in the model net, it is not allowed.
                  */
-                if (!modelNetUse.isInvertLinksAllowed ())
+                if (!modelNetUse.isLinkInversionAllowed ())
                 {
                     edits = UtilConstraints.getSimpleEditsByType (edit, InvertLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
