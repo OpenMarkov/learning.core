@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmarkov.core.action.PNEdit;
+import org.openmarkov.core.exception.ConstraintViolationException;
 
 
 /**
@@ -88,5 +89,27 @@ public abstract class EditionsGenerator {
     public boolean isBlocked(PNEdit edit)
     {
     	return blockedEdits.contains(edit);
+    }    
+    
+    protected boolean isAllowed(PNEdit edit)
+    {
+        boolean isAllowed = true;
+        try
+        {
+            //Announce edit to check whether it is allowed or not
+            try
+            {
+                edit.getProbNet ().getPNESupport ().announceEdit (edit);
+            }
+            catch (ConstraintViolationException e)
+            {
+                isAllowed = false;
+            }
+        }
+        catch (Exception e1)
+        {
+            e1.printStackTrace ();
+        }       
+        return isAllowed;
     }    
 }
