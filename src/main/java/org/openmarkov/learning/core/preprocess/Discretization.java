@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.PartitionedInterval;
@@ -87,8 +86,7 @@ public class Discretization {
                                     Map<String, Option> discretizeOptions,
                                     Map<String, Integer> numIntervalsPerVariable,
                                     ProbNet modelNet)
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -131,8 +129,7 @@ public class Discretization {
     public static CaseDatabase process (CaseDatabase database,
                                     Map<String, Option> discretizeOptions,
                                     Map<String, Integer> numIntervalsPerVariable)
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -152,8 +149,7 @@ public class Discretization {
     public static CaseDatabase process (CaseDatabase database,
                                         Discretization.Option discretizationOption,
                                         int numIntervals)
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -180,8 +176,7 @@ public class Discretization {
      */
     public static CaseDatabase process (CaseDatabase database,
                                         ProbNet modelNet)
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -319,8 +314,7 @@ public class Discretization {
      * @throws java.lang.Exception
      */
     private static Variable discretizeEqualFreq (Variable variable, CaseDatabase database, int numIntervals)
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException
     {
         Variable newVariable;

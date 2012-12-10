@@ -17,7 +17,6 @@ import org.openmarkov.core.action.InvertLinkEdit;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.action.RemoveLinkEdit;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
-import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.model.graph.Node;
@@ -58,7 +57,7 @@ public class ModelNetworkConstraint extends PNConstraint {
 
 	@Override
 	public boolean checkEdit(ProbNet probNet, PNEdit edit)  
-	throws NotEnoughMemoryException, NonProjectablePotentialException, 
+	throws NonProjectablePotentialException, 
 	WrongCriterionException {
         List<PNEdit> edits = new ArrayList<PNEdit> ();
         Node source, destination;
@@ -72,7 +71,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                  */
                 if (!modelNetUse.isAddLinksAllowed ())
                 {
-                    edits = UtilConstraints.getEditsType (edit, AddLinkEdit.class);
+                    edits = UtilConstraints.getSimpleEditsByType (edit, AddLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
                         source = modelNet.getProbNode (((AddLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
@@ -90,7 +89,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                  */
                 if (!modelNetUse.isDeleteLinksAllowed ())
                 {
-                    edits = UtilConstraints.getEditsType (edit, RemoveLinkEdit.class);
+                    edits = UtilConstraints.getSimpleEditsByType (edit, RemoveLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
                         source = modelNet.getProbNode (((RemoveLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
@@ -108,7 +107,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                  */
                 if (!modelNetUse.isInvertLinksAllowed ())
                 {
-                    edits = UtilConstraints.getEditsType (edit, InvertLinkEdit.class);
+                    edits = UtilConstraints.getSimpleEditsByType (edit, InvertLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
                         source = modelNet.getProbNode (((InvertLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();

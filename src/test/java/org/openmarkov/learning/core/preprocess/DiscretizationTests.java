@@ -10,7 +10,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
@@ -41,8 +40,7 @@ public class DiscretizationTests
     
     @Test
     public void testNoDiscretize ()
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -62,8 +60,7 @@ public class DiscretizationTests
 
     @Test
     public void testDiscretizeEqualWidth ()
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -94,8 +91,7 @@ public class DiscretizationTests
     
     @Test
     public void testDiscretizeEqualFreq ()
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -127,8 +123,7 @@ public class DiscretizationTests
     
     @Test
     public void testDiscretizeModelNet ()
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {
@@ -158,8 +153,7 @@ public class DiscretizationTests
     
     @Test
     public void testDiscretizeModelNetFS ()
-        throws NotEnoughMemoryException,
-        InvalidStateException,
+        throws InvalidStateException,
         ProbNodeNotFoundException,
         WrongDiscretizationLimitException
     {

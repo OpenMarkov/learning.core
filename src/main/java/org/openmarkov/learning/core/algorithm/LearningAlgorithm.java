@@ -15,7 +15,6 @@ import java.util.List;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
-import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
@@ -66,8 +65,7 @@ public abstract class LearningAlgorithm {
      * @throws NormalizeNullVectorException
      */
     public void run (ModelNetUse modelNetUse)
-        throws NotEnoughMemoryException,
-        NormalizeNullVectorException
+        throws NormalizeNullVectorException
     {
         init(modelNetUse);
         /* Main loop */
@@ -109,8 +107,7 @@ public abstract class LearningAlgorithm {
      * @throws openmarkov.exceptions.NotEnoughMemoryException
      * @throws java.lang.Exception
      */
-    private ProbNet step(PNEdit bestEdition) throws NotEnoughMemoryException, 
-            NormalizeNullVectorException {
+    private ProbNet step(PNEdit bestEdition) throws NormalizeNullVectorException {
 
     /* If there have been any improvements on the score, we update
      * the learnedNet. */
@@ -136,7 +133,7 @@ public abstract class LearningAlgorithm {
      * @throws NormalizeNullVectorException 
      */
     public ProbNet parametricLearning() 
-            throws NotEnoughMemoryException, NormalizeNullVectorException{
+            throws NormalizeNullVectorException{
         int[][] cases = caseDatabase.getCases ();
         TablePotential absoluteFrequencies;
         
@@ -167,13 +164,12 @@ public abstract class LearningAlgorithm {
     private TablePotential calculateAbsoluteFrequencies (ProbNet probNet,
                                                          int[][] cases,
                                                          ProbNode node)
-        throws NotEnoughMemoryException
     {
         int parentsConfigurations = 1;
         int indexOfParent = 0;
         int numParents = node.getNode ().getNumParents ();
         int[] indexesOfParents = new int[numParents];
-        ArrayList<Variable> variables = new ArrayList<Variable> ();
+        List<Variable> variables = new ArrayList<Variable> ();
         variables.add ((Variable) node.getVariable ());
         if (numParents == 0)
         {
@@ -219,11 +215,10 @@ public abstract class LearningAlgorithm {
                                                           int[][] cases,
                                                           ProbNode probNode,
                                                           int parentsConfigurations,
-                                                          ArrayList<Variable> variables,
+                                                          List<Variable> variables,
                                                           int[] indexesOfParents,
                                                           int numValues
-                                                          )
-            throws NotEnoughMemoryException {
+                                                          ) {
         TablePotential absoluteFreqPotential = new TablePotential(
                 variables, PotentialRole.CONDITIONAL_PROBABILITY);
         double[] absoluteFreqs = absoluteFreqPotential.getValues();

@@ -21,7 +21,6 @@ import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
-import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
@@ -79,13 +78,11 @@ public class LearningManager {
                             String algorithmName,
                             List<Object> parameters, 
                             ProbNet modelNet,
-                            ModelNetUse modelNetUse
-                            )
+                            ModelNetUse modelNetUse)
         throws NormalizeNullVectorException,
         EmptyModelNetException,
         NodeNotFoundException,
-        ProbNodeNotFoundException,
-        NotEnoughMemoryException
+        ProbNodeNotFoundException
     {
         LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
         this.caseDatabase = caseDatabase;
@@ -130,8 +127,7 @@ public class LearningManager {
      * @throws ProbNodeNotFoundException
      */
     public void learn ()
-        throws NotEnoughMemoryException,
-        NormalizeNullVectorException
+        throws NormalizeNullVectorException
     {
         learningAlgorithm.run (modelNetUse);
     }
@@ -199,8 +195,7 @@ public class LearningManager {
      * @throws NormalizeNullVectorException 
      */
     public void applyEdit (PNEdit edit)
-        throws NotEnoughMemoryException,
-        ConstraintViolationException,
+        throws ConstraintViolationException,
         CanNotDoEditException,
         NonProjectablePotentialException,
         WrongCriterionException,

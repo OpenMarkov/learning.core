@@ -12,7 +12,6 @@ package org.openmarkov.learning.core.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmarkov.core.exception.NotEnoughMemoryException;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.Variable;
@@ -58,18 +57,9 @@ public class Util
             indexesOfParents[i] = probNet.getProbNodes ().indexOf (probNet.getProbNode (variables.get (i + 1)));
             parentsConfigurations *= variables.get (i + 1).getNumStates ();
         }
-        TablePotential absoluteFreqPotential = null;
-        try
-        {
-            absoluteFreqPotential = new TablePotential (
+        TablePotential absoluteFreqPotential = new TablePotential (
                                                         variables,
                                                         PotentialRole.CONDITIONAL_PROBABILITY);
-        }
-        catch (NotEnoughMemoryException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace ();
-        }
         double[] absoluteFreqs = absoluteFreqPotential.getValues ();
         // Initialize the table
         for (int i = 0; i < parentsConfigurations * numValues; i++)
