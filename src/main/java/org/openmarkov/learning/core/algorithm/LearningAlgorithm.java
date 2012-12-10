@@ -291,4 +291,21 @@ public abstract class LearningAlgorithm {
 	public List<PNEdit> getBlockedEdits() {
 		return editionsGenerator.getBlockedEdits();
 	}
+
+    /**
+     * Tells the learning algorithm to advance until the next phase
+     */	
+    public void goToNextPhase ()
+    {
+        // Do nothing by default
+    }
+
+    /**
+     * Retrieves whether the LearningAlgorithm is in the last phase. 
+     * True by default
+     */    
+    public boolean isLastPhase ()
+    {
+        return true;
+    }
 }

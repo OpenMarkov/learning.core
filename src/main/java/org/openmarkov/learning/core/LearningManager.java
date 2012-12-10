@@ -184,6 +184,23 @@ public class LearningManager {
     }
     
     /**
+     * Tells the learning algorithm to advance until the next phase
+     */
+    public void goToNextPhase ()
+    {
+        
+        this.learningAlgorithm.goToNextPhase ();        
+    }   
+    
+    /**
+     * Retrieves whether the LearningAlgorithm is in the last phase
+     */
+    public boolean isLastPhase ()
+    {
+        return this.learningAlgorithm.isLastPhase ();        
+    }       
+    
+    /**
      *  Applies the edit passed to the learnedNet and updates parameters
      * @param edit
      * @throws DoEditException 
@@ -250,7 +267,7 @@ public class LearningManager {
         }else {
             probNet = modelNet.copy ();
         
-            // If the databse includes variables that are not in the model net, add them 
+            // If the database includes variables that are not in the model net, add them 
             for (Variable databaseVariable : database.getVariables ())
             {
                 if(!probNet.containsVariable (databaseVariable.getName ()))
