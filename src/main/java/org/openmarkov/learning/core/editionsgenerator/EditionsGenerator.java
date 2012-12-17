@@ -115,7 +115,10 @@ public abstract class EditionsGenerator {
         return isAllowed;
     }    
     
-    public abstract boolean isLastPhase ();
+    public boolean isLastPhase ()
+    {
+    	return true;
+    }
     
     public int getPhase ()
     {
