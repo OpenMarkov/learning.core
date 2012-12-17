@@ -107,7 +107,7 @@ public abstract class LearningAlgorithm {
      * @throws openmarkov.exceptions.NotEnoughMemoryException
      * @throws java.lang.Exception
      */
-    private ProbNet step(PNEdit bestEdition) throws NormalizeNullVectorException {
+    protected ProbNet step (PNEdit bestEdition) throws NormalizeNullVectorException {
 
     /* If there have been any improvements on the score, we update
      * the learnedNet. */
@@ -295,7 +295,7 @@ public abstract class LearningAlgorithm {
     /**
      * Tells the learning algorithm to advance until the next phase
      */	
-    public void goToNextPhase ()
+    public void goToNextPhase () throws NormalizeNullVectorException
     {
         // Do nothing by default
     }

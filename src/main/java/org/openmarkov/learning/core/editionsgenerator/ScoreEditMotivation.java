@@ -20,6 +20,10 @@ public class ScoreEditMotivation extends LearningEditMotivation
         this.score = score;
     }
     
+    public double compareTo ( ScoreEditMotivation edit ){
+        return score - edit.score;
+    }
+    
     @Override
     public String toString()
     {

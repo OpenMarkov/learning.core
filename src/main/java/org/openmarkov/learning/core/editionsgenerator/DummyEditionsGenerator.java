@@ -27,4 +27,12 @@ public class DummyEditionsGenerator extends EditionsGenerator
     {
         return null;
     }
+    
+    @Override
+    public boolean isLastPhase ()
+    {
+        return true;
+    }
+
+
 }

@@ -29,7 +29,9 @@ public abstract class EditionsGenerator {
 	
 
     /** List of blocked edits */
-    private List<PNEdit> blockedEdits = new ArrayList<PNEdit>();	
+    protected List<PNEdit> blockedEdits = new ArrayList<PNEdit>();	
+    
+    protected int phase = 0;
 
 	/**
 	 * This method returns the best edition (and its associated score)
@@ -56,7 +58,7 @@ public abstract class EditionsGenerator {
      */
     public abstract LearningEditProposal getNext (boolean onlyAllowedEdits,
                                      boolean onlyPositiveEdits);
-    
+       
     /**
      * Blocks edit
      * @param edit to block
@@ -112,4 +114,11 @@ public abstract class EditionsGenerator {
         }       
         return isAllowed;
     }    
+    
+    public abstract boolean isLastPhase ();
+    
+    public int getPhase ()
+    {
+    	return phase;
+    }
 }
