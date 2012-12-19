@@ -20,8 +20,16 @@ public class ScoreEditMotivation extends LearningEditMotivation
         this.score = score;
     }
     
-    public double compareTo ( ScoreEditMotivation edit ){
-        return score - edit.score;
+    public int compareTo ( LearningEditMotivation edit ){
+        int comparison = 0;
+        if(score > ((ScoreEditMotivation)edit).score)
+        {
+            comparison = 1;
+        }else if(score < ((ScoreEditMotivation)edit).score)
+        {
+            comparison = -1;
+        }
+        return comparison;
     }
     
     @Override

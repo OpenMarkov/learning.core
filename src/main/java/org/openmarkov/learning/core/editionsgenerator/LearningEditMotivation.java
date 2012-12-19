@@ -8,6 +8,6 @@
 */
 package org.openmarkov.learning.core.editionsgenerator;
 
-public abstract class LearningEditMotivation
+public abstract class LearningEditMotivation implements Comparable<LearningEditMotivation>
 {
 }
