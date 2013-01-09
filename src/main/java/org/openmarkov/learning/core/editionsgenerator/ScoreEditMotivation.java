@@ -37,4 +37,13 @@ public class ScoreEditMotivation extends LearningEditMotivation
     {
        return new BigDecimal(score).setScale(2, BigDecimal.ROUND_FLOOR).toString ();
     }
+
+    /**
+     * Returns the score.
+     * @return the score.
+     */
+    public double getScore ()
+    {
+        return score;
+    }
 }
