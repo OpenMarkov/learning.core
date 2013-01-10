@@ -80,6 +80,22 @@ public abstract class LearningAlgorithm {
     }
     
     /**
+     * Tells the learning algorithm to advance until the next phase
+     */
+    public void goToNextPhase () throws NormalizeNullVectorException
+    {
+    	int phase = editionsGenerator.getPhase ();
+    	editionsGenerator.resetHistory ();
+    	LearningEditProposal bestEdition = editionsGenerator.getBest (true, true);
+        while ((bestEdition != null) && (phase == editionsGenerator.getPhase ()))
+        {
+            step ( bestEdition.getEdition ());
+            bestEdition = editionsGenerator.getBest (true, true);
+        }
+        editionsGenerator.resetHistory ();
+    }
+    
+    /**
      * Init algorithm
      * @param modelNetUse 
      */
@@ -290,15 +306,7 @@ public abstract class LearningAlgorithm {
 	 */
 	public List<PNEdit> getBlockedEdits() {
 		return editionsGenerator.getBlockedEdits();
-	}
-
-    /**
-     * Tells the learning algorithm to advance until the next phase
-     */	
-    public void goToNextPhase () throws NormalizeNullVectorException
-    {
-        // Do nothing by default
-    }
+	}	
 
     /**
      * Retrieves whether the LearningAlgorithm is in the last phase. 
