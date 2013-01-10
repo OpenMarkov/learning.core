@@ -34,5 +34,9 @@ public class DummyEditionsGenerator extends EditionsGenerator
         return true;
     }
 
+	@Override
+	public void resetHistory() {
+	}
+
 
 }

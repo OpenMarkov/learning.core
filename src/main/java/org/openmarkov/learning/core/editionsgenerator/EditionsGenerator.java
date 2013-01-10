@@ -58,6 +58,8 @@ public abstract class EditionsGenerator {
      */
     public abstract LearningEditProposal getNext (boolean onlyAllowedEdits,
                                      boolean onlyPositiveEdits);
+    
+    public abstract void resetHistory ();
        
     /**
      * Blocks edit
