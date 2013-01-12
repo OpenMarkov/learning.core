@@ -37,9 +37,9 @@ public class Discretization {
 
     public enum Option {
         NONE,
-        MODEL_NET,
         EQUAL_FREQ,
-        EQUAL_WIDTH;
+        EQUAL_WIDTH,
+        MODEL_NET;
     }
 
     public static Discretization.Option[] getOptions(){
