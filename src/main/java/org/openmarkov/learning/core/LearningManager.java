@@ -10,6 +10,7 @@
 
 package org.openmarkov.learning.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -31,10 +32,12 @@ import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmManager;
+import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmType;
 import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
 import org.openmarkov.learning.core.editionsgenerator.LearningEditMotivation;
 import org.openmarkov.learning.core.editionsgenerator.LearningEditProposal;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
+import org.openmarkov.learning.core.exception.LatentVariablesException;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /** This class launches the learning algorithm and receives the results of
@@ -70,6 +73,7 @@ public class LearningManager {
      *            use also the initial links or use them fixed
      * @throws NormalizeNullVectorException
      * @throws EmptyModelNetException
+     * @throws LatentVariablesException 
      * @throws ProbNodeNotFoundException
      * @throws NodeNotFoundException
      * @throws NotEnoughMemoryException
@@ -80,20 +84,19 @@ public class LearningManager {
                             ProbNet modelNet,
                             ModelNetUse modelNetUse)
         throws NormalizeNullVectorException,
-        EmptyModelNetException,
-        NodeNotFoundException,
-        ProbNodeNotFoundException
+        EmptyModelNetException, LatentVariablesException
     {
         LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
         this.caseDatabase = caseDatabase;
-        /* Maybe there's no modelNet to work with */
+        /* Check ModelNet is not null */
         if (modelNetUse != null && modelNetUse.isUseModelNet ())
         {
             if (modelNet == null)
             {
                 throw new EmptyModelNetException ();
             }
-            this.learnedNet = applyModelNet (caseDatabase, modelNet, modelNetUse);
+            this.learnedNet = applyModelNet (learningAlgorithmManager.getByName (algorithmName),
+                                             caseDatabase, modelNet, modelNetUse);
         }
         else
         {
@@ -140,6 +143,15 @@ public class LearningManager {
 		return this.learnedNet;
 	}
 	
+    /**
+     * Returns the learningAlgorithm.
+     * @return the learningAlgorithm.
+     */
+    public LearningAlgorithm getLearningAlgorithm ()
+    {
+        return learningAlgorithm;
+    }
+
     /**
      * Score of the associated network. 
      * @return <code>double</code> score of the net 
@@ -241,18 +253,28 @@ public class LearningManager {
     /**
      * Adds links and constraints depending on the structure of the model net
      * and the option selected by the user.
+     * @param algorithmClass 
      * @param modelNetUse use of the model net selected by the user.
      * @param modelNet structure of the net to add the constraints
+     * @throws LatentVariablesException 
      * @throws ProbNodeNotFoundException
      * @throws NodeNotFoundException
      */
-    private ProbNet applyModelNet (CaseDatabase database,
+    private ProbNet applyModelNet (Class<? extends LearningAlgorithm> algorithmClass,
+                                   CaseDatabase database,
                                    ProbNet modelNet,
-                                   ModelNetUse modelNetUse)
-        throws ProbNodeNotFoundException,
-        NodeNotFoundException
+                                   ModelNetUse modelNetUse) throws LatentVariablesException
     {
         ProbNet probNet = null;
+        
+        if(!algorithmClass.getAnnotation (LearningAlgorithmType.class).supportsLatentVariables () && 
+                !database.getVariables ().containsAll (modelNet.getVariables ()))
+        {
+            List<Variable> latentVariables = new ArrayList<>(modelNet.getVariables ());
+            latentVariables.removeAll (database.getVariables ());
+            throw new LatentVariablesException(latentVariables);
+        }
+        
         /*
          * If the option "Use only nodes" is not selected, we add the links of
          * the model net to the learnedNet we are going to learn.

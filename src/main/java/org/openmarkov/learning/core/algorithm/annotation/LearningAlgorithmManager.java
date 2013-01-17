@@ -50,6 +50,17 @@ public class LearningAlgorithmManager
             }
         }  
     }
+    
+    /**
+     * Returns the class of the learning algorithm whose name is passed 
+     * @param name the algorithm name.
+     * @return a learning algorithm class
+     */
+    public final Class<? extends LearningAlgorithm> getByName (String name)  
+    {
+        return learningAlgorithms.get (name);
+    }
+    
     /**
      * Returns a learning algorithm by name. 
      * @param name the algorithm name.
