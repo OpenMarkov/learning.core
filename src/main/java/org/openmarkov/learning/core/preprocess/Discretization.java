@@ -10,10 +10,13 @@
 
 package org.openmarkov.learning.core.preprocess;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.openmarkov.core.exception.InvalidStateException;
@@ -319,6 +322,13 @@ public class Discretization {
     {
         Variable newVariable;
         State[] states = variable.getStates ();
+        List<Double> intervalLimits = new ArrayList<Double> ();
+        double accruedFreq = 0, stateFreq = 0, validCaseNum, intervalFreq;
+        int stateIndex;
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("en"));
+        DecimalFormat decimalFormat = (DecimalFormat)nf;
+        decimalFormat.applyPattern("###.########");
+        String stateName;
 
 
         // Order the numerical states
@@ -338,7 +348,7 @@ public class Discretization {
 
         
         // number of cases with valid data, i.e. all minus the missing values
-        double validCaseNum = casesForVariable.length;
+        validCaseNum = casesForVariable.length;
         try
         {
             validCaseNum = casesForVariable.length - histogram[variable.getStateIndex ("?")];
@@ -348,16 +358,23 @@ public class Discretization {
         }
         
         //calculate approximate frequency of each interval
-        double intervalFreq = validCaseNum / (double) numIntervals;
-
-        List<Double> intervalLimits = new ArrayList<Double> ();
+        intervalFreq = validCaseNum / (double) numIntervals;
         intervalLimits.add(Double.NEGATIVE_INFINITY);
-        double accruedFreq = 0, stateFreq = 0;
-        int stateIndex;
+
+        
         for (Double state : orderedStates){
             //check whether the state is integer or double
+        	stateName = state.toString();
             try{
-                stateIndex = variable.getStateIndex(""+state);
+            	if (stateName.contains("E"))
+            	{
+            		//scientific notation
+            		stateIndex = variable.getStateIndex(""+decimalFormat.format(state.doubleValue()));
+            	}
+            	else
+            	{
+            		stateIndex = variable.getStateIndex(""+state);
+            	}
             }
             catch (Exception e){
                 stateIndex = variable.getStateIndex(""+state.intValue());
