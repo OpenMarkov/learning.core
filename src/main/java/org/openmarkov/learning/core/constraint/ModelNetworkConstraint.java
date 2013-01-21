@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.openmarkov.core.action.AddLinkEdit;
 import org.openmarkov.core.action.InvertLinkEdit;
+import org.openmarkov.core.action.OrientLinkEdit;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.action.RemoveLinkEdit;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
@@ -113,6 +114,16 @@ public class ModelNetworkConstraint extends PNConstraint {
                         source = modelNet.getProbNode (((InvertLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
                         destination = modelNet.getProbNode (((InvertLinkEdit) simpleEdit).getVariable2 ().getName ()).getNode ();
                         if ((modelNet.getGraph ().getLink (source, destination, true) != null))
+                        {
+                            return false;
+                        }
+                    }
+                    edits = UtilConstraints.getSimpleEditsByType (edit, OrientLinkEdit.class);
+                    for (PNEdit simpleEdit : edits)
+                    {
+                        source = modelNet.getProbNode (((OrientLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
+                        destination = modelNet.getProbNode (((OrientLinkEdit) simpleEdit).getVariable2 ().getName ()).getNode ();
+                        if ((modelNet.getGraph ().getLink (destination, source, true) != null))
                         {
                             return false;
                         }
