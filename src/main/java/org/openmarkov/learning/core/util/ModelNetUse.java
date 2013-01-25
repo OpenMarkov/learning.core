@@ -13,23 +13,30 @@ public class ModelNetUse {
 	
 	private boolean useModelNet;
 	private boolean useNodePositions;
+	private boolean startFromModelNet;
 	private boolean allowLinkAddition;
 	private boolean allowLinkRemoval;
 	private boolean allowLinkInversion;
 	
-	public ModelNetUse(boolean useModelNet, boolean useNodePositions, boolean allowLinkAddition, 
+	public ModelNetUse(boolean useModelNet, boolean useNodePositions,
+						boolean startFromModelNet, boolean allowLinkAddition, 
 						boolean allowLinkRemoval, boolean allowLinkInversion)
 	{
 		this.useModelNet = useModelNet;
 		this.useNodePositions = useNodePositions;
+		this.startFromModelNet = startFromModelNet;
 		this.allowLinkAddition = allowLinkAddition;
 		this.allowLinkRemoval = allowLinkRemoval;
 		this.allowLinkInversion = allowLinkInversion;
+		if ( !useNodePositions && !startFromModelNet )
+		{
+			this.useModelNet = false;
+		}
 	}
 	
     public ModelNetUse()
    {
-       this(false, false, false, false, false);
+       this(false, false, false, false, false, false);
    }	
 
 	/**
@@ -49,8 +56,12 @@ public class ModelNetUse {
 	/**
 	 * @return the useNodesModelNet
 	 */
-	public boolean isOnlyUseNodePositions() {
+	public boolean isUseNodePositions() {
 		return useNodePositions;
+	}
+	
+	public boolean isStartFromModelNet() {
+		return startFromModelNet;
 	}
 
 	/**

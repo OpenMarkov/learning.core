@@ -275,11 +275,7 @@ public class LearningManager {
             throw new LatentVariablesException(latentVariables);
         }
         
-        /*
-         * If the option "Use only nodes" is not selected, we add the links of
-         * the model net to the learnedNet we are going to learn.
-         */
-        if (modelNetUse.isOnlyUseNodePositions ())
+        if ( modelNetUse.isUseNodePositions () )
         {
             probNet = new ProbNet ();
             for (Variable variable : database.getVariables ())
@@ -287,7 +283,9 @@ public class LearningManager {
                 probNet.addProbNode (variable, NodeType.CHANCE);
             }
             copyNodePositionsFromModelNet(modelNet, probNet);
-        }else {
+        }
+        if ( modelNetUse.isStartFromModelNet() )
+        {
             probNet = modelNet.copy ();
         
             // If the database includes variables that are not in the model net, add them 

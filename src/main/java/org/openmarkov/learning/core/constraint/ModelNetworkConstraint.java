@@ -62,7 +62,7 @@ public class ModelNetworkConstraint extends PNConstraint {
 	WrongCriterionException {
         List<PNEdit> edits = new ArrayList<PNEdit> ();
         Node source, destination;
-        if (!modelNetUse.isOnlyUseNodePositions ())
+        if (modelNetUse.isStartFromModelNet())
         {
             try
             {
