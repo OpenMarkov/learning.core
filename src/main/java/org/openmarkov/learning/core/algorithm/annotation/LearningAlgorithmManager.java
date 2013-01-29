@@ -75,13 +75,28 @@ public class LearningAlgorithmManager
             for(Constructor<?> constructor : constructors)
             {
                 Class<?>[]  parameterTypes = constructor.getParameterTypes ();
-                int i= 0;
-                while (i < parameterTypes.length
-                       && parameterTypes[i].isAssignableFrom (parameters.get (i).getClass ()))
-                    ++i;
-                if(i == parameterTypes.length)
-                    instance = (LearningAlgorithm) constructor.newInstance (parameters.toArray ());
+                if(parameterTypes.length == parameters.size ())
+                {
+                    int i= 0;
+                    while (i < parameterTypes.length
+                           && parameterTypes[i].isAssignableFrom (parameters.get (i).getClass ()))
+                        ++i;
+                    if(i == parameterTypes.length)
+                    {
+                        instance = (LearningAlgorithm) constructor.newInstance (parameters.toArray ());
+                    }else
+                    {
+                        throw new InvalidParameterException (i + " th parameter of the constructor of "
+                                                             + name + " should be a "
+                                                             + parameterTypes[i] + " and is a "
+                                                             + parameters.get (i).getClass ());
+                    }
+                }
             }
+        }
+        catch(InvalidParameterException e)
+        {
+            throw e;
         }
         catch (Exception e)
         {

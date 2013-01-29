@@ -49,6 +49,8 @@ import org.openmarkov.learning.core.util.ModelNetUse;
  * @since OpenMarkov 1.0 */
 public class LearningManager {
     
+    private static LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
+    
     /**  Learning algorithm */
     private LearningAlgorithm learningAlgorithm = null;    
     
@@ -80,13 +82,11 @@ public class LearningManager {
      */
     public LearningManager (CaseDatabase caseDatabase,
                             String algorithmName,
-                            List<Object> parameters, 
                             ProbNet modelNet,
                             ModelNetUse modelNetUse)
         throws NormalizeNullVectorException,
         EmptyModelNetException, LatentVariablesException
     {
-        LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
         this.caseDatabase = caseDatabase;
         /* Check ModelNet is not null */
         if (modelNetUse != null && modelNetUse.isUseModelNet ())
@@ -107,9 +107,6 @@ public class LearningManager {
             }
         }
             
-        parameters.add (0, learnedNet);
-        parameters.add (1, caseDatabase);
-        this.learningAlgorithm = learningAlgorithmManager.getByName (algorithmName, parameters);
         this.addElviraProperties (learnedNet);
         this.modelNetUse = modelNetUse;
     }  
@@ -117,8 +114,9 @@ public class LearningManager {
     /**
      * Initialize the learning algorithm.
      */
-    public void init ()
+    public void init (LearningAlgorithm learningAlgorithm)
     {
+        this.learningAlgorithm = learningAlgorithm;
         learningAlgorithm.init (modelNetUse);
     }
 
@@ -311,10 +309,16 @@ public class LearningManager {
     
     public static Set<String> getAlgorithmNames ()
     {
-        LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager ();
-        
         return learningAlgorithmManager.getLearningAlgorithmNames ();
     }    
+    
+    public LearningAlgorithm getAlgorithmInstance (String name)
+    {
+        List<Object> parameters = new ArrayList<> ();
+        parameters.add (learnedNet);
+        parameters.add (caseDatabase);
+        return learningAlgorithmManager.getByName (name, parameters);
+    }      
     
     /**
      * Blocks edit
