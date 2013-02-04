@@ -210,10 +210,14 @@ public class Discretization {
     {
         
         Variable newVariable = oldVariable;
+        String [ ] tokens;
 
         if (modelNet != null){
             Variable modelNetVariable = modelNet.getVariable(oldVariable.getName());
             
+            int numIntervals = modelNetVariable.getNumStates();
+            boolean[] belongsToLeftSide = new boolean [numIntervals + 1];
+            double[] limits = new double [numIntervals + 1];
             boolean missingValuesInDB = false;
             try
             {
@@ -248,7 +252,23 @@ public class Discretization {
             {
                 newStates = modelNetVariable.getStates ();
             }
-            newVariable = new Variable(oldVariable.getName(), newStates);
+            
+            int i = 0;
+            for (State state : modelNetVariable.getStates ())
+            {
+            	tokens = state.getName().split("\\s|\\[|\\]|\\(|\\)|,");
+            	limits [i] = Double.parseDouble (tokens [1]);
+            	belongsToLeftSide [i] = (state.getName().charAt(0) == '[')? true : false;
+            	i++;
+            }
+            tokens = modelNetVariable.getStates()[numIntervals-1].getName().split("\\s|\\[|\\]|\\(|\\)|,");
+        	limits [i] = Double.parseDouble (tokens [4]);
+            //Minimum and Maximum must be in the interval
+            belongsToLeftSide[0] = false;
+            belongsToLeftSide[numIntervals] = true;
+            
+            newVariable = new Variable(oldVariable.getName(), newStates,
+            		new PartitionedInterval(limits, belongsToLeftSide), 0.001);
         }
         
         return newVariable;
