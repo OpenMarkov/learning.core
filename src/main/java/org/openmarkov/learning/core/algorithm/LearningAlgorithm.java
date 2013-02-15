@@ -12,7 +12,6 @@ package org.openmarkov.learning.core.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmarkov.core.action.BaseLinkEdit;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
@@ -96,10 +95,13 @@ public abstract class LearningAlgorithm {
     }
     
     /**
-     * Init algorithm
-     * @param modelNetUse 
+     * Initializes the algorithm
+     * @param modelNetUse
      */
-    public abstract void init (ModelNetUse modelNetUse);
+    public void init (ModelNetUse modelNetUse)
+    {
+        // Do nothing
+    }
     
     /**
      * This method returns the best edition (and its associated score)
@@ -123,14 +125,20 @@ public abstract class LearningAlgorithm {
      * editions with a positive associated score are returned.
      * @return <code>LearningEditProposal</code> with the best edition and its score. 
      */
-    public abstract LearningEditProposal getNextEdit (boolean onlyAllowedEdits, boolean onlyPositiveEdits);
+    public LearningEditProposal getNextEdit (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
+    {
+        return null;
+    }
     
     /**
      * Calculates the score associated to the given edit.
      * @param edit <code>PNEdit</code> 
      * @return <code>LearningEditMotivation</code> motivation for the given edit
      */    
-    public abstract LearningEditMotivation getMotivation (PNEdit edit);    
+    public LearningEditMotivation getMotivation (PNEdit edit)
+    {
+        return null;
+    }
     
     /** Takes a step in the algorithm
      * 

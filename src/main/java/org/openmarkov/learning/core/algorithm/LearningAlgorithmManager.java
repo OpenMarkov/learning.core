@@ -7,7 +7,7 @@
 * on an "AS IS" basis, WITHOUT WARRANTIES OF ANY KIND.
 */
 
-package org.openmarkov.learning.core.algorithm.annotation;
+package org.openmarkov.learning.core.algorithm;
 
 import java.lang.annotation.AnnotationFormatError;
 import java.lang.reflect.Constructor;
@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.plugin.PluginLoader;
 import org.openmarkov.plugin.service.FilterIF;
 import org.openmarkov.plugin.service.PluginLoaderIF;

@@ -7,7 +7,7 @@
 * on an "AS IS" basis, WITHOUT WARRANTIES OF ANY KIND.
 */
 
-package org.openmarkov.learning.core.algorithm.annotation;
+package org.openmarkov.learning.core.algorithm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
