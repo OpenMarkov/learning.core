@@ -7,7 +7,7 @@
 * on an "AS IS" basis, WITHOUT WARRANTIES OF ANY KIND.
 */
 
-package org.openmarkov.learning.core.editionsgenerator;
+package org.openmarkov.learning.core.util;
 
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
@@ -22,14 +22,14 @@ import org.openmarkov.core.exception.ConstraintViolationException;
  * @since Carmen 1.0 */
 public class LearningEditProposal {
 
-    protected PNEdit edition;
+    protected PNEdit edit;
     
     protected LearningEditMotivation motivation;
     
     protected ConstraintViolationException violatedConstraint;
     
-    public LearningEditProposal(PNEdit edition, LearningEditMotivation motivation){
-        this.edition = edition; 
+    public LearningEditProposal(PNEdit edit, LearningEditMotivation motivation){
+        this.edit = edit; 
         this.motivation = motivation;
         this.violatedConstraint = null;
     }
@@ -39,8 +39,8 @@ public class LearningEditProposal {
         this.violatedConstraint = e;
     }    
     
-    public PNEdit getEdition(){
-        return edition;
+    public PNEdit getEdit(){
+        return edit;
     }
     
     public LearningEditMotivation getMotivation(){
@@ -61,11 +61,11 @@ public class LearningEditProposal {
             return true;
         if((obj == null) || (obj.getClass() != this.getClass()))
             return false;
-        return (this.edition.equals(((LearningEditProposal)obj).edition));
+        return (this.edit.equals(((LearningEditProposal)obj).edit));
     }
     
     public String toString()
     {
-        return new StringBuilder().append (edition.toString () + " " + motivation).toString (); 
+        return new StringBuilder().append (edit.toString () + " " + motivation).toString (); 
     }
 }

@@ -34,10 +34,10 @@ import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmManager;
 import org.openmarkov.learning.core.algorithm.annotation.LearningAlgorithmType;
 import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
-import org.openmarkov.learning.core.editionsgenerator.LearningEditMotivation;
-import org.openmarkov.learning.core.editionsgenerator.LearningEditProposal;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
 import org.openmarkov.learning.core.exception.LatentVariablesException;
+import org.openmarkov.learning.core.util.LearningEditMotivation;
+import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /** This class launches the learning algorithm and receives the results of
@@ -164,7 +164,7 @@ public class LearningManager {
      * @return <code>double</code> score of the net with the given edition
      */
     public LearningEditMotivation getMotivation(PNEdit edit)  {
-        return learningAlgorithm.getMotivation (this.learnedNet, this.caseDatabase.getCases (), edit);
+        return learningAlgorithm.getMotivation (edit);
     }
     
     /**
@@ -172,12 +172,10 @@ public class LearningManager {
      * @param onlyAllowedEdits
      * @param onlyPositiveEdits
      */
-    public LearningEditProposal getBestEdition (boolean onlyAllowedEdits,
-                                 boolean onlyPositiveEdits)
+    public LearningEditProposal getBestEdit (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
     {
         
-        return this.learningAlgorithm.getBestEdition (onlyAllowedEdits,
-                                                       onlyPositiveEdits);        
+        return this.learningAlgorithm.getBestEdit (onlyAllowedEdits, onlyPositiveEdits);        
     }
     
     /**
@@ -185,12 +183,10 @@ public class LearningManager {
      * @param onlyAllowedEdits
      * @param onlyPositiveEdits
      */
-    public LearningEditProposal getNextEdition (boolean onlyAllowedEdits,
-                                 boolean onlyPositiveEdits)
+    public LearningEditProposal getNextEdit (boolean onlyAllowedEdits, boolean onlyPositiveEdits)
     {
         
-        return this.learningAlgorithm.getNextEdition (onlyAllowedEdits,
-                                                       onlyPositiveEdits);        
+        return this.learningAlgorithm.getNextEdit (onlyAllowedEdits, onlyPositiveEdits);        
     }
     
     /**
@@ -200,7 +196,7 @@ public class LearningManager {
 		throws NormalizeNullVectorException
     {
         
-        this.learningAlgorithm.goToNextPhase ();        
+        this.learningAlgorithm.runTillNextPhase ();        
     }   
     
     /**

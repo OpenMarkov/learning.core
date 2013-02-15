@@ -12,6 +12,7 @@ package org.openmarkov.learning.core.algorithm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openmarkov.core.action.BaseLinkEdit;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
@@ -22,9 +23,8 @@ import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.model.network.potential.PotentialRole;
 import org.openmarkov.core.model.network.potential.TablePotential;
 import org.openmarkov.core.model.network.potential.operation.DiscretePotentialOperations;
-import org.openmarkov.learning.core.editionsgenerator.EditionsGenerator;
-import org.openmarkov.learning.core.editionsgenerator.LearningEditMotivation;
-import org.openmarkov.learning.core.editionsgenerator.LearningEditProposal;
+import org.openmarkov.learning.core.util.LearningEditMotivation;
+import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 /**
@@ -32,8 +32,6 @@ import org.openmarkov.learning.core.util.ModelNetUse;
  */
 public abstract class LearningAlgorithm {
     
-    /** Edition generator */
-    protected EditionsGenerator editionsGenerator;
     /** Parameter for the parametric learning. */
     protected double alpha;    
     
@@ -43,17 +41,21 @@ public abstract class LearningAlgorithm {
     /** Case database */
     protected CaseDatabase caseDatabase;
     
+    /** List of blocked edits */
+    protected List<PNEdit> blockedEdits = new ArrayList<PNEdit>();  
+    
+    protected int phase = 0;    
+    
     
     // Constructor
     /**
      * @param editionsGenerator <code>EditionsGenerator</code> The object that
      * gives the best operation in each iteration of the algorithm.
      **/
-    public LearningAlgorithm (ProbNet probNet, CaseDatabase caseDatabase, EditionsGenerator editionsGenerator, double alpha)
+    public LearningAlgorithm (ProbNet probNet, CaseDatabase caseDatabase, double alpha)
     {
         this.probNet = probNet;
         this.caseDatabase = caseDatabase;
-        this.editionsGenerator = editionsGenerator;
         this.alpha = alpha;
     }
     
@@ -69,11 +71,11 @@ public abstract class LearningAlgorithm {
     {
         init(modelNetUse);
         /* Main loop */
-       LearningEditProposal bestEdition = editionsGenerator.getBest(true,true);
+       LearningEditProposal bestEdition = getBestEdit(true,true);
         while (bestEdition != null)
         {
-            step (bestEdition.getEdition ());
-            bestEdition = editionsGenerator.getBest (true, true);
+            step (bestEdition.getEdit ());
+            bestEdition = getBestEdit (true, true);
         }
        /* Parametric Learning */
        parametricLearning();
@@ -82,17 +84,15 @@ public abstract class LearningAlgorithm {
     /**
      * Tells the learning algorithm to advance until the next phase
      */
-    public void goToNextPhase () throws NormalizeNullVectorException
+    public void runTillNextPhase () throws NormalizeNullVectorException
     {
-    	int phase = editionsGenerator.getPhase ();
-    	editionsGenerator.resetHistory ();
-    	LearningEditProposal bestEdition = editionsGenerator.getBest (true, true);
-        while ((bestEdition != null) && (phase == editionsGenerator.getPhase ()))
+    	int currentPhase = getPhase ();
+    	LearningEditProposal bestEditProposal = getBestEdit (true, true);
+        while ((bestEditProposal != null) && (currentPhase == getPhase ()))
         {
-            step ( bestEdition.getEdition ());
-            bestEdition = editionsGenerator.getBest (true, true);
+            step ( bestEditProposal.getEdit ());
+            bestEditProposal = getBestEdit (true, true);
         }
-        editionsGenerator.resetHistory ();
     }
     
     /**
@@ -102,21 +102,35 @@ public abstract class LearningAlgorithm {
     public abstract void init (ModelNetUse modelNetUse);
     
     /**
-     * Score the network. 
-     * @param probNet
-     * @param cases
-     * @return <code>double</code> score of the net 
-     */    
-    public abstract double getScore (ProbNet probNet, int[][] cases);
-
+     * This method returns the best edition (and its associated score)
+     * that can be done to the network that is being learnt. 
+     * 
+     * @param onlyAllowedEditions If this parameter is true, only those editions
+     * that do not provoke a ConstraintViolationException are returned
+     * @param onlyPositiveEditions If this parameter is true, only those 
+     * editions with a positive associated score are returned.
+     * @return <code>LearningEditProposal</code> with the best edition and its score. 
+     */
+    public abstract LearningEditProposal getBestEdit (boolean onlyAllowedEdits, boolean onlyPositiveEdits);
+    
     /**
-     * Scores the associated network with the given edition.
-     * @param probNet
-     * @param cases
+     * This method returns the next best edition (and its associated score)
+     * that can be done to the network that is being learnt. 
+     * 
+     * @param onlyAllowedEditions If this parameter is true, only those editions
+     * that do not provoke a ConstraintViolationException are returned
+     * @param onlyPositiveEditions If this parameter is true, only those 
+     * editions with a positive associated score are returned.
+     * @return <code>LearningEditProposal</code> with the best edition and its score. 
+     */
+    public abstract LearningEditProposal getNextEdit (boolean onlyAllowedEdits, boolean onlyPositiveEdits);
+    
+    /**
+     * Calculates the score associated to the given edit.
      * @param edit <code>PNEdit</code> 
-     * @return <code>double</code> score of the net with the given edition
+     * @return <code>LearningEditMotivation</code> motivation for the given edit
      */    
-    public abstract LearningEditMotivation getMotivation (ProbNet probNet, int[][] cases, PNEdit edit); 
+    public abstract LearningEditMotivation getMotivation (PNEdit edit);    
     
     /** Takes a step in the algorithm
      * 
@@ -140,6 +154,17 @@ public abstract class LearningAlgorithm {
         }
         return probNet;
     }
+    
+    /**
+     * Score the network. 
+     * @param probNet
+     * @param cases
+     * @return <code>double</code> score of the net 
+     */    
+    public double getScore (ProbNet probNet, int[][] cases)
+    {
+        return 0;
+    }    
             
     /**
      * This function creates the Potentials associated to each node,
@@ -165,6 +190,77 @@ public abstract class LearningAlgorithm {
         }
         
         return probNet;
+    }
+
+       
+    /**
+     * Blocks edit
+     * @param edit to block
+     */
+    public void blockEdit(PNEdit edit)
+    {
+        blockedEdits.add(edit);
+    }
+    
+    /**
+     * Blocks edit
+     * @param edit to block
+     */
+    public void unblockEdit(PNEdit edit)
+    {
+        blockedEdits.remove(edit);
+    }
+
+    /**
+     * @return the blockedEdits
+     */
+    public List<PNEdit> getBlockedEdits() {
+        return blockedEdits;
+    }    
+    
+    /**
+     * Blocks edit
+     * @param edit to block
+     */
+    public boolean isBlocked(PNEdit edit)
+    {
+        return blockedEdits.contains(edit);
+    }    
+    
+    protected boolean isAllowed(PNEdit edit)
+    {
+        boolean isAllowed = true;
+        try
+        {
+            //Announce edit to check whether it is allowed or not
+            try
+            {
+                edit.getProbNet ().getPNESupport ().announceEdit (edit);
+            }
+            catch (ConstraintViolationException e)
+            {
+                isAllowed = false;
+            }
+        }
+        catch (Exception e1)
+        {
+            e1.printStackTrace ();
+        }       
+        return isAllowed;
+    }    
+    
+    public int getPhase ()
+    {
+        return phase;
+    }
+
+    /**
+     * Retrieves whether the LearningAlgorithm is in the last phase. 
+     * True by default
+     */    
+    public boolean isLastPhase ()
+    {
+        return true;
     }
     
     /**
@@ -259,61 +355,5 @@ public abstract class LearningAlgorithm {
             absoluteFreqs[numValues * ((int) iCPT) + (int) cases[i][iNode]]++;
         }
         return absoluteFreqPotential;
-    }
-
-    /**
-     * Returns best edition
-     * @param onlyAllowedEdits
-     * @param onlyPositiveEdits
-     * @return
-     */    
-    public LearningEditProposal getBestEdition(boolean onlyAllowedEdits, boolean onlyPositiveEdits)
-    {
-    	return editionsGenerator.getBest(onlyAllowedEdits, onlyPositiveEdits);
-    }
-    
-    /**
-     * Returns next best edition
-     * @param onlyAllowedEdits
-     * @param onlyPositiveEdits
-     * @return
-     */    
-    public LearningEditProposal getNextEdition(boolean onlyAllowedEdits, boolean onlyPositiveEdits)
-    {
-    	return editionsGenerator.getNext(onlyAllowedEdits, onlyPositiveEdits);    
-    }
-    
-    /**
-     * Blocks edit
-     * @param edit to block
-     */
-    public void blockEdit(PNEdit edit)
-    {
-    	editionsGenerator.blockEdit(edit);
-    }
-    
-    /**
-     * Blocks edit
-     * @param edit to block
-     */
-    public void unblockEdit(PNEdit edit)
-    {
-    	editionsGenerator.unblockEdit(edit);
-    } 
-
-	/**
-	 * @return the blocked edits
-	 */
-	public List<PNEdit> getBlockedEdits() {
-		return editionsGenerator.getBlockedEdits();
-	}	
-
-    /**
-     * Retrieves whether the LearningAlgorithm is in the last phase. 
-     * True by default
-     */    
-    public boolean isLastPhase ()
-    {
-        return true;
-    }
+    }    
 }

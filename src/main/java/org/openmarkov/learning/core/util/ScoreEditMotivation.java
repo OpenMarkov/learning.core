@@ -7,7 +7,7 @@
 * on an "AS IS" basis, WITHOUT WARRANTIES OF ANY KIND.
 */
 
-package org.openmarkov.learning.core.editionsgenerator;
+package org.openmarkov.learning.core.util;
 
 import java.math.BigDecimal;
 
