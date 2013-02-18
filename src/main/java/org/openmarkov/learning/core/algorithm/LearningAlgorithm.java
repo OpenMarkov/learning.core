@@ -165,11 +165,9 @@ public abstract class LearningAlgorithm {
     
     /**
      * Score the network. 
-     * @param probNet
-     * @param cases
      * @return <code>double</code> score of the net 
      */    
-    public double getScore (ProbNet probNet, int[][] cases)
+    public double getScore ()
     {
         return 0;
     }    

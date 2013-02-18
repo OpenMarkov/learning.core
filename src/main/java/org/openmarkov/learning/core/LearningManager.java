@@ -155,7 +155,7 @@ public class LearningManager {
      * @return <code>double</code> score of the net 
      */
     public double getScore()  {
-			return learningAlgorithm.getScore(this.learnedNet, this.caseDatabase.getCases ());
+			return learningAlgorithm.getScore();
     }
     
     /**
@@ -195,7 +195,6 @@ public class LearningManager {
     public void goToNextPhase ()
 		throws NormalizeNullVectorException
     {
-        
         this.learningAlgorithm.runTillNextPhase ();        
     }   
     
