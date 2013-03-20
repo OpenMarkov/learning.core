@@ -162,15 +162,6 @@ public abstract class LearningAlgorithm {
         }
         return probNet;
     }
-    
-    /**
-     * Score the network. 
-     * @return <code>double</code> score of the net 
-     */    
-    public double getScore ()
-    {
-        return 0;
-    }    
             
     /**
      * This function creates the Potentials associated to each node,

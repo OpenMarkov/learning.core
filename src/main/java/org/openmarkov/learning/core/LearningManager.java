@@ -149,14 +149,6 @@ public class LearningManager {
     {
         return learningAlgorithm;
     }
-
-    /**
-     * Score of the associated network. 
-     * @return <code>double</code> score of the net 
-     */
-    public double getScore()  {
-			return learningAlgorithm.getScore();
-    }
     
     /**
      * Scores the associated network with the given edition.
