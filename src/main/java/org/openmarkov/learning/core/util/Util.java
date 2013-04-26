@@ -127,14 +127,15 @@ public class Util
     {
         ArrayList<Variable> variables = new ArrayList<Variable> ();
         variables.add ((Variable) node.getVariable ());
-        if (extraParent != null)
-        {
-            variables.add (extraParent.getVariable ());
-        }
+        
         for (ProbNode parent : ProbNet.getProbNodesOfNodes (node.getNode ().getParents ()))
         {
             if(!variables.contains (parent.getVariable ()))
                 variables.add (parent.getVariable ());
+        }
+        if ((extraParent != null) && (!variables.contains (extraParent.getVariable ())))
+        {
+            variables.add (extraParent.getVariable ());
         }
         return getAbsoluteFrequencies (probNet, cases, node, variables);
     }
