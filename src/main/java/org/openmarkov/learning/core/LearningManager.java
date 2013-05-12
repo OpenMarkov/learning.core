@@ -31,6 +31,7 @@ import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
+import org.openmarkov.core.model.network.VariableType;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithmManager;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithmType;
@@ -268,7 +269,7 @@ public class LearningManager {
             {
                 probNet.addProbNode (variable, NodeType.CHANCE);
             }
-            copyNodePositionsFromModelNet(modelNet, probNet);
+            copyNodeInformationFromModelNet(modelNet, probNet);
         }
         if ( modelNetUse.isStartFromModelNet() )
         {
@@ -333,44 +334,69 @@ public class LearningManager {
 		return learningAlgorithm.getBlockedEdits();
 	}   
 	
-    /** Given a modelNet, applies the node positions of the modelNet to the
-     * nodes of the current probNet
+    /** Given a modelNet, applies the node positions and the order of the 
+     * states of the nodes of the modelNet to the nodes of the current probNet
      * @param modelNet - the modelNet to copy the node positions from
      */
-    private void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learnedNet)
+    private void copyNodeInformationFromModelNet(ProbNet modelNet, ProbNet learnedNet)
     {
         ProbNode positionNode = null;
         
         /* Take the positions of the nodes */
         if(modelNet != null){
-            for (ProbNode node : modelNet.getProbNodes()){
+            for (ProbNode node : modelNet.getProbNodes ()){
                 try {
-                    positionNode = learnedNet.getProbNode(node.getVariable().getName());
+                    positionNode = learnedNet.getProbNode (node.getVariable ().getName ());
                     if (positionNode != null){
-                        positionNode.getNode().setCoordinateX(node.getNode().
-                                getCoordinateX());
-                        positionNode.getNode().setCoordinateY(node.getNode().
-                                getCoordinateY());
+                        positionNode.getNode ().setCoordinateX (node.getNode ().
+                                getCoordinateX ());
+                        positionNode.getNode ().setCoordinateY (node.getNode ().
+                                getCoordinateY ());
                         
-                        updateCases(learnedNet.getProbNodes().indexOf(positionNode),
-                        		positionNode, node);
-                        positionNode.getVariable().setStates(node.getVariable().getStates());
+                        /* Check wether the variables are discretized or not before
+                         * copying the states order. If both are discretized, they
+                         * have to share the same intervals.
+                         */
+                        if (((positionNode.getVariable ().getVariableType () != VariableType.DISCRETIZED) &&
+                        		(node.getVariable ().getVariableType () != VariableType.DISCRETIZED)) ||
+                        		((positionNode.getVariable ().getVariableType () == VariableType.DISCRETIZED) &&
+                        		(node.getVariable ().getVariableType () == VariableType.DISCRETIZED) &&
+                        		isSameDiscretization (positionNode, node))){
+	                        updateCases (learnedNet.getProbNodes ().indexOf (positionNode),
+	                        		positionNode, node);
+	                        positionNode.getVariable ().setStates (node.getVariable ().getStates ());
+                        }
                     }
                 } catch (ProbNodeNotFoundException e) {}
             }
         }        
     }
     
-    private void updateCases(int variableIndex, ProbNode originalNode, ProbNode modelNode){
+    private boolean isSameDiscretization(ProbNode positionNode, ProbNode node){
+    	boolean result = true;
+    	
+    	try {
+    		for (State state : positionNode.getVariable ().getStates ()){
+				if (node.getVariable ().getStateIndex (state.getName ()) == -1){
+					return false;
+				}
+    		}
+    	} catch (InvalidStateException e) {
+			return false;
+		}
+    	return result;
+    }
+    
+    private void updateCases (int variableIndex, ProbNode originalNode, ProbNode modelNode){
     	State state;
     	
-    	for (int i = 0; i < caseDatabase.getCases().length; i++){
-    		state = originalNode.getVariable().getStates()[caseDatabase.getCases()[i][variableIndex]];
+    	for (int i = 0; i < caseDatabase.getCases ().length; i++){
+    		state = originalNode.getVariable ().getStates ()[caseDatabase.getCases ()[i][variableIndex]];
     		try {
-				caseDatabase.getCases()[i][variableIndex] = modelNode.getVariable().getStateIndex(state.getName());
+				caseDatabase.getCases ()[i][variableIndex] = modelNode.getVariable ().getStateIndex (state.getName ());
 			} catch (InvalidStateException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace ();
 			}
     	}
     }
