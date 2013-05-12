@@ -19,6 +19,7 @@ import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.CanNotDoEditException;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.DoEditException;
+import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
@@ -365,7 +366,12 @@ public class LearningManager {
     	
     	for (int i = 0; i < caseDatabase.getCases().length; i++){
     		state = originalNode.getVariable().getStates()[caseDatabase.getCases()[i][variableIndex]];
-    		caseDatabase.getCases()[i][variableIndex] = modelNode.getVariable().getStateIndex(state);
+    		try {
+				caseDatabase.getCases()[i][variableIndex] = modelNode.getVariable().getStateIndex(state.getName());
+			} catch (InvalidStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     	}
     }
 	
