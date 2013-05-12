@@ -350,6 +350,7 @@ public class LearningManager {
                                 getCoordinateX());
                         positionNode.getNode().setCoordinateY(node.getNode().
                                 getCoordinateY());
+                        positionNode.getVariable().setStates(node.getVariable().getStates());
                     }
                 } catch (ProbNodeNotFoundException e) {}
             }
