@@ -350,11 +350,23 @@ public class LearningManager {
                                 getCoordinateX());
                         positionNode.getNode().setCoordinateY(node.getNode().
                                 getCoordinateY());
+                        
+                        updateCases(learnedNet.getProbNodes().indexOf(positionNode),
+                        		positionNode, node);
                         positionNode.getVariable().setStates(node.getVariable().getStates());
                     }
                 } catch (ProbNodeNotFoundException e) {}
             }
         }        
+    }
+    
+    private void updateCases(int variableIndex, ProbNode originalNode, ProbNode modelNode){
+    	State state;
+    	
+    	for (int i = 0; i < caseDatabase.getCases().length; i++){
+    		state = originalNode.getVariable().getStates()[caseDatabase.getCases()[i][variableIndex]];
+    		caseDatabase.getCases()[i][variableIndex] = modelNode.getVariable().getStateIndex(state);
+    	}
     }
 	
 }
