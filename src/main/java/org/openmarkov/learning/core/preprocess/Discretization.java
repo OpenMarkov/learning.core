@@ -210,6 +210,7 @@ public class Discretization {
     {
         
         Variable newVariable = oldVariable;
+        StringBuffer buffer = new StringBuffer();
 
         if (modelNet != null){
             Variable modelNetVariable = modelNet.getVariable(oldVariable.getName());
@@ -254,7 +255,17 @@ public class Discretization {
             {
                 double[] limits = modelNetInterval.getLimits();
                 boolean[] belongsToLeftSide = modelNetInterval.getBelongsToLeftSide();
+                newStates = new State[limits.length - 1];
                 
+                for (int i = 0; i < modelNetInterval.getNumSubintervals(); i++){
+        			buffer.append(!belongsToLeftSide[i] ? "[" : "(");
+        			buffer.append(limits[i]);
+        			buffer.append(" , ");
+        			buffer.append(limits[i + 1]);
+        			buffer.append(!belongsToLeftSide[i + 1] ? ")" : "]");
+        			newStates[i] = new State(buffer.toString());
+        			buffer.setLength(0);
+        		}
                 newVariable = new Variable(oldVariable.getName(), newStates,
                 		new PartitionedInterval(limits, belongsToLeftSide), 0.001);
             }else

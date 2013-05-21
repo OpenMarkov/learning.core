@@ -357,11 +357,8 @@ public class LearningManager {
                          * copying the states order. If both are discretized, they
                          * have to share the same intervals.
                          */
-                        if (((positionNode.getVariable ().getVariableType () != VariableType.DISCRETIZED) &&
-                        		(node.getVariable ().getVariableType () != VariableType.DISCRETIZED)) ||
-                        		((positionNode.getVariable ().getVariableType () == VariableType.DISCRETIZED) &&
-                        		(node.getVariable ().getVariableType () == VariableType.DISCRETIZED) &&
-                        		isSameDiscretization (positionNode, node))){
+                        if ((positionNode.getVariable ().getVariableType () != VariableType.DISCRETIZED) &&
+                        		(node.getVariable ().getVariableType () != VariableType.DISCRETIZED)){
 	                        updateCases (learnedNet.getProbNodes ().indexOf (positionNode),
 	                        		positionNode, node);
 	                        positionNode.getVariable ().setStates (node.getVariable ().getStates ());
@@ -370,21 +367,6 @@ public class LearningManager {
                 } catch (ProbNodeNotFoundException e) {}
             }
         }        
-    }
-    
-    private boolean isSameDiscretization(ProbNode positionNode, ProbNode node){
-    	boolean result = true;
-    	
-    	try {
-    		for (State state : positionNode.getVariable ().getStates ()){
-				if (node.getVariable ().getStateIndex (state.getName ()) == -1){
-					return false;
-				}
-    		}
-    	} catch (InvalidStateException e) {
-			return false;
-		}
-    	return result;
     }
     
     private void updateCases (int variableIndex, ProbNode originalNode, ProbNode modelNode){
