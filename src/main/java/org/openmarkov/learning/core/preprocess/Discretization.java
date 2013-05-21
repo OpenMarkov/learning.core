@@ -210,14 +210,10 @@ public class Discretization {
     {
         
         Variable newVariable = oldVariable;
-        String [ ] tokens;
 
         if (modelNet != null){
             Variable modelNetVariable = modelNet.getVariable(oldVariable.getName());
             
-            int numIntervals = modelNetVariable.getNumStates();
-            boolean[] belongsToLeftSide = new boolean [numIntervals + 1];
-            double[] limits = new double [numIntervals + 1];
             boolean missingValuesInDB = false;
             try
             {
@@ -253,22 +249,18 @@ public class Discretization {
                 newStates = modelNetVariable.getStates ();
             }
             
-            int i = 0;
-            for (State state : modelNetVariable.getStates ())
+            PartitionedInterval modelNetInterval = modelNetVariable.getPartitionedInterval();
+            if(modelNetInterval != null)
             {
-            	tokens = state.getName().split("\\s|\\[|\\]|\\(|\\)|,");
-            	limits [i] = Double.parseDouble (tokens [1]);
-            	belongsToLeftSide [i] = (state.getName().charAt(0) == '[')? true : false;
-            	i++;
+                double[] limits = modelNetInterval.getLimits();
+                boolean[] belongsToLeftSide = modelNetInterval.getBelongsToLeftSide();
+                
+                newVariable = new Variable(oldVariable.getName(), newStates,
+                		new PartitionedInterval(limits, belongsToLeftSide), 0.001);
+            }else
+            {
+                newVariable = new Variable(oldVariable.getName(), newStates);
             }
-            tokens = modelNetVariable.getStates()[numIntervals-1].getName().split("\\s|\\[|\\]|\\(|\\)|,");
-        	limits [i] = Double.parseDouble (tokens [4]);
-            //Minimum and Maximum must be in the interval
-            belongsToLeftSide[0] = false;
-            belongsToLeftSide[numIntervals] = true;
-            
-            newVariable = new Variable(oldVariable.getName(), newStates,
-            		new PartitionedInterval(limits, belongsToLeftSide), 0.001);
         }
         
         return newVariable;
@@ -301,17 +293,16 @@ public class Discretization {
         double step = (max - min) / (double)numIntervals;
         for (int i = 0; i < numIntervals; i++)
         {
-            states[i] = new State (new String ("[" + (min + (i * step)) + " , "
-                                               + (min + ((i + 1) * step)) + ")"));
+            states[i] = new State (new String ("(" + (min + (i * step)) + " , "
+                                               + (min + ((i + 1) * step)) + "]"));
             belongsToLeftSide[i] = true;
             limits[i] = min + (i * step);
         }
-        //close the last interval
-        states[numIntervals - 1] = new State(states[numIntervals - 1].getName().replace(')', ']'));
-        limits[limits.length - 1] = max;
         //Minimum and Maximum must be in the interval
+        states[0].setName(states[0].getName().replace('(', '['));
         belongsToLeftSide[0] = false;
         belongsToLeftSide[numIntervals] = true;
+        limits[numIntervals] = max;
         if(containsMissingValues)
         {
             states[numStates - 1] = new State("?");
@@ -503,10 +494,7 @@ public class Discretization {
                            }else
                            {
                                 Double value = Double.parseDouble (oldStates[oldCases[i][j]].getName ());
-                                /*
-                                 * We search for the interval in which the value
-                                 * is contained
-                                 */
+                                // We search for the interval in which the value is contained
                                 int k = 1;
                                 boolean matched = false;
                                 while (!matched && k < newIntervals.length)
