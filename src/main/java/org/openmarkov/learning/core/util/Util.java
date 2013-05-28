@@ -40,7 +40,6 @@ public class Util
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents.
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      */
     private static TablePotential getAbsoluteFrequencies (ProbNet probNet,
                                            int[][] cases,
@@ -95,7 +94,6 @@ public class Util
      * @return <code>TablePotential</code> with the absolute frequencies in the
      *         database of each of the configurations of the given node and its
      *         parents and a given extra parent.
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      */
     public static TablePotential getAbsoluteFreq (ProbNet probNet,
                                                   int[][] cases,
@@ -118,7 +116,6 @@ public class Util
      * @return <code>TablePotential</code> with the absolute frequencies in the
      *         database of each of the configurations of the given node and its
      *         parents and a given extra parent.
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      */
     public static TablePotential getAbsoluteFreqExtraParent (ProbNet probNet,
                                                                           int[][] cases,
@@ -149,7 +146,6 @@ public class Util
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents except one.
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      */
     public static TablePotential getAbsoluteFreqRemovingParent (ProbNet probNet,
                                                                             int[][] cases,

@@ -147,7 +147,6 @@ public class Discretization {
      * @throws WrongDiscretizationLimitException 
      * @throws ProbNodeNotFoundException 
      * @throws InvalidStateException 
-     * @throws NotEnoughMemoryException 
      */
     public static CaseDatabase process (CaseDatabase database,
                                         Discretization.Option discretizationOption,
@@ -175,7 +174,6 @@ public class Discretization {
      * @throws WrongDiscretizationLimitException 
      * @throws ProbNodeNotFoundException 
      * @throws InvalidStateException 
-     * @throws NotEnoughMemoryException 
      */
     public static CaseDatabase process (CaseDatabase database,
                                         ProbNet modelNet)

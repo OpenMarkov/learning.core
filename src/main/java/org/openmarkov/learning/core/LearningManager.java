@@ -80,7 +80,6 @@ public class LearningManager {
      * @throws LatentVariablesException 
      * @throws ProbNodeNotFoundException
      * @throws NodeNotFoundException
-     * @throws NotEnoughMemoryException
      */
     public LearningManager (CaseDatabase caseDatabase,
                             String algorithmName,
@@ -124,7 +123,6 @@ public class LearningManager {
 
     /**
      * Main method to launch the learning process.
-     * @throws NotEnoughMemoryException
      * @throws NodeNotFoundException
      * @throws NormalizeNullVectorException
      * @throws ProbNodeNotFoundException
@@ -208,7 +206,6 @@ public class LearningManager {
      * @throws NonProjectablePotentialException 
      * @throws CanNotDoEditException 
      * @throws ConstraintViolationException 
-     * @throws NotEnoughMemoryException 
      * @throws NormalizeNullVectorException 
      */
     public void applyEdit (PNEdit edit)

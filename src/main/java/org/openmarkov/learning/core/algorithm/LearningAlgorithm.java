@@ -62,7 +62,6 @@ public abstract class LearningAlgorithm {
      * @param modelNetUse 
      * 
      * @return <code>ProbNet</code> learned.
-     * @throws NotEnoughMemoryException
      * @throws NormalizeNullVectorException
      */
     public void run (ModelNetUse modelNetUse)
@@ -142,7 +141,6 @@ public abstract class LearningAlgorithm {
     
     /** Takes a step in the algorithm
      * 
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      * @throws java.lang.Exception
      */
     protected ProbNet step (PNEdit bestEdition) throws NormalizeNullVectorException {
@@ -167,7 +165,6 @@ public abstract class LearningAlgorithm {
      * This function creates the Potentials associated to each node,
      * normalizing the absolute frequencies of the configurations of 
      * the parents.
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      * @throws NormalizeNullVectorException 
      */
     public ProbNet parametricLearning() 
@@ -268,7 +265,6 @@ public abstract class LearningAlgorithm {
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents and a given extra parent.
-     * @throws NotEnoughMemoryException
      */
     private TablePotential calculateAbsoluteFrequencies (ProbNet probNet,
                                                          int[][] cases,
@@ -318,7 +314,6 @@ public abstract class LearningAlgorithm {
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents.
-     * @throws openmarkov.exceptions.NotEnoughMemoryException
      */
     private TablePotential calculateAbsoluteFreqPotential (ProbNet probNet,
                                                           int[][] cases,
