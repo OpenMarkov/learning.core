@@ -208,7 +208,6 @@ public class Discretization {
     {
         
         Variable newVariable = oldVariable;
-        StringBuffer buffer = new StringBuffer();
 
         if (modelNet != null){
             Variable modelNetVariable = modelNet.getVariable(oldVariable.getName());
