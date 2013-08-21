@@ -20,7 +20,7 @@ import org.openmarkov.core.exception.ConstraintViolationException;
  * @author fjdiez
  * @version 1.0
  * @since Carmen 1.0 */
-public class LearningEditProposal {
+public class LearningEditProposal implements Comparable<LearningEditProposal>{
 
     protected PNEdit edit;
     
@@ -68,4 +68,9 @@ public class LearningEditProposal {
     {
         return new StringBuilder().append (edit.toString () + " " + motivation).toString (); 
     }
+
+	@Override
+	public int compareTo(LearningEditProposal editProposal) {
+		return motivation.compareTo(editProposal.getMotivation());
+	}
 }
