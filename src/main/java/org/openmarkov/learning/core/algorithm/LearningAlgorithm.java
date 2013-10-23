@@ -16,6 +16,7 @@ import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
 import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.graph.Node;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.Variable;
@@ -84,8 +85,8 @@ public abstract class LearningAlgorithm {
      */
     public void runTillNextPhase () throws NormalizeNullVectorException
     {
-    	int currentPhase = getPhase ();
-    	LearningEditProposal bestEditProposal = getBestEdit (true, true);
+        int currentPhase = getPhase ();
+        LearningEditProposal bestEditProposal = getBestEdit (true, true);
         while ((bestEditProposal != null) && (currentPhase == getPhase ()))
         {
             step ( bestEditProposal.getEdit ());
@@ -167,24 +168,20 @@ public abstract class LearningAlgorithm {
      * the parents.
      * @throws NormalizeNullVectorException 
      */
-    public ProbNet parametricLearning() 
-            throws NormalizeNullVectorException{
-        int[][] cases = caseDatabase.getCases ();
-        TablePotential absoluteFrequencies;
-        
-        for (ProbNode node : probNet.getProbNodes()) {
-            if(!node.getPotentials ().isEmpty ())
-            {
-                probNet.removePotential (node.getPotentials ().get (0));
-            }
-            absoluteFrequencies = calculateAbsoluteFrequencies(probNet, cases, node);
-            for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
-                absoluteFrequencies.values[j] += alpha;
-            probNet.addPotential (DiscretePotentialOperations.normalize(absoluteFrequencies));
-        }
-        
-        return probNet;
-    }
+	public ProbNet parametricLearning() throws NormalizeNullVectorException {
+
+		for (ProbNode node : probNet.getProbNodes()) {
+			if (!node.getPotentials().isEmpty()) {
+				probNet.removePotential(node.getPotentials().get(0));
+			}
+			TablePotential absoluteFrequencies = getAbsoluteFrequencies(caseDatabase, node);
+			for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
+				absoluteFrequencies.values[j] += alpha;
+			probNet.addPotential(DiscretePotentialOperations.normalize(absoluteFrequencies));
+		}
+
+		return probNet;
+	}
 
        
     /**
@@ -259,92 +256,55 @@ public abstract class LearningAlgorithm {
     
     /**
      * Calculate the absolute frequencies in the database of each of the
-     * configurations of the given node and its parents and a given extra
-     * parent.
-     * @param node <code>ProbNode</code> whose frequencies we want to calculate.
+     * configurations of the given node and its parents.
+     * 
+     * @param caseDatabase database of cases
+     * @param node <code>ProbNode</code> whose frequencies we want to 
+     * calculate.
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
-     * parents and a given extra parent.
+     * parents.
      */
-    private TablePotential calculateAbsoluteFrequencies (ProbNet probNet,
-                                                         int[][] cases,
+    private TablePotential getAbsoluteFrequencies (CaseDatabase caseDatabase,
                                                          ProbNode node)
     {
-        int parentsConfigurations = 1;
+    	Variable variable = node.getVariable();
         int indexOfParent = 0;
-        int numParents = node.getNode ().getNumParents ();
-        int[] indexesOfParents = new int[numParents];
+        List<Node> parents = node.getNode ().getParents ();
+        int[] indexesOfParents = new int[parents.size()];
         List<Variable> variables = new ArrayList<Variable> ();
-        variables.add ((Variable) node.getVariable ());
-        if (numParents == 0)
+        variables.add (variable);
+        if (!parents.isEmpty())
         {
-            parentsConfigurations = 1;
-        }
-        else
-        {
-            for (ProbNode parent : ProbNet.getProbNodesOfNodes (node.getNode ().getParents ()))
+            for (ProbNode parent : ProbNet.getProbNodesOfNodes (parents))
             {
-                variables.add ((Variable) parent.getVariable ());
-                indexesOfParents[indexOfParent] = probNet.getProbNodes ().indexOf (probNet.getProbNode (parent.getVariable ()));
-                parentsConfigurations *= ((Variable) parent.getVariable ()).getNumStates ();
+                variables.add (parent.getVariable ());
+                indexesOfParents[indexOfParent] = caseDatabase.getVariables().indexOf (parent.getVariable ());
                 indexOfParent++;
             }
         }
-        return calculateAbsoluteFreqPotential (probNet,
-                                               cases,
-                                               node,
-                                               parentsConfigurations,
-                                               variables,
-                                               indexesOfParents,
-                                               node.getVariable ().getNumStates ());
-    }
-    
-    /**
-     * Calculate the absolute frequencies in the database of each of the
-     * configurations of the given node and its parents.
-     * @param probNode <code>ProbNode</code> whose frequencies we want to 
-     * calculate.
-     * @param parentsConfigurations product of the number of states of the
-     * parents.
-     * @param variables <code>ArrayList</code> formed by the variable associated
-     * to the given node and the variables associated to its parents.
-     * @param indexesOfParents <code>int[]</code> indexes of the parents in the
-     * probNet list of nodes.
-     * @param numValues number of states of the given node
-     * @return <code>TablePotential</code> with the absolute frequencies in
-     * the database of each of the configurations of the given node and its
-     * parents.
-     */
-    private TablePotential calculateAbsoluteFreqPotential (ProbNet probNet,
-                                                          int[][] cases,
-                                                          ProbNode probNode,
-                                                          int parentsConfigurations,
-                                                          List<Variable> variables,
-                                                          int[] indexesOfParents,
-                                                          int numValues
-                                                          ) {
+
+    	int numValues = variable.getNumStates ();
         TablePotential absoluteFreqPotential = new TablePotential(
                 variables, PotentialRole.CONDITIONAL_PROBABILITY);
         double[] absoluteFreqs = absoluteFreqPotential.getValues();
-        double iCPT;
-        int iNode = probNet.getProbNodes().indexOf(
-                probNet.getProbNode(probNode.getVariable())); 
+        int iNode = caseDatabase.getVariables().indexOf(variable); 
 
         // Initialize the table
-        for (int i = 0; i < parentsConfigurations * numValues; i++) {
+        for (int i = 0; i < absoluteFreqs.length; i++) {
             absoluteFreqs[i] = 0;
         }
         
         variables.remove(0);
         // Compute the absolute frequencies
+        int[][] cases = caseDatabase.getCases();
         for (int i = 0; i < cases.length; i++) {
-            iCPT = 0;
-            int j = 0;
-            for (ProbNode parent : probNet.getProbNodes(variables)) {
-                iCPT = iCPT * parent.getVariable().getNumStates() + cases[i][indexesOfParents[j]];
-                j++;
+            int iCPT = 0;
+            for (int j = 0; j < variables.size(); ++j) {
+            	Variable parentVariable = variables.get(j);
+                iCPT = iCPT * parentVariable.getNumStates() + cases[i][indexesOfParents[j]];
             }
-            absoluteFreqs[numValues * ((int) iCPT) + (int) cases[i][iNode]]++;
+            absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
         }
         return absoluteFreqPotential;
     }    

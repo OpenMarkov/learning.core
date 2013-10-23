@@ -266,7 +266,7 @@ public class LearningManager {
             {
                 probNet.addProbNode (variable, NodeType.CHANCE);
             }
-            copyNodeInformationFromModelNet(modelNet, probNet);
+            copyNodePositionsFromModelNet(modelNet, probNet);
         }
         if ( modelNetUse.isStartFromModelNet() )
         {
@@ -290,6 +290,9 @@ public class LearningManager {
             {
             }
         }
+
+        adaptDatabaseToModelNet (database, modelNet);
+
         return probNet;
     }
     
@@ -335,44 +338,58 @@ public class LearningManager {
      * states of the nodes of the modelNet to the nodes of the current probNet
      * @param modelNet - the modelNet to copy the node positions from
      */
-    private void copyNodeInformationFromModelNet(ProbNet modelNet, ProbNet learnedNet)
+    private void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learntNet)
     {
-        ProbNode positionNode = null;
+        ProbNode learntNetNode = null;
         
         /* Take the positions of the nodes */
         if(modelNet != null){
-            for (ProbNode node : modelNet.getProbNodes ()){
+            for (ProbNode modelNetNode : modelNet.getProbNodes ()){
                 try {
-                    positionNode = learnedNet.getProbNode (node.getVariable ().getName ());
-                    if (positionNode != null){
-                        positionNode.getNode ().setCoordinateX (node.getNode ().
-                                getCoordinateX ());
-                        positionNode.getNode ().setCoordinateY (node.getNode ().
-                                getCoordinateY ());
-                        
-                        /* Check wether the variables are discretized or not before
-                         * copying the states order. If both are discretized, they
-                         * have to share the same intervals.
-                         */
-                        if ((positionNode.getVariable ().getVariableType () != VariableType.DISCRETIZED) &&
-                        		(node.getVariable ().getVariableType () != VariableType.DISCRETIZED)){
-	                        updateCases (learnedNet.getProbNodes ().indexOf (positionNode),
-	                        		positionNode, node);
-	                        positionNode.getVariable ().setStates (node.getVariable ().getStates ());
-                        }
+                    learntNetNode = learntNet.getProbNode (modelNetNode.getVariable ().getName ());
+                    if (learntNetNode != null){
+                    	double x = modelNetNode.getNode ().getCoordinateX ();
+                    	double y = modelNetNode.getNode ().getCoordinateY ();
+                        learntNetNode.getNode ().setCoordinateX (x);
+                        learntNetNode.getNode ().setCoordinateY (y);
                     }
                 } catch (ProbNodeNotFoundException e) {}
             }
         }        
     }
     
-    private void updateCases (int variableIndex, ProbNode originalNode, ProbNode modelNode){
+    /**
+     * Adapt case database to model network's variables 
+     * @param database
+     * @param modelNet
+     */
+    private void adaptDatabaseToModelNet (CaseDatabase database, ProbNet modelNet) 
+    {
+        for (Variable modelNetVariable : modelNet.getVariables()){
+        	Variable caseDatabaseVariable = database.getVariable(modelNetVariable.getName());
+        	if(caseDatabaseVariable != null)
+        	{
+        		int variableIndex = database.getVariables().indexOf(caseDatabaseVariable);
+                /* Check whether the variables are discretized or not before
+                 * copying the states order. If both are discretized, they
+                 * have to share the same intervals.
+                 */
+                if (caseDatabaseVariable.getVariableType () != VariableType.DISCRETIZED &&
+                		modelNetVariable.getVariableType () != VariableType.DISCRETIZED){
+                	updateCases(variableIndex, caseDatabaseVariable, modelNetVariable);
+                }
+        		database.getVariables().set(variableIndex, modelNetVariable);
+        	}
+        }
+    }
+    
+    private void updateCases (int variableIndex, Variable originalVariable, Variable modelNetVariable){
     	State state;
     	
-    	for (int i = 0; i < caseDatabase.getCases ().length; i++){
-    		state = originalNode.getVariable ().getStates ()[caseDatabase.getCases ()[i][variableIndex]];
+    	for (int j = 0; j < caseDatabase.getCases ().length; j++){
+    		state = originalVariable.getStates ()[caseDatabase.getCases ()[j][variableIndex]];
     		try {
-				caseDatabase.getCases ()[i][variableIndex] = modelNode.getVariable ().getStateIndex (state.getName ());
+				caseDatabase.getCases ()[j][variableIndex] = modelNetVariable.getStateIndex (state.getName ());
 			} catch (InvalidStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace ();

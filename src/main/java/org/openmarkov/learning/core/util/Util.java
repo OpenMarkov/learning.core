@@ -12,6 +12,7 @@ package org.openmarkov.learning.core.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.Variable;
@@ -41,19 +42,16 @@ public class Util
      * the database of each of the configurations of the given node and its
      * parents.
      */
-    private static TablePotential getAbsoluteFrequencies (ProbNet probNet,
-                                           int[][] cases,
-                                           ProbNode probNode,
-                                           List<Variable> variables)
-    {
-        
+	private static TablePotential getAbsoluteFrequencies(ProbNet probNet,
+			CaseDatabase caseDatabase, ProbNode probNode, List<Variable> variables)
+	{
         int parentsConfigurations = 1;
         int numValues = probNode.getVariable ().getNumStates ();
         // We miss the first one as it is the node itself, not one of its parents
         int[] indexesOfParents = new int[variables.size () -1];
         for (int i = 0; i < indexesOfParents.length; ++i)
         {
-            indexesOfParents[i] = probNet.getProbNodes ().indexOf (probNet.getProbNode (variables.get (i + 1)));
+            indexesOfParents[i] = caseDatabase.getVariables().indexOf (variables.get (i + 1));
             parentsConfigurations *= variables.get (i + 1).getNumStates ();
         }
         TablePotential absoluteFreqPotential = new TablePotential (
@@ -68,7 +66,8 @@ public class Util
         variables.remove (0);
         // Compute the absolute frequencies
         int iCPT;
-        int iParent, iNode = probNet.getProbNodes ().indexOf (probNet.getProbNode (probNode.getVariable ()));
+        int iParent, iNode = caseDatabase.getVariables().indexOf (probNode.getVariable ());
+        int[][] cases = caseDatabase.getCases();
         List<ProbNode> nodes = probNet.getProbNodes (variables);
         for (int i = 0; i < cases.length; i++)
         {
@@ -79,6 +78,9 @@ public class Util
                 iCPT = iCPT * nodes.get (j).getVariable ().getNumStates ()
                        + cases[i][iParent];
             }
+            if(numValues * iCPT + cases[i][iNode] >= absoluteFreqs.length)
+            	System.out.println("fdx");
+            	
             absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
         }
         return absoluteFreqPotential;
@@ -96,16 +98,16 @@ public class Util
      *         parents and a given extra parent.
      */
     public static TablePotential getAbsoluteFreq (ProbNet probNet,
-                                                  int[][] cases,
+    		CaseDatabase caseDatabase,
                                                   ProbNode node)
     {
-        ArrayList<Variable> variables = new ArrayList<Variable> ();
+        List<Variable> variables = new ArrayList<Variable> ();
         variables.add ((Variable) node.getVariable ());
         for (ProbNode parent : ProbNet.getProbNodesOfNodes (node.getNode ().getParents ()))
         {
             variables.add ((Variable) parent.getVariable ());
         }
-        return getAbsoluteFrequencies (probNet, cases, node, variables);
+        return getAbsoluteFrequencies (probNet, caseDatabase, node, variables);
     }    
     /**
      * Calculate the absolute frequencies in the database of each of the
@@ -117,12 +119,10 @@ public class Util
      *         database of each of the configurations of the given node and its
      *         parents and a given extra parent.
      */
-    public static TablePotential getAbsoluteFreqExtraParent (ProbNet probNet,
-                                                                          int[][] cases,
-                                                                          ProbNode node,
-                                                                          ProbNode extraParent)
-    {
-        ArrayList<Variable> variables = new ArrayList<Variable> ();
+	public static TablePotential getAbsoluteFreqExtraParent(ProbNet probNet,
+			CaseDatabase caseDatabase, ProbNode node, ProbNode extraParent) 
+	{
+        List<Variable> variables = new ArrayList<Variable> ();
         variables.add ((Variable) node.getVariable ());
         
         for (ProbNode parent : ProbNet.getProbNodesOfNodes (node.getNode ().getParents ()))
@@ -134,7 +134,7 @@ public class Util
         {
             variables.add (extraParent.getVariable ());
         }
-        return getAbsoluteFrequencies (probNet, cases, node, variables);
+        return getAbsoluteFrequencies (probNet, caseDatabase, node, variables);
     }
 
     /**
@@ -147,10 +147,8 @@ public class Util
      * the database of each of the configurations of the given node and its
      * parents except one.
      */
-    public static TablePotential getAbsoluteFreqRemovingParent (ProbNet probNet,
-                                                                            int[][] cases,
-                                                                            ProbNode node,
-                                                                            ProbNode removedParent)
+	public static TablePotential getAbsoluteFreqRemovingParent(ProbNet probNet,
+			CaseDatabase caseDatabase, ProbNode node, ProbNode removedParent)
     {
         List<Variable> variables = new ArrayList<Variable> ();
         variables.add (node.getVariable ());
@@ -163,7 +161,7 @@ public class Util
                 variables.add (parent.getVariable ());
             }
         }
-        return getAbsoluteFrequencies (probNet, cases, node, variables);
+        return getAbsoluteFrequencies (probNet, caseDatabase, node, variables);
     }
     
     
