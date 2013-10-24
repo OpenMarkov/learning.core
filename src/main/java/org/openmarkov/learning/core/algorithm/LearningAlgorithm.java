@@ -179,7 +179,7 @@ public abstract class LearningAlgorithm {
 				absoluteFrequencies.values[j] += alpha;
 			probNet.addPotential(DiscretePotentialOperations.normalize(absoluteFrequencies));
 		}
-
+		
 		return probNet;
 	}
 
@@ -269,17 +269,21 @@ public abstract class LearningAlgorithm {
                                                          ProbNode node)
     {
     	Variable variable = node.getVariable();
-        int indexOfParent = 0;
         List<Node> parents = node.getNode ().getParents ();
-        int[] indexesOfParents = new int[parents.size()];
+        int numParents = parents.size();
+        int[] indexesOfParents = new int[numParents];
+        int[] parentsStateNum = new int[numParents];
         List<Variable> variables = new ArrayList<Variable> ();
         variables.add (variable);
         if (!parents.isEmpty())
         {
+            int indexOfParent = 0;
             for (ProbNode parent : ProbNet.getProbNodesOfNodes (parents))
             {
-                variables.add (parent.getVariable ());
-                indexesOfParents[indexOfParent] = caseDatabase.getVariables().indexOf (parent.getVariable ());
+            	Variable parentVariable = parent.getVariable (); 
+                variables.add (parentVariable);
+                indexesOfParents[indexOfParent] = caseDatabase.getVariables().indexOf (parentVariable);
+                parentsStateNum[indexOfParent] = parentVariable.getNumStates();
                 indexOfParent++;
             }
         }
@@ -300,9 +304,8 @@ public abstract class LearningAlgorithm {
         int[][] cases = caseDatabase.getCases();
         for (int i = 0; i < cases.length; i++) {
             int iCPT = 0;
-            for (int j = 0; j < variables.size(); ++j) {
-            	Variable parentVariable = variables.get(j);
-                iCPT = iCPT * parentVariable.getNumStates() + cases[i][indexesOfParents[j]];
+            for (int j = numParents - 1; j >= 0; --j) {
+                iCPT = iCPT * parentsStateNum[j] + cases[i][indexesOfParents[j]];
             }
             absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
         }
