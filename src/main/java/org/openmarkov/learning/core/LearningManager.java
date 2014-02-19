@@ -313,7 +313,7 @@ public class LearningManager {
      * Blocks edit
      * @param edit to block
      */
-    public void blockEdit(PNEdit edit)
+    public void blockEdit(LearningEditProposal edit)
     {
     	learningAlgorithm.blockEdit(edit);
     }
@@ -322,7 +322,7 @@ public class LearningManager {
      * Blocks edit
      * @param edit to block
      */
-    public void unblockEdit(PNEdit edit)
+    public void unblockEdit(LearningEditProposal edit)
     {
     	learningAlgorithm.unblockEdit(edit);
     }
@@ -330,7 +330,7 @@ public class LearningManager {
 	/**
 	 * @return the blocked edits
 	 */
-	public List<PNEdit> getBlockedEdits() {
+	public List<LearningEditProposal> getBlockedEdits() {
 		return learningAlgorithm.getBlockedEdits();
 	}   
 	

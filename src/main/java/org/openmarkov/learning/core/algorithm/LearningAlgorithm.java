@@ -42,7 +42,7 @@ public abstract class LearningAlgorithm {
     protected CaseDatabase caseDatabase;
     
     /** List of blocked edits */
-    protected List<PNEdit> blockedEdits = new ArrayList<PNEdit>();  
+    protected List<LearningEditProposal> blockedEdits = new ArrayList<LearningEditProposal>();  
     
     protected int phase = 0;    
     
@@ -188,7 +188,7 @@ public abstract class LearningAlgorithm {
      * Blocks edit
      * @param edit to block
      */
-    public void blockEdit(PNEdit edit)
+    public void blockEdit(LearningEditProposal edit)
     {
         blockedEdits.add(edit);
     }
@@ -197,7 +197,7 @@ public abstract class LearningAlgorithm {
      * Blocks edit
      * @param edit to block
      */
-    public void unblockEdit(PNEdit edit)
+    public void unblockEdit(LearningEditProposal edit)
     {
         blockedEdits.remove(edit);
     }
@@ -205,7 +205,7 @@ public abstract class LearningAlgorithm {
     /**
      * @return the blockedEdits
      */
-    public List<PNEdit> getBlockedEdits() {
+    public List<LearningEditProposal> getBlockedEdits() {
         return blockedEdits;
     }    
     
@@ -213,9 +213,21 @@ public abstract class LearningAlgorithm {
      * Blocks edit
      * @param edit to block
      */
-    public boolean isBlocked(PNEdit edit)
+    public boolean isBlocked(LearningEditProposal edit)
     {
         return blockedEdits.contains(edit);
+    }    
+    
+    public boolean isBlocked(PNEdit edit)
+    {
+        for (LearningEditProposal editProposal : blockedEdits)
+        {
+        	if (editProposal.getEdit().equals(edit))
+        	{
+        		return true;
+        	}
+        }
+    	return false;
     }    
     
     protected boolean isAllowed(PNEdit edit)
