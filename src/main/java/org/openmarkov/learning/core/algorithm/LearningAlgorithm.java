@@ -16,9 +16,8 @@ import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
 import org.openmarkov.core.io.database.CaseDatabase;
-import org.openmarkov.core.model.graph.Node;
+import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.ProbNet;
-import org.openmarkov.core.model.network.ProbNode;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.model.network.potential.PotentialRole;
 import org.openmarkov.core.model.network.potential.TablePotential;
@@ -170,7 +169,7 @@ public abstract class LearningAlgorithm {
      */
 	public ProbNet parametricLearning() throws NormalizeNullVectorException {
 
-		for (ProbNode node : probNet.getProbNodes()) {
+		for (Node node : probNet.getNodes()) {
 			if (!node.getPotentials().isEmpty()) {
 				probNet.removePotential(node.getPotentials().get(0));
 			}
@@ -278,10 +277,10 @@ public abstract class LearningAlgorithm {
      * parents.
      */
     private TablePotential getAbsoluteFrequencies (CaseDatabase caseDatabase,
-                                                         ProbNode node)
+                                                         Node node)
     {
     	Variable variable = node.getVariable();
-        List<Node> parents = node.getNode ().getParents ();
+        List<Node> parents = node.getParents ();
         int numParents = parents.size();
         int[] indexesOfParents = new int[numParents];
         int[] parentsStateNum = new int[numParents];
@@ -290,7 +289,7 @@ public abstract class LearningAlgorithm {
         if (!parents.isEmpty())
         {
             int indexOfParent = 0;
-            for (ProbNode parent : ProbNet.getProbNodesOfNodes (parents))
+            for (Node parent : parents)
             {
             	Variable parentVariable = parent.getVariable (); 
                 variables.add (parentVariable);

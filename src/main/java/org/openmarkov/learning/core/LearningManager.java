@@ -28,7 +28,7 @@ import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;
-import org.openmarkov.core.model.network.ProbNode;
+import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.model.network.VariableType;
@@ -104,7 +104,7 @@ public class LearningManager {
             this.learnedNet = new ProbNet ();
             for (Variable variable : caseDatabase.getVariables ())
             {
-                learnedNet.addProbNode (variable, NodeType.CHANCE);
+                learnedNet.addNode (variable, NodeType.CHANCE);
             }
         }
             
@@ -264,7 +264,7 @@ public class LearningManager {
             probNet = new ProbNet ();
             for (Variable variable : database.getVariables ())
             {
-                probNet.addProbNode (variable, NodeType.CHANCE);
+                probNet.addNode (variable, NodeType.CHANCE);
             }
             copyNodePositionsFromModelNet(modelNet, probNet);
         }
@@ -277,7 +277,7 @@ public class LearningManager {
             {
                 if(!probNet.containsVariable (databaseVariable.getName ()))
                 {
-                    probNet.addProbNode (databaseVariable, NodeType.CHANCE);
+                    probNet.addNode (databaseVariable, NodeType.CHANCE);
                 }
             }
             
@@ -340,18 +340,18 @@ public class LearningManager {
      */
     private void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learntNet)
     {
-        ProbNode learntNetNode = null;
+        Node learntNetNode = null;
         
         /* Take the positions of the nodes */
         if(modelNet != null){
-            for (ProbNode modelNetNode : modelNet.getProbNodes ()){
+            for (Node modelNetNode : modelNet.getNodes ()){
                 try {
-                    learntNetNode = learntNet.getProbNode (modelNetNode.getVariable ().getName ());
+                    learntNetNode = learntNet.getNode (modelNetNode.getVariable ().getName ());
                     if (learntNetNode != null){
-                    	double x = modelNetNode.getNode ().getCoordinateX ();
-                    	double y = modelNetNode.getNode ().getCoordinateY ();
-                        learntNetNode.getNode ().setCoordinateX (x);
-                        learntNetNode.getNode ().setCoordinateY (y);
+                    	double x = modelNetNode.getCoordinateX ();
+                    	double y = modelNetNode.getCoordinateY ();
+                        learntNetNode.setCoordinateX (x);
+                        learntNetNode.setCoordinateY (y);
                     }
                 } catch (ProbNodeNotFoundException e) {}
             }

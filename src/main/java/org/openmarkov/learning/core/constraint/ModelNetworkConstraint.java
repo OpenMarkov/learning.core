@@ -20,7 +20,7 @@ import org.openmarkov.core.action.RemoveLinkEdit;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
 import org.openmarkov.core.exception.ProbNodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
-import org.openmarkov.core.model.graph.Node;
+import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.constraint.ConstraintBehavior;
 import org.openmarkov.core.model.network.constraint.PNConstraint;
@@ -75,10 +75,10 @@ public class ModelNetworkConstraint extends PNConstraint {
                     edits = UtilConstraints.getSimpleEditsByType (edit, AddLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
-                        source = modelNet.getProbNode (((AddLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
-                        destination = modelNet.getProbNode (((AddLinkEdit) simpleEdit).getVariable2 ().getName ()).getNode ();
-                        if ((modelNet.getGraph ().getLink (source, destination, true) == null)
-                            && (modelNet.getGraph ().getLink (source, destination, true) == null))
+                        source = modelNet.getNode (((AddLinkEdit) simpleEdit).getVariable1 ().getName ());
+                        destination = modelNet.getNode (((AddLinkEdit) simpleEdit).getVariable2 ().getName ());
+                        if ((modelNet.getLink (source, destination, true) == null)
+                            && (modelNet.getLink (source, destination, true) == null))
                         {
                             return false;
                         }
@@ -93,10 +93,10 @@ public class ModelNetworkConstraint extends PNConstraint {
                     edits = UtilConstraints.getSimpleEditsByType (edit, RemoveLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
-                        source = modelNet.getProbNode (((RemoveLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
-                        destination = modelNet.getProbNode (((RemoveLinkEdit) simpleEdit).getVariable2 ().getName ()).getNode ();
-                        if ((modelNet.getGraph ().getLink (source, destination, true) != null)
-                            || (modelNet.getGraph ().getLink (destination, source, true) != null))
+                        source = modelNet.getNode (((RemoveLinkEdit) simpleEdit).getVariable1 ().getName ());
+                        destination = modelNet.getNode (((RemoveLinkEdit) simpleEdit).getVariable2 ().getName ());
+                        if ((modelNet.getLink (source, destination, true) != null)
+                            || (modelNet.getLink (destination, source, true) != null))
                         {
                             return false;
                         }
@@ -111,9 +111,9 @@ public class ModelNetworkConstraint extends PNConstraint {
                     edits = UtilConstraints.getSimpleEditsByType (edit, InvertLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
-                        source = modelNet.getProbNode (((InvertLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
-                        destination = modelNet.getProbNode (((InvertLinkEdit) simpleEdit).getVariable2 ().getName ()).getNode ();
-                        if ((modelNet.getGraph ().getLink (source, destination, true) != null))
+                        source = modelNet.getNode (((InvertLinkEdit) simpleEdit).getVariable1 ().getName ());
+                        destination = modelNet.getNode (((InvertLinkEdit) simpleEdit).getVariable2 ().getName ());
+                        if ((modelNet.getLink (source, destination, true) != null))
                         {
                             return false;
                         }
@@ -121,9 +121,9 @@ public class ModelNetworkConstraint extends PNConstraint {
                     edits = UtilConstraints.getSimpleEditsByType (edit, OrientLinkEdit.class);
                     for (PNEdit simpleEdit : edits)
                     {
-                        source = modelNet.getProbNode (((OrientLinkEdit) simpleEdit).getVariable1 ().getName ()).getNode ();
-                        destination = modelNet.getProbNode (((OrientLinkEdit) simpleEdit).getVariable2 ().getName ()).getNode ();
-                        if ((modelNet.getGraph ().getLink (destination, source, true) != null))
+                        source = modelNet.getNode (((OrientLinkEdit) simpleEdit).getVariable1 ().getName ());
+                        destination = modelNet.getNode (((OrientLinkEdit) simpleEdit).getVariable2 ().getName ());
+                        if ((modelNet.getLink (destination, source, true) != null))
                         {
                             return false;
                         }

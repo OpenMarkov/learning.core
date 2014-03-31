@@ -138,8 +138,8 @@ public class DiscretizationTests
         Variable modelVarB = new Variable ("B", statesB, partitionedIntervalB, 0.001);
         
         ProbNet modelNet = new ProbNet();
-        modelNet.addProbNode (modelVarA, NodeType.CHANCE);
-        modelNet.addProbNode (modelVarB, NodeType.CHANCE);
+        modelNet.addNode (modelVarA, NodeType.CHANCE);
+        modelNet.addNode (modelVarB, NodeType.CHANCE);
         
         CaseDatabase newDatabase = Discretization.process (database, modelNet);
         
@@ -172,8 +172,8 @@ public class DiscretizationTests
         Variable modelVarB = new Variable ("B", "-", "0", "+");
         
         ProbNet modelNet = new ProbNet();
-        modelNet.addProbNode (modelVarA, NodeType.CHANCE);
-        modelNet.addProbNode (modelVarB, NodeType.CHANCE);
+        modelNet.addNode (modelVarA, NodeType.CHANCE);
+        modelNet.addNode (modelVarB, NodeType.CHANCE);
         
         CaseDatabase newDatabase = Discretization.process (database, modelNet);
         

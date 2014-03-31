@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.ProbNet;
-import org.openmarkov.core.model.network.ProbNode;
+import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.model.network.potential.PotentialRole;
 import org.openmarkov.core.model.network.potential.TablePotential;
@@ -43,7 +43,7 @@ public class Util
      * parents.
      */
 	private static TablePotential getAbsoluteFrequencies(ProbNet probNet,
-			CaseDatabase caseDatabase, ProbNode probNode, List<Variable> variables)
+			CaseDatabase caseDatabase, Node probNode, List<Variable> variables)
 	{
         int parentsConfigurations = 1;
         int numValues = probNode.getVariable ().getNumStates ();
@@ -68,7 +68,7 @@ public class Util
         int iCPT;
         int iParent, iNode = caseDatabase.getVariables().indexOf (probNode.getVariable ());
         int[][] cases = caseDatabase.getCases();
-        List<ProbNode> nodes = probNet.getProbNodes (variables);
+        List<Node> nodes = probNet.getNodes (variables);
         for (int i = 0; i < cases.length; i++)
         {
             iCPT = 0;
@@ -99,11 +99,11 @@ public class Util
      */
     public static TablePotential getAbsoluteFreq (ProbNet probNet,
     		CaseDatabase caseDatabase,
-                                                  ProbNode node)
+                                                  Node node)
     {
         List<Variable> variables = new ArrayList<Variable> ();
         variables.add ((Variable) node.getVariable ());
-        for (ProbNode parent : ProbNet.getProbNodesOfNodes (node.getNode ().getParents ()))
+        for (Node parent : node.getParents ())
         {
             variables.add ((Variable) parent.getVariable ());
         }
@@ -120,12 +120,12 @@ public class Util
      *         parents and a given extra parent.
      */
 	public static TablePotential getAbsoluteFreqExtraParent(ProbNet probNet,
-			CaseDatabase caseDatabase, ProbNode node, ProbNode extraParent) 
+			CaseDatabase caseDatabase, Node node, Node extraParent) 
 	{
         List<Variable> variables = new ArrayList<Variable> ();
         variables.add ((Variable) node.getVariable ());
         
-        for (ProbNode parent : ProbNet.getProbNodesOfNodes (node.getNode ().getParents ()))
+        for (Node parent : node.getParents ())
         {
             if(!variables.contains (parent.getVariable ()))
                 variables.add (parent.getVariable ());
@@ -148,13 +148,13 @@ public class Util
      * parents except one.
      */
 	public static TablePotential getAbsoluteFreqRemovingParent(ProbNet probNet,
-			CaseDatabase caseDatabase, ProbNode node, ProbNode removedParent)
+			CaseDatabase caseDatabase, Node node, Node removedParent)
     {
         List<Variable> variables = new ArrayList<Variable> ();
         variables.add (node.getVariable ());
         
-        List<ProbNode> parents = ProbNet.getProbNodesOfNodes (node.getNode ().getParents ());
-        for (ProbNode parent : parents)
+        List<Node> parents = node.getParents ();
+        for (Node parent : parents)
         {
             if (parent.getVariable () != removedParent.getVariable ())
             {
