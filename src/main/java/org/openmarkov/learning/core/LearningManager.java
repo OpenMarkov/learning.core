@@ -23,7 +23,7 @@ import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
-import org.openmarkov.core.exception.ProbNodeNotFoundException;
+import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
@@ -78,7 +78,7 @@ public class LearningManager {
      * @throws NormalizeNullVectorException
      * @throws EmptyModelNetException
      * @throws LatentVariablesException 
-     * @throws ProbNodeNotFoundException
+     * @throws NodeNotFoundException
      * @throws NodeNotFoundException
      */
     public LearningManager (CaseDatabase caseDatabase,
@@ -125,7 +125,7 @@ public class LearningManager {
      * Main method to launch the learning process.
      * @throws NodeNotFoundException
      * @throws NormalizeNullVectorException
-     * @throws ProbNodeNotFoundException
+     * @throws NodeNotFoundException
      */
     public void learn ()
         throws NormalizeNullVectorException
@@ -241,7 +241,7 @@ public class LearningManager {
      * @param modelNetUse use of the model net selected by the user.
      * @param modelNet structure of the net to add the constraints
      * @throws LatentVariablesException 
-     * @throws ProbNodeNotFoundException
+     * @throws NodeNotFoundException
      * @throws NodeNotFoundException
      */
     private ProbNet applyModelNet (Class<? extends LearningAlgorithm> algorithmClass,
@@ -353,7 +353,7 @@ public class LearningManager {
                         learntNetNode.setCoordinateX (x);
                         learntNetNode.setCoordinateY (y);
                     }
-                } catch (ProbNodeNotFoundException e) {}
+                } catch (NodeNotFoundException e) {}
             }
         }        
     }

@@ -19,7 +19,7 @@ import org.openmarkov.core.exception.ConstraintViolationException;
  * @author manuel
  * @author fjdiez
  * @version 1.0
- * @since Carmen 1.0 */
+ * @since OpenMarkov 1.0 */
 public class LearningEditProposal implements Comparable<LearningEditProposal>{
 
     protected PNEdit edit;

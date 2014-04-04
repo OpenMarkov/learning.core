@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.ProbNodeNotFoundException;
+import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;
@@ -90,7 +90,7 @@ public class Discretization {
                                     Map<String, Integer> numIntervalsPerVariable,
                                     ProbNet modelNet)
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
 
@@ -133,7 +133,7 @@ public class Discretization {
                                     Map<String, Option> discretizeOptions,
                                     Map<String, Integer> numIntervalsPerVariable)
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         return process (database, discretizeOptions, numIntervalsPerVariable, null);
@@ -145,14 +145,14 @@ public class Discretization {
      *
      * @return <code>CaseDatabase</code> updated database
      * @throws WrongDiscretizationLimitException 
-     * @throws ProbNodeNotFoundException 
+     * @throws NodeNotFoundException 
      * @throws InvalidStateException 
      */
     public static CaseDatabase process (CaseDatabase database,
                                         Discretization.Option discretizationOption,
                                         int numIntervals)
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         Map<String, Option> discretizeOptions = new HashMap<>();
@@ -172,13 +172,13 @@ public class Discretization {
      *
      * @return <code>CaseDatabase</code> updated database
      * @throws WrongDiscretizationLimitException 
-     * @throws ProbNodeNotFoundException 
+     * @throws NodeNotFoundException 
      * @throws InvalidStateException 
      */
     public static CaseDatabase process (CaseDatabase database,
                                         ProbNet modelNet)
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         Map<String, Option> discretizeOptions = new HashMap<>();
@@ -204,7 +204,7 @@ public class Discretization {
      */
     private static Variable discretizeFromModelNet (Variable oldVariable,
                                                 ProbNet modelNet)
-        throws ProbNodeNotFoundException
+        throws NodeNotFoundException
     {
         
         Variable newVariable = oldVariable;
@@ -322,12 +322,12 @@ public class Discretization {
      * @param oldProbNet <code>ProbNet</code> original probNet
      * @param cases <code>int[][]</code> database cases
      * @throws InvalidStateException 
-     * @throws ProbNodeNotFoundException 
+     * @throws NodeNotFoundException 
      * @throws java.lang.Exception
      */
     private static Variable discretizeEqualFreq (Variable variable, CaseDatabase database, int numIntervals)
         throws InvalidStateException,
-        ProbNodeNotFoundException
+        NodeNotFoundException
     {
         Variable newVariable;
         State[] states = variable.getStates ();
@@ -446,12 +446,12 @@ public class Discretization {
      * @param oldProbNet <code>ProbNet</code> original probNet
      * @param discretizeOption <code>ArrayList</code> discretization option
      * selected for each variable.
-    * @throws ProbNodeNotFoundException 
+    * @throws NodeNotFoundException 
     * @throws WrongDiscretizationLimitException 
      * @throws InvalidStateException 
      */
    private static int[][] discretizeCases (CaseDatabase database, List<Variable> newVariables, Map<String, Option> discretizeOptions)
-       throws ProbNodeNotFoundException,
+       throws NodeNotFoundException,
        WrongDiscretizationLimitException, InvalidStateException
    {
        int[][] oldCases = database.getCases ();

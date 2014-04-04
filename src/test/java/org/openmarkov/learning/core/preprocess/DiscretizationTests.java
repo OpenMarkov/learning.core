@@ -10,7 +10,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.ProbNodeNotFoundException;
+import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.PartitionedInterval;
@@ -41,7 +41,7 @@ public class DiscretizationTests
     @Test
     public void testNoDiscretize ()
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         Map<String, Discretization.Option> discretizeOptions = new HashMap<> ();
@@ -61,7 +61,7 @@ public class DiscretizationTests
     @Test
     public void testDiscretizeEqualWidth ()
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         Map<String, Discretization.Option> discretizeOptions = new HashMap<> ();
@@ -92,7 +92,7 @@ public class DiscretizationTests
     @Test
     public void testDiscretizeEqualFreq ()
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         Map<String, Discretization.Option> discretizeOptions = new HashMap<> ();
@@ -124,7 +124,7 @@ public class DiscretizationTests
     @Test
     public void testDiscretizeModelNet ()
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         
@@ -154,7 +154,7 @@ public class DiscretizationTests
     @Test
     public void testDiscretizeModelNetFS ()
         throws InvalidStateException,
-        ProbNodeNotFoundException,
+        NodeNotFoundException,
         WrongDiscretizationLimitException
     {
         

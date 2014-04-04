@@ -29,7 +29,7 @@ public class Util
     /**
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents.
-     * @param probNode <code>ProbNode</code> whose frequencies we want to 
+     * @param node <code>Node</code> whose frequencies we want to 
      * calculate.
      * @param parentsConfigurations product of the number of states of the
      * parents.
@@ -43,10 +43,10 @@ public class Util
      * parents.
      */
 	private static TablePotential getAbsoluteFrequencies(ProbNet probNet,
-			CaseDatabase caseDatabase, Node probNode, List<Variable> variables)
+			CaseDatabase caseDatabase, Node node, List<Variable> variables)
 	{
         int parentsConfigurations = 1;
-        int numValues = probNode.getVariable ().getNumStates ();
+        int numValues = node.getVariable ().getNumStates ();
         // We miss the first one as it is the node itself, not one of its parents
         int[] indexesOfParents = new int[variables.size () -1];
         for (int i = 0; i < indexesOfParents.length; ++i)
@@ -66,7 +66,7 @@ public class Util
         variables.remove (0);
         // Compute the absolute frequencies
         int iCPT;
-        int iParent, iNode = caseDatabase.getVariables().indexOf (probNode.getVariable ());
+        int iParent, iNode = caseDatabase.getVariables().indexOf (node.getVariable ());
         int[][] cases = caseDatabase.getCases();
         List<Node> nodes = probNet.getNodes (variables);
         for (int i = 0; i < cases.length; i++)
@@ -91,8 +91,8 @@ public class Util
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents and a given extra
      * parent.
-     * @param node <code>ProbNode</code> whose frequencies we want to calculate.
-     * @param extraParent <code>ProbNode</code>
+     * @param node <code>Node</code> whose frequencies we want to calculate.
+     * @param extraParent <code>Node</code>
      * @return <code>TablePotential</code> with the absolute frequencies in the
      *         database of each of the configurations of the given node and its
      *         parents and a given extra parent.
@@ -113,8 +113,8 @@ public class Util
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents and a given extra
      * parent.
-     * @param node <code>ProbNode</code> whose frequencies we want to calculate.
-     * @param extraParent <code>ProbNode</code>
+     * @param node <code>Node</code> whose frequencies we want to calculate.
+     * @param extraParent <code>Node</code>
      * @return <code>TablePotential</code> with the absolute frequencies in the
      *         database of each of the configurations of the given node and its
      *         parents and a given extra parent.
@@ -140,8 +140,8 @@ public class Util
     /**
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents except one.
-     * @param node <code>ProbNode</code> whose frequencies we want to calculate.
-     * @param removedParent <code>ProbNode</code> that we do not want to include
+     * @param node <code>Node</code> whose frequencies we want to calculate.
+     * @param removedParent <code>Node</code> that we do not want to include
      * in the calculations
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its

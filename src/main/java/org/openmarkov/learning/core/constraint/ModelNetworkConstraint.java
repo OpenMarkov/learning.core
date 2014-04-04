@@ -18,7 +18,7 @@ import org.openmarkov.core.action.OrientLinkEdit;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.action.RemoveLinkEdit;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
-import org.openmarkov.core.exception.ProbNodeNotFoundException;
+import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.ProbNet;
@@ -130,7 +130,7 @@ public class ModelNetworkConstraint extends PNConstraint {
                     }
                 }
             }
-            catch (ProbNodeNotFoundException e)
+            catch (NodeNotFoundException e)
             {
                 return (false);
             }

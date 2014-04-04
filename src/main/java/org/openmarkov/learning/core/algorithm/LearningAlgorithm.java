@@ -270,7 +270,7 @@ public abstract class LearningAlgorithm {
      * configurations of the given node and its parents.
      * 
      * @param caseDatabase database of cases
-     * @param node <code>ProbNode</code> whose frequencies we want to 
+     * @param node <code>Node</code> whose frequencies we want to 
      * calculate.
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
