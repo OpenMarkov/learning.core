@@ -460,7 +460,7 @@ public class Discretization {
        for(int j = 0; j < database.getVariables ().size(); j++){
            Variable oldVariable = database.getVariables ().get (j);
            State[] oldStates = oldVariable.getStates ();
-           int indexOfNewVariable = newVariables.indexOf (oldVariable);
+           int indexOfNewVariable = getIndexOfNewVariable (newVariables, oldVariable);
            Variable newVariable = newVariables.get (indexOfNewVariable);
            PartitionedInterval partitionedInterval = newVariable.getPartitionedInterval();
            double[] newIntervals = (partitionedInterval != null)? partitionedInterval.getLimits() : null;
@@ -518,7 +518,22 @@ public class Discretization {
        return newCases;
    }    
    
-   private static double calculateVariableMax (Variable variable)
+   private static int getIndexOfNewVariable(List<Variable> newVariables, Variable oldVariable) {
+		int i =0;
+		int index = -1;
+		
+		while(i<newVariables.size() && index == -1)
+		{
+			if(newVariables.get(i).getName().equals(oldVariable.getName()))
+			{
+				index = i;
+			}
+			++i;
+		}
+		return index;
+	}
+
+private static double calculateVariableMax (Variable variable)
    {
        double max = Double.NEGATIVE_INFINITY;
        
