@@ -23,12 +23,11 @@ import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.NonProjectablePotentialException;
 import org.openmarkov.core.exception.NormalizeNullVectorException;
-import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;
-import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.model.network.VariableType;
@@ -250,9 +249,10 @@ public class LearningManager {
                                    ModelNetUse modelNetUse) throws LatentVariablesException
     {
         ProbNet probNet = null;
-        
-        if(!algorithmClass.getAnnotation (LearningAlgorithmType.class).supportsLatentVariables () && 
-                !database.getVariables ().containsAll (modelNet.getVariables ()))
+        List<Variable> missingVariables = getMissingVariables(database.getVariables (), modelNet.getVariables ());
+        if(//!modelNetUse.isUseNodePositions() &&
+        		!algorithmClass.getAnnotation (LearningAlgorithmType.class).supportsLatentVariables () && 
+                !missingVariables.isEmpty())
         {
             List<Variable> latentVariables = new ArrayList<>(modelNet.getVariables ());
             latentVariables.removeAll (database.getVariables ());
@@ -289,14 +289,33 @@ public class LearningManager {
             catch (ConstraintViolationException e)
             {
             }
+            adaptDatabaseToModelNet (database, modelNet);
         }
 
-        adaptDatabaseToModelNet (database, modelNet);
 
         return probNet;
     }
     
-    public static Set<String> getAlgorithmNames ()
+    private List<Variable> getMissingVariables(List<Variable> databaseVariables, List<Variable> modelNetVariables) {
+    	List<Variable> missingVariables = new ArrayList<>(modelNetVariables);
+    	for(Variable databaseVariable : databaseVariables)
+    	{
+    		int i=0;
+    		boolean found = false;
+    		while(i < missingVariables.size() && !found)
+    		{
+    			if(missingVariables.get(i).getName().equals(databaseVariable.getName()))
+    			{
+    				found = true;
+    				missingVariables.remove(i);
+    			}
+    			++i;
+    		}
+    	}
+		return missingVariables;
+	}
+
+	public static Set<String> getAlgorithmNames ()
     {
         return learningAlgorithmManager.getLearningAlgorithmNames ();
     }    

@@ -67,6 +67,8 @@ public class Util
         // Compute the absolute frequencies
         int iCPT;
         int iParent, iNode = caseDatabase.getVariables().indexOf (node.getVariable ());
+        if(iNode == -1)
+        	System.out.println("fdx");
         int[][] cases = caseDatabase.getCases();
         List<Node> nodes = probNet.getNodes (variables);
         for (int i = 0; i < cases.length; i++)
