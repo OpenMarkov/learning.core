@@ -251,7 +251,7 @@ public class LearningManager {
         ProbNet probNet = null;
         List<Variable> missingVariables = getMissingVariables(database.getVariables (), modelNet.getVariables ());
         if(//!modelNetUse.isUseNodePositions() &&
-        		!algorithmClass.getAnnotation (LearningAlgorithmType.class).supportsLatentVariables () && 
+        		!algorithmClass.getAnnotation (LearningAlgorithmType.class).supportsUnobservedVariables () && 
                 !missingVariables.isEmpty())
         {
             List<Variable> latentVariables = new ArrayList<>(modelNet.getVariables ());

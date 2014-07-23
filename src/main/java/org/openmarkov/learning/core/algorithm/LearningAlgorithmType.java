@@ -18,5 +18,5 @@ import java.lang.annotation.Target;
 @Target (ElementType.TYPE)
 public @interface LearningAlgorithmType {
     String name ();
-    boolean supportsLatentVariables ();    
+    boolean supportsUnobservedVariables () default false;    
 }
