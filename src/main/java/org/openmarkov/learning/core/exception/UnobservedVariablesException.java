@@ -13,21 +13,17 @@ import java.util.List;
 import org.openmarkov.core.model.network.Variable;
 
 @SuppressWarnings("serial")
-public class LatentVariablesException extends Exception
+public class UnobservedVariablesException extends Exception
 {
-    List<Variable> latentVariables;
+    List<Variable> unobservedVariables;
     
-    public LatentVariablesException(List<Variable> latentVariables)
+    public UnobservedVariablesException(List<Variable> unobservedVariables)
     {
-        this.latentVariables = latentVariables;
+        this.unobservedVariables = unobservedVariables;
     }
 
-    /**
-     * Returns the latentVariables.
-     * @return the latentVariables.
-     */
-    public List<Variable> getLatentVariables ()
+    public List<Variable> getUnobservedVariables ()
     {
-        return latentVariables;
+        return unobservedVariables;
     }
 }

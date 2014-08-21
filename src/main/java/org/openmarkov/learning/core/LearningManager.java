@@ -36,7 +36,7 @@ import org.openmarkov.learning.core.algorithm.LearningAlgorithmManager;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithmType;
 import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
-import org.openmarkov.learning.core.exception.LatentVariablesException;
+import org.openmarkov.learning.core.exception.UnobservedVariablesException;
 import org.openmarkov.learning.core.util.LearningEditMotivation;
 import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
@@ -76,7 +76,7 @@ public class LearningManager {
      *            use also the initial links or use them fixed
      * @throws NormalizeNullVectorException
      * @throws EmptyModelNetException
-     * @throws LatentVariablesException 
+     * @throws UnobservedVariablesException 
      * @throws NodeNotFoundException
      * @throws NodeNotFoundException
      */
@@ -85,7 +85,7 @@ public class LearningManager {
                             ProbNet modelNet,
                             ModelNetUse modelNetUse)
         throws NormalizeNullVectorException,
-        EmptyModelNetException, LatentVariablesException
+        EmptyModelNetException, UnobservedVariablesException
     {
         this.caseDatabase = caseDatabase;
         /* Check ModelNet is not null */
@@ -239,14 +239,14 @@ public class LearningManager {
      * @param algorithmClass 
      * @param modelNetUse use of the model net selected by the user.
      * @param modelNet structure of the net to add the constraints
-     * @throws LatentVariablesException 
+     * @throws UnobservedVariablesException 
      * @throws NodeNotFoundException
      * @throws NodeNotFoundException
      */
     private ProbNet applyModelNet (Class<? extends LearningAlgorithm> algorithmClass,
                                    CaseDatabase database,
                                    ProbNet modelNet,
-                                   ModelNetUse modelNetUse) throws LatentVariablesException
+                                   ModelNetUse modelNetUse) throws UnobservedVariablesException
     {
         ProbNet probNet = null;
         List<Variable> missingVariables = getMissingVariables(database.getVariables (), modelNet.getVariables ());
@@ -256,7 +256,7 @@ public class LearningManager {
         {
             List<Variable> latentVariables = new ArrayList<>(modelNet.getVariables ());
             latentVariables.removeAll (database.getVariables ());
-            throw new LatentVariablesException(latentVariables);
+            throw new UnobservedVariablesException(latentVariables);
         }
         
         if ( modelNetUse.isUseNodePositions () )
