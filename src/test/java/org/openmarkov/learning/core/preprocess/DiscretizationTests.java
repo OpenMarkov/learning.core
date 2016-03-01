@@ -79,8 +79,8 @@ public class DiscretizationTests
         Variable newVarB = newDatabase.getVariable ("B");
         Assert.assertEquals (4, newVarA.getStates ().length);
         Assert.assertEquals (4, newVarB.getStates ().length);
-        Assert.assertEquals ("[2.0 , 3.666666666666667)", newVarA.getStates ()[0].getName ());
-        Assert.assertEquals ("[-3.2 , -1.75)", newVarB.getStates ()[0].getName ());
+        Assert.assertEquals ("[2.0 , 3.666666666666667]", newVarA.getStates ()[0].getName ());
+        Assert.assertEquals ("[-3.2 , -1.75]", newVarB.getStates ()[0].getName ());
         Assert.assertEquals ("?", newVarA.getStates ()[3].getName ());
         Assert.assertEquals (0, newDatabase.getCases ()[0][0]);
         Assert.assertEquals (3, newDatabase.getCases ()[0][1]);
