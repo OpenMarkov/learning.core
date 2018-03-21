@@ -6,12 +6,12 @@
  */
 
 package org.openmarkov.learning.core.exception;
+
 /**
  * Thrown when model net is null
- * @author Iñigo
  *
+ * @author Iñigo
  */
-@SuppressWarnings("serial")
-public class EmptyModelNetException extends Exception {
+@SuppressWarnings("serial") public class EmptyModelNetException extends Exception {
 
 }

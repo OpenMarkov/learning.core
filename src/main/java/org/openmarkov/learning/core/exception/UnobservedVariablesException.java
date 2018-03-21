@@ -6,22 +6,18 @@
  */
 package org.openmarkov.learning.core.exception;
 
-import java.util.List;
-
 import org.openmarkov.core.model.network.Variable;
 
-@SuppressWarnings("serial")
-public class UnobservedVariablesException extends Exception
-{
-    List<Variable> unobservedVariables;
-    
-    public UnobservedVariablesException(List<Variable> unobservedVariables)
-    {
-        this.unobservedVariables = unobservedVariables;
-    }
+import java.util.List;
 
-    public List<Variable> getUnobservedVariables ()
-    {
-        return unobservedVariables;
-    }
+@SuppressWarnings("serial") public class UnobservedVariablesException extends Exception {
+	List<Variable> unobservedVariables;
+
+	public UnobservedVariablesException(List<Variable> unobservedVariables) {
+		this.unobservedVariables = unobservedVariables;
+	}
+
+	public List<Variable> getUnobservedVariables() {
+		return unobservedVariables;
+	}
 }

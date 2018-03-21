@@ -6,6 +6,5 @@
  */
 package org.openmarkov.learning.core.util;
 
-public abstract class LearningEditMotivation implements Comparable<LearningEditMotivation>
-{
+public abstract class LearningEditMotivation implements Comparable<LearningEditMotivation> {
 }

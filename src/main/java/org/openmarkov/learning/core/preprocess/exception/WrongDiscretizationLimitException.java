@@ -8,12 +8,11 @@
 package org.openmarkov.learning.core.preprocess.exception;
 
 /**
- * Thrown when the minimum is under the left limit of the first interval, 
- * or the maximum is greater than the right limit of the last interval, 
- * @author Iñigo
+ * Thrown when the minimum is under the left limit of the first interval,
+ * or the maximum is greater than the right limit of the last interval,
  *
+ * @author Iñigo
  */
-@SuppressWarnings("serial")
-public class WrongDiscretizationLimitException extends Exception {
+@SuppressWarnings("serial") public class WrongDiscretizationLimitException extends Exception {
 
 }

@@ -7,23 +7,19 @@
 
 package org.openmarkov.learning.core.util;
 
-public class StringEditMotivation extends LearningEditMotivation
-{
-    private String motivation;
-    
-    public StringEditMotivation(String motivation)
-    {
-        this.motivation = motivation;
-    }
-    
-    public int compareTo ( LearningEditMotivation edit ){
-        return 0;
-    }
-    
-    @Override
-    public String toString()
-    {
-       return motivation;
-    }
+public class StringEditMotivation extends LearningEditMotivation {
+	private String motivation;
+
+	public StringEditMotivation(String motivation) {
+		this.motivation = motivation;
+	}
+
+	public int compareTo(LearningEditMotivation edit) {
+		return 0;
+	}
+
+	@Override public String toString() {
+		return motivation;
+	}
 
 }
