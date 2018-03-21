@@ -197,7 +197,6 @@ public class Discretization {
      * @param oldVariable <code>Variable</code> variable to discretize
      * @param modelNet <code>ProbNet</code> net from which to tak the
      * information of the discretization
-     * @param oldProbNet <code>ProbNet</code> original probNet
      * @throws java.lang.Exception
      */
     private static Variable discretizeFromModelNet (Variable oldVariable,
@@ -317,8 +316,8 @@ public class Discretization {
      * 4, making two intervals of "equal frequency" would lead to an interval
      * of frequency 200 and an interval of frequency 7.
      * @param variable <code>Variable</code> variable to discretize
-     * @param oldProbNet <code>ProbNet</code> original probNet
-     * @param cases <code>int[][]</code> database cases
+     * @param database <code>int[][]</code> database cases
+     * @param numIntervals
      * @throws InvalidStateException 
      * @throws NodeNotFoundException 
      * @throws java.lang.Exception
@@ -440,9 +439,9 @@ public class Discretization {
     /**
      * This function updates the database cases to adapt them to the new
      * states of the discretized variables.
-     * @param cases <code>int[][]</code> original database cases
-     * @param oldProbNet <code>ProbNet</code> original probNet
-     * @param discretizeOption <code>ArrayList</code> discretization option
+     * @param database <code>int[][]</code> original database cases
+     * @param newVariables
+     * @param discretizeOptions <code>ArrayList</code> discretization option
      * selected for each variable.
     * @throws NodeNotFoundException 
     * @throws WrongDiscretizationLimitException 
