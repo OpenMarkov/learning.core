@@ -63,7 +63,7 @@ public class ModelNetUse {
 	}
 
 	/**
-	 * @param useOnlyNodes the useNodesModelNet to set
+	 * @param useOnlyNodePositions
 	 */
 	public void setOnlyUseNodePositions(boolean useOnlyNodePositions) {
 		this.useNodePositions = useOnlyNodePositions;
@@ -77,7 +77,7 @@ public class ModelNetUse {
 	}
 
 	/**
-	 * @param addLinkModelNet the addLinkModelNet to set
+	 * @param allowLinkAddition
 	 */
 	public void setLinkAdditionAllowed(boolean allowLinkAddition) {
 		this.allowLinkAddition = allowLinkAddition;
@@ -91,7 +91,7 @@ public class ModelNetUse {
 	}
 
 	/**
-	 * @param deleteLinksModelNet the deleteLinksModelNet to set
+	 * @param allowLinkRemoval
 	 */
 	public void setLinkRemovalAllowed(boolean allowLinkRemoval) {
 		this.allowLinkRemoval = allowLinkRemoval;

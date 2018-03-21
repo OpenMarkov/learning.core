@@ -27,15 +27,12 @@ public class Util
     /**
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents.
+     * @param probNet
+     * @param caseDatabase
      * @param node <code>Node</code> whose frequencies we want to 
      * calculate.
-     * @param parentsConfigurations product of the number of states of the
-     * parents.
      * @param variables <code>ArrayList</code> formed by the variable associated
      * to the given node and the variables associated to its parents.
-     * @param indexesOfParents <code>int[]</code> indexes of the parents in the
-     * probNet list of nodes.
-     * @param numValues number of states of the given node
      * @return <code>TablePotential</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents.
@@ -91,8 +88,9 @@ public class Util
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents and a given extra
      * parent.
+     * @param probNet
      * @param node <code>Node</code> whose frequencies we want to calculate.
-     * @param extraParent <code>Node</code>
+     * @param caseDatabase
      * @return <code>TablePotential</code> with the absolute frequencies in the
      *         database of each of the configurations of the given node and its
      *         parents and a given extra parent.

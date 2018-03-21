@@ -64,9 +64,8 @@ public class LearningManager {
     
     /**
      * Constructor
-     * @param preprocessedNet <code>ProbNet</code> Net with the variables of
-     * interest after preprocessing.
-     * @param algorithm <code>LearningAlgorithm</code> indicating the algorithm
+     * @param caseDatabase
+     * @param algorithmName <code>LearningAlgorithm</code> indicating the algorithm
      *            selected by the user.
      * @param modelNet <code>ProbNet</code> Net from which take the
      *            information of the nodes and links

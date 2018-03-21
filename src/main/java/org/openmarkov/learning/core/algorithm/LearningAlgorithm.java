@@ -45,10 +45,6 @@ public abstract class LearningAlgorithm {
     
     
     // Constructor
-    /**
-     * @param editionsGenerator <code>EditionsGenerator</code> The object that
-     * gives the best operation in each iteration of the algorithm.
-     **/
     public LearningAlgorithm (ProbNet probNet, CaseDatabase caseDatabase, double alpha)
     {
         this.probNet = probNet;
@@ -104,9 +100,9 @@ public abstract class LearningAlgorithm {
      * This method returns the best edition (and its associated score)
      * that can be done to the network that is being learnt. 
      * 
-     * @param onlyAllowedEditions If this parameter is true, only those editions
+     * @param onlyAllowedEdits If this parameter is true, only those editions
      * that do not provoke a ConstraintViolationException are returned
-     * @param onlyPositiveEditions If this parameter is true, only those 
+     * @param onlyPositiveEdits If this parameter is true, only those
      * editions with a positive associated score are returned.
      * @return <code>LearningEditProposal</code> with the best edition and its score. 
      */
@@ -116,9 +112,9 @@ public abstract class LearningAlgorithm {
      * This method returns the next best edition (and its associated score)
      * that can be done to the network that is being learnt. 
      * 
-     * @param onlyAllowedEditions If this parameter is true, only those editions
+     * @param onlyAllowedEdits If this parameter is true, only those editions
      * that do not provoke a ConstraintViolationException are returned
-     * @param onlyPositiveEditions If this parameter is true, only those 
+     * @param onlyPositiveEdits If this parameter is true, only those
      * editions with a positive associated score are returned.
      * @return <code>LearningEditProposal</code> with the best edition and its score. 
      */
