@@ -15,7 +15,6 @@ import org.openmarkov.core.exception.OpenMarkovException;
  *
  * @author Iñigo
  */
-@OpenMarkovException(name = "WrongDiscretizationLimitException")
-@SuppressWarnings("serial") public class WrongDiscretizationLimitException extends Exception {
+@SuppressWarnings("serial") public class WrongDiscretizationLimitException extends OpenMarkovException {
 
 }

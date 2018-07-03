@@ -14,7 +14,6 @@ import org.openmarkov.core.exception.OpenMarkovException;
  *
  * @author Iñigo
  */
-@OpenMarkovException(name = "EmptyModelNetException")
-@SuppressWarnings("serial") public class EmptyModelNetException extends Exception {
+@SuppressWarnings("serial") public class EmptyModelNetException extends OpenMarkovException {
 
 }

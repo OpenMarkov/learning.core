@@ -8,7 +8,6 @@
 package org.openmarkov.learning.core;
 
 import org.openmarkov.core.action.PNEdit;
-import org.openmarkov.core.exception.CanNotDoEditException;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.exception.InvalidStateException;
@@ -203,12 +202,11 @@ public class LearningManager {
 	 * @throws DoEditException
 	 * @throws WrongCriterionException
 	 * @throws NonProjectablePotentialException
-	 * @throws CanNotDoEditException
 	 * @throws ConstraintViolationException
 	 * @throws NormalizeNullVectorException
 	 */
 	public void applyEdit(PNEdit edit)
-			throws ConstraintViolationException, CanNotDoEditException, NonProjectablePotentialException,
+			throws ConstraintViolationException, NonProjectablePotentialException,
 			WrongCriterionException, DoEditException, NormalizeNullVectorException {
 		this.learnedNet.doEdit(edit);
 		learningAlgorithm.parametricLearning();
