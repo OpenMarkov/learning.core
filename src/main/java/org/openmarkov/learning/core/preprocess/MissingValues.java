@@ -151,7 +151,7 @@ public class MissingValues {
 
 	/* Options to manage absent values*/
 	public enum Option implements Serializable {
-		KEEP, ELIMINATE;
+		KEEP, ELIMINATE
 	}
 
 }

@@ -471,7 +471,7 @@ public class Discretization {
 	}
 
 	public enum Option {
-		NONE, EQUAL_FREQ, EQUAL_WIDTH, MODEL_NET;
+		NONE, EQUAL_FREQ, EQUAL_WIDTH, MODEL_NET
 	}
 
 }
