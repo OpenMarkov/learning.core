@@ -164,7 +164,6 @@ public class Discretization {
 	 * @param oldVariable <code>Variable</code> variable to discretize
 	 * @param modelNet    <code>ProbNet</code> net from which to tak the
 	 *                    information of the discretization
-	 * @throws java.lang.Exception
 	 */
 	private static Variable discretizeFromModelNet(Variable oldVariable, ProbNet modelNet)
 			throws NodeNotFoundException {
@@ -266,7 +265,6 @@ public class Discretization {
 	 * @param numIntervals
 	 * @throws InvalidStateException
 	 * @throws NodeNotFoundException
-	 * @throws java.lang.Exception
 	 */
 	private static Variable discretizeEqualFreq(Variable variable, CaseDatabase database, int numIntervals)
 			throws InvalidStateException, NodeNotFoundException {

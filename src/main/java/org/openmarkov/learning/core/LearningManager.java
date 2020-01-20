@@ -84,8 +84,6 @@ public class LearningManager {
 	 * @throws NormalizeNullVectorException
 	 * @throws EmptyModelNetException
 	 * @throws UnobservedVariablesException
-	 * @throws NodeNotFoundException
-	 * @throws NodeNotFoundException
 	 */
 	public LearningManager(CaseDatabase caseDatabase, String algorithmName, ProbNet modelNet, ModelNetUse modelNetUse)
 			throws NormalizeNullVectorException, EmptyModelNetException, UnobservedVariablesException {
@@ -122,10 +120,7 @@ public class LearningManager {
 
 	/**
 	 * Main method to launch the learning process.
-	 *
-	 * @throws NodeNotFoundException
 	 * @throws NormalizeNullVectorException
-	 * @throws NodeNotFoundException
 	 */
 	public void learn() throws NormalizeNullVectorException {
 		learningAlgorithm.run(modelNetUse);
@@ -235,8 +230,6 @@ public class LearningManager {
 	 * @param modelNetUse    use of the model net selected by the user.
 	 * @param modelNet       structure of the net to add the constraints
 	 * @throws UnobservedVariablesException
-	 * @throws NodeNotFoundException
-	 * @throws NodeNotFoundException
 	 */
 	private ProbNet applyModelNet(Class<? extends LearningAlgorithm> algorithmClass, CaseDatabase database,
 			ProbNet modelNet, ModelNetUse modelNetUse) throws UnobservedVariablesException {

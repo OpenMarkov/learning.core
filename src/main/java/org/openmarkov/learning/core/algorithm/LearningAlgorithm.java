@@ -60,9 +60,7 @@ public abstract class LearningAlgorithm {
 
 	/**
 	 * Method invoked to run the algorithm.
-	 *
 	 * @param modelNetUse
-	 * @return <code>ProbNet</code> learned.
 	 * @throws NormalizeNullVectorException
 	 */
 	public void run(ModelNetUse modelNetUse) throws NormalizeNullVectorException {
@@ -136,8 +134,6 @@ public abstract class LearningAlgorithm {
 
 	/**
 	 * Takes a step in the algorithm
-	 *
-	 * @throws java.lang.Exception
 	 */
 	protected ProbNet step(PNEdit bestEdition) throws NormalizeNullVectorException {
 
