@@ -34,7 +34,7 @@ public class MissingValues {
 	 * and removes the cases with missing values according to the preprocessOptions
 	 *
 	 * @param database         <code>CaseDatabase</code> database to preprocess
-	 * @param preprocessOption <code>Map<Variable, MissingValues.Option></code> containing the preprocess
+	 * @param preprocessOption <code>Map&lt;Variable, MissingValues.Option&gt;</code> containing the preprocess
 	 *                         option selected for each variable
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, MissingValues.Option> preprocessOption) {
@@ -107,7 +107,7 @@ public class MissingValues {
 	 * This function removes the "?" of each variable whose preprocessOption
 	 * is ELIMINATE
 	 *
-	 * @param preprocessOptions <code>Map<Variable, MissingValues.Option></code> preprocess option for each
+	 * @param preprocessOptions <code>Map&lt;Variable, MissingValues.Option&gt;</code> preprocess option for each
 	 *                          variable
 	 * @param variables         <code>List</code> of variables
 	 */
