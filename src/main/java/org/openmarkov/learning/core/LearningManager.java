@@ -33,7 +33,7 @@ import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -215,7 +215,7 @@ public class LearningManager {
 	 */
 	private void addElviraProperties(ProbNet learnedNet) {
 
-		HashMap<String, String> newIO = learnedNet.additionalProperties;
+		LinkedHashMap<String, String> newIO = learnedNet.additionalProperties;
 		State[] defaultNodeStates = { new State("present"), new State("absent") };
 		learnedNet.setDefaultStates(defaultNodeStates);
 		newIO.put("hasElviraProperties", new String("yes"));
