@@ -142,12 +142,14 @@ public abstract class LearningAlgorithm {
 		try {
 			probNet.doEdit(bestEdition);
 		} catch (ConstraintViolationException ex) {
+			System.out.println("Proposed edition: " + bestEdition.toString() + " not allowed by the Model Network, skipping.");
 			/* If the edition was not allowed (ModelNetworkconstraint)
 			 * the algorithm just goes through the next iteration of the
 			 * loop, asking the cache for the next best edition.
 			 */
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			System.err.println(exception.getMessage());
+			System.err.println(exception.getStackTrace());
 		}
 		return probNet;
 	}
