@@ -7,9 +7,9 @@
 
 package org.openmarkov.learning.core.preprocess;
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
@@ -29,7 +29,7 @@ public class DiscretizationTests {
 	CaseDatabase database = null;
 	Variable varA, varB;
 
-	@Before public void setUp() {
+	@BeforeAll public void setUp() {
 		List<Variable> variables = new ArrayList<>();
 		varA = new Variable("A", "3", "?", "2", "4", "7", "5");
 		varB = new Variable("B", "2.6", "1.0", "-3.2", "0.01", "0.6", "1.2");
@@ -53,8 +53,8 @@ public class DiscretizationTests {
 
 		CaseDatabase newDatabase = Discretization.process(database, discretizeOptions, numIntervalsPerVariable);
 
-		Assert.assertEquals(database.getVariables(), newDatabase.getVariables());
-		Assert.assertEquals(database.getCases().length, newDatabase.getCases().length);
+		Assertions.assertEquals(database.getVariables(), newDatabase.getVariables());
+		Assertions.assertEquals(database.getCases().length, newDatabase.getCases().length);
 	}
 
 	@Test public void testDiscretizeEqualWidth()
@@ -71,15 +71,15 @@ public class DiscretizationTests {
 
 		Variable newVarA = newDatabase.getVariable("A");
 		Variable newVarB = newDatabase.getVariable("B");
-		Assert.assertEquals(4, newVarA.getStates().length);
-		Assert.assertEquals(4, newVarB.getStates().length);
-		Assert.assertEquals("[2.0 , 3.666666666666667]", newVarA.getStates()[0].getName());
-		Assert.assertEquals("[-3.2 , -1.75]", newVarB.getStates()[0].getName());
-		Assert.assertEquals("?", newVarA.getStates()[3].getName());
-		Assert.assertEquals(0, newDatabase.getCases()[0][0]);
-		Assert.assertEquals(3, newDatabase.getCases()[0][1]);
-		Assert.assertEquals(1, newDatabase.getCases()[7][0]);
-		Assert.assertEquals(3, newDatabase.getCases()[7][1]);
+		Assertions.assertEquals(4, newVarA.getStates().length);
+		Assertions.assertEquals(4, newVarB.getStates().length);
+		Assertions.assertEquals("[2.0 , 3.666666666666667]", newVarA.getStates()[0].getName());
+		Assertions.assertEquals("[-3.2 , -1.75]", newVarB.getStates()[0].getName());
+		Assertions.assertEquals("?", newVarA.getStates()[3].getName());
+		Assertions.assertEquals(0, newDatabase.getCases()[0][0]);
+		Assertions.assertEquals(3, newDatabase.getCases()[0][1]);
+		Assertions.assertEquals(1, newDatabase.getCases()[7][0]);
+		Assertions.assertEquals(3, newDatabase.getCases()[7][1]);
 
 	}
 
@@ -97,17 +97,17 @@ public class DiscretizationTests {
 
 		Variable newVarA = newDatabase.getVariable("A");
 		Variable newVarB = newDatabase.getVariable("B");
-		Assert.assertEquals(5, newVarA.getStates().length);
-		Assert.assertEquals(2, newVarB.getStates().length);
-		Assert.assertEquals("(-Infinity , 3.0]", newVarA.getStates()[0].getName());
-		Assert.assertEquals("(7.0 , Infinity)", newVarA.getStates()[3].getName());
-		Assert.assertEquals("(-Infinity , 1.0]", newVarB.getStates()[0].getName());
-		Assert.assertEquals("?", newVarA.getStates()[4].getName());
+		Assertions.assertEquals(5, newVarA.getStates().length);
+		Assertions.assertEquals(2, newVarB.getStates().length);
+		Assertions.assertEquals("(-Infinity , 3.0]", newVarA.getStates()[0].getName());
+		Assertions.assertEquals("(7.0 , Infinity)", newVarA.getStates()[3].getName());
+		Assertions.assertEquals("(-Infinity , 1.0]", newVarB.getStates()[0].getName());
+		Assertions.assertEquals("?", newVarA.getStates()[4].getName());
 		int[][] newCases = newDatabase.getCases();
-		Assert.assertEquals(0, newCases[0][0]);
-		Assert.assertEquals(1, newCases[0][1]);
-		Assert.assertEquals(2, newCases[7][0]);
-		Assert.assertEquals(1, newCases[7][1]);
+		Assertions.assertEquals(0, newCases[0][0]);
+		Assertions.assertEquals(1, newCases[0][1]);
+		Assertions.assertEquals(2, newCases[7][0]);
+		Assertions.assertEquals(1, newCases[7][1]);
 	}
 
 	@Test public void testDiscretizeModelNet()
@@ -134,11 +134,11 @@ public class DiscretizationTests {
 		CaseDatabase newDatabase = Discretization.process(database, modelNet);
 
 		int[][] newCases = newDatabase.getCases();
-		Assert.assertEquals(2, newCases[0][0]);
-		Assert.assertEquals(1, newCases[0][1]);
-		Assert.assertEquals(3, newCases[2][0]);
-		Assert.assertEquals(2, newCases[7][0]);
-		Assert.assertEquals(1, newCases[7][1]);
+		Assertions.assertEquals(2, newCases[0][0]);
+		Assertions.assertEquals(1, newCases[0][1]);
+		Assertions.assertEquals(3, newCases[2][0]);
+		Assertions.assertEquals(2, newCases[7][0]);
+		Assertions.assertEquals(1, newCases[7][1]);
 	}
 
 	@Test public void testDiscretizeModelNetFS()
@@ -164,11 +164,11 @@ public class DiscretizationTests {
 		CaseDatabase newDatabase = Discretization.process(database, modelNet);
 
 		int[][] newCases = newDatabase.getCases();
-		Assert.assertEquals(1, newCases[0][0]);
-		Assert.assertEquals(0, newCases[0][1]);
-		Assert.assertEquals(2, newCases[2][0]);
-		Assert.assertEquals(0, newCases[7][0]);
-		Assert.assertEquals(1, newCases[7][1]);
+		Assertions.assertEquals(1, newCases[0][0]);
+		Assertions.assertEquals(0, newCases[0][1]);
+		Assertions.assertEquals(2, newCases[2][0]);
+		Assertions.assertEquals(0, newCases[7][0]);
+		Assertions.assertEquals(1, newCases[7][1]);
 	}
 
 }
