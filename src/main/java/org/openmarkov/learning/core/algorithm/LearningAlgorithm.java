@@ -164,8 +164,8 @@ public abstract class LearningAlgorithm {
 	public ProbNet parametricLearning() throws NormalizeNullVectorException {
 
 		for (Node node : probNet.getNodes()) {
-			if (!node.getPotentials().isEmpty()) {
-				probNet.removePotential(node.getPotentials().get(0));
+			if (!node.getPotentials().isEmpty()) {	// Remove all the potentials
+				probNet.removePotentials(node);
 			}
 			TablePotential absoluteFrequencies = getAbsoluteFrequencies(caseDatabase, node);
 			for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
@@ -240,7 +240,7 @@ public abstract class LearningAlgorithm {
 
 	/**
 	 * Retrieves whether the LearningAlgorithm is in the last phase.
-	 * True by default
+	 * True by default; the method must be overrided in derived classes.
 	 */
 	public boolean isLastPhase() {
 		return true;
@@ -258,35 +258,37 @@ public abstract class LearningAlgorithm {
 	 * parents.
 	 */
 	private TablePotential getAbsoluteFrequencies(CaseDatabase caseDatabase, Node node) {
-		Variable variable = node.getVariable();
+
 		List<Node> parents = node.getParents();
 		int numParents = parents.size();
 		int[] indexesOfParents = new int[numParents];
 		int[] parentsStateNum = new int[numParents];
-		List<Variable> variables = new ArrayList<Variable>();
-		variables.add(variable);
+		List<Variable> potentialVariables = new ArrayList<Variable>(numParents + 1);
+		Variable variableNode = node.getVariable();
+
+		potentialVariables.add(variableNode);
 		if (!parents.isEmpty()) {
 			int indexOfParent = 0;
 			for (Node parent : parents) {
 				Variable parentVariable = parent.getVariable();
-				variables.add(parentVariable);
+				potentialVariables.add(parentVariable);
 				indexesOfParents[indexOfParent] = caseDatabase.getVariables().indexOf(parentVariable);
 				parentsStateNum[indexOfParent] = parentVariable.getNumStates();
 				indexOfParent++;
 			}
 		}
 
-		int numValues = variable.getNumStates();
-		TablePotential absoluteFreqPotential = new TablePotential(variables, PotentialRole.CONDITIONAL_PROBABILITY);
+		int numValues = variableNode.getNumStates();
+		TablePotential absoluteFreqPotential = new TablePotential(potentialVariables, PotentialRole.CONDITIONAL_PROBABILITY);
 		double[] absoluteFreqs = absoluteFreqPotential.getValues();
-		int iNode = caseDatabase.getVariables().indexOf(variable);
+		int iNode = caseDatabase.getVariables().indexOf(variableNode);
 
 		// Initialize the table
 		for (int i = 0; i < absoluteFreqs.length; i++) {
 			absoluteFreqs[i] = 0;
 		}
 
-		variables.remove(0);
+		potentialVariables.remove(0);
 		// Compute the absolute frequencies
 		int[][] cases = caseDatabase.getCases();
 		for (int i = 0; i < cases.length; i++) {
@@ -296,6 +298,7 @@ public abstract class LearningAlgorithm {
 			}
 			absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
 		}
+
 		return absoluteFreqPotential;
 	}
 }
