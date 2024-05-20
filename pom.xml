@@ -6,6 +6,7 @@
         <groupId>org.openmarkov</groupId>
         <artifactId>org.openmarkov</artifactId>
         <version>0.3.0-SNAPSHOT</version>
+        <relativePath>../org.openmarkov</relativePath>
     </parent>
 
     <artifactId>org.openmarkov.learning.core</artifactId>
