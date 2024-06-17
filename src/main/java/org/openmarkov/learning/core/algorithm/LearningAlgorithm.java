@@ -22,6 +22,7 @@ import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * List of blocked edits
 	 */
-	protected List<LearningEditProposal> blockedEdits = new ArrayList<LearningEditProposal>();
+	protected List<LearningEditProposal> blockedEdits = new ArrayList<>();
 
 	protected int phase = 0;
 
@@ -60,7 +61,7 @@ public abstract class LearningAlgorithm {
 
 	/**
 	 * Method invoked to run the algorithm.
-	 * @param modelNetUse
+	 * @param modelNetUse ModelNetUse
 	 * @throws NormalizeNullVectorException
 	 */
 	public void run(ModelNetUse modelNetUse) throws NormalizeNullVectorException {
@@ -90,7 +91,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * Initializes the algorithm
 	 *
-	 * @param modelNetUse
+	 * @param modelNetUse nodelNetUse
 	 */
 	public void init(ModelNetUse modelNetUse) {
 		// Do nothing
@@ -135,7 +136,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * Takes a step in the algorithm
 	 */
-	protected ProbNet step(PNEdit bestEdition) throws NormalizeNullVectorException {
+	protected ProbNet step(PNEdit bestEdition) {
 
 		/* If there have been any improvements on the score, we update
 		 * the learnedNet. */
@@ -167,7 +168,7 @@ public abstract class LearningAlgorithm {
 			if (!node.getPotentials().isEmpty()) {	// Remove all the potentials
 				probNet.removePotentials(node);
 			}
-			TablePotential absoluteFrequencies = getAbsoluteFrequencies(caseDatabase, node);
+			TablePotential absoluteFrequencies = getAbsoluteFrequencies(node);
 			for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
 				absoluteFrequencies.values[j] += alpha;
 			probNet.addPotential(DiscretePotentialOperations.normalize(absoluteFrequencies));
@@ -250,14 +251,13 @@ public abstract class LearningAlgorithm {
 	 * Calculate the absolute frequencies in the database of each of the
 	 * configurations of the given node and its parents.
 	 *
-	 * @param caseDatabase database of cases
 	 * @param node         <code>Node</code> whose frequencies we want to
 	 *                     calculate.
-	 * @return <code>TablePotential</code> with the absolute frequencies in
+	 * @return <code>TablePotential(node,parents)</code> with the absolute frequencies in
 	 * the database of each of the configurations of the given node and its
 	 * parents.
 	 */
-	private TablePotential getAbsoluteFrequencies(CaseDatabase caseDatabase, Node node) {
+	private TablePotential getAbsoluteFrequencies(Node node) {
 
 		List<Node> parents = node.getParents();
 		int numParents = parents.size();
@@ -284,9 +284,7 @@ public abstract class LearningAlgorithm {
 		int iNode = caseDatabase.getVariables().indexOf(variableNode);
 
 		// Initialize the table
-		for (int i = 0; i < absoluteFreqs.length; i++) {
-			absoluteFreqs[i] = 0;
-		}
+		Arrays.fill(absoluteFreqs, 0);
 
 		potentialVariables.remove(0);
 		// Compute the absolute frequencies

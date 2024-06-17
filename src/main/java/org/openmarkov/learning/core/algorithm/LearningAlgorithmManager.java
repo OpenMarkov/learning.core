@@ -18,17 +18,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class manages the learning algorithms.
+ */
 public class LearningAlgorithmManager {
-	private PluginLoaderIF pluginsLoader;
-	private HashMap<String, Class<? extends LearningAlgorithm>> learningAlgorithms;
 
+	// Attributes
+	private final PluginLoaderIF pluginsLoader;
+	private final HashMap<String, Class<? extends LearningAlgorithm>> learningAlgorithms;
+
+	// Constructor
 	/**
-	 * Constructor for LearningAlgoritmManager.
+	 * Finds all learning algorithms using the plugin architecture, which means all those with the annotation
+	 * corresponding to <code>LearningAlorithmType</code> and stores them in a map.
 	 */
 	@SuppressWarnings("unchecked") public LearningAlgorithmManager() {
 		super();
 		this.pluginsLoader = new PluginLoader();
-		learningAlgorithms = new HashMap<String, Class<? extends LearningAlgorithm>>();
+		learningAlgorithms = new HashMap<>();
 
 		for (Class<?> plugin : findAllLearningAlgorithms()) {
 			LearningAlgorithmType lAnnotation = plugin.getAnnotation(LearningAlgorithmType.class);
