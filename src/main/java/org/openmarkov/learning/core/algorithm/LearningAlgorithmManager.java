@@ -38,6 +38,7 @@ public class LearningAlgorithmManager {
 		learningAlgorithms = new HashMap<>();
 
 		for (Class<?> plugin : findAllLearningAlgorithms()) {
+			// Uses the plugin architecture to find all learning algorithms annotated with LearningAlgorithmType
 			LearningAlgorithmType lAnnotation = plugin.getAnnotation(LearningAlgorithmType.class);
 			if (LearningAlgorithm.class.isAssignableFrom(plugin)) {
 				learningAlgorithms.put(lAnnotation.name(), (Class<? extends LearningAlgorithm>) plugin);
@@ -62,6 +63,7 @@ public class LearningAlgorithmManager {
 	 * Returns a learning algorithm by name.
 	 *
 	 * @param name the algorithm name.
+	 * @param parameters the parameters of the algorithm constructor.
 	 * @return a learning algorithm.
 	 */
 	public final LearningAlgorithm getByName(String name, List<Object> parameters) {
@@ -108,7 +110,7 @@ public class LearningAlgorithmManager {
 	 *
 	 * @return a list of learning algorithms.
 	 */
-	private final List<Class<?>> findAllLearningAlgorithms() {
+	private List<Class<?>> findAllLearningAlgorithms() {
 		try {
 			FilterIF filter = org.openmarkov.plugin.Filter.filter().toBeAnnotatedBy(LearningAlgorithmType.class);
 			return pluginsLoader.loadAllPlugins(filter);
