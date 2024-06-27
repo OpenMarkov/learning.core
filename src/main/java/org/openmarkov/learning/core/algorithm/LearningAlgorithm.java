@@ -22,6 +22,7 @@ import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * List of blocked edits
 	 */
-	protected List<LearningEditProposal> blockedEdits = new ArrayList<LearningEditProposal>();
+	protected List<LearningEditProposal> blockedEdits = new ArrayList<>();
 
 	protected int phase = 0;
 
@@ -60,7 +61,7 @@ public abstract class LearningAlgorithm {
 
 	/**
 	 * Method invoked to run the algorithm.
-	 * @param modelNetUse
+	 * @param modelNetUse ModelNetUse
 	 * @throws NormalizeNullVectorException
 	 */
 	public void run(ModelNetUse modelNetUse) throws NormalizeNullVectorException {
@@ -90,7 +91,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * Initializes the algorithm
 	 *
-	 * @param modelNetUse
+	 * @param modelNetUse nodelNetUse
 	 */
 	public void init(ModelNetUse modelNetUse) {
 		// Do nothing
@@ -135,7 +136,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * Takes a step in the algorithm
 	 */
-	protected ProbNet step(PNEdit bestEdition) throws NormalizeNullVectorException {
+	protected ProbNet step(PNEdit bestEdition) {
 
 		/* If there have been any improvements on the score, we update
 		 * the learnedNet. */
@@ -164,10 +165,10 @@ public abstract class LearningAlgorithm {
 	public ProbNet parametricLearning() throws NormalizeNullVectorException {
 
 		for (Node node : probNet.getNodes()) {
-			if (!node.getPotentials().isEmpty()) {
-				probNet.removePotential(node.getPotentials().get(0));
+			if (!node.getPotentials().isEmpty()) {	// Remove all the potentials
+				probNet.removePotentials(node);
 			}
-			TablePotential absoluteFrequencies = getAbsoluteFrequencies(caseDatabase, node);
+			TablePotential absoluteFrequencies = getAbsoluteFrequencies(node);
 			for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
 				absoluteFrequencies.values[j] += alpha;
 			probNet.addPotential(DiscretePotentialOperations.normalize(absoluteFrequencies));
@@ -240,7 +241,7 @@ public abstract class LearningAlgorithm {
 
 	/**
 	 * Retrieves whether the LearningAlgorithm is in the last phase.
-	 * True by default
+	 * True by default; the method must be overrided in derived classes.
 	 */
 	public boolean isLastPhase() {
 		return true;
@@ -250,43 +251,42 @@ public abstract class LearningAlgorithm {
 	 * Calculate the absolute frequencies in the database of each of the
 	 * configurations of the given node and its parents.
 	 *
-	 * @param caseDatabase database of cases
 	 * @param node         <code>Node</code> whose frequencies we want to
 	 *                     calculate.
-	 * @return <code>TablePotential</code> with the absolute frequencies in
+	 * @return <code>TablePotential(node,parents)</code> with the absolute frequencies in
 	 * the database of each of the configurations of the given node and its
 	 * parents.
 	 */
-	private TablePotential getAbsoluteFrequencies(CaseDatabase caseDatabase, Node node) {
-		Variable variable = node.getVariable();
+	private TablePotential getAbsoluteFrequencies(Node node) {
+
 		List<Node> parents = node.getParents();
 		int numParents = parents.size();
 		int[] indexesOfParents = new int[numParents];
 		int[] parentsStateNum = new int[numParents];
-		List<Variable> variables = new ArrayList<Variable>();
-		variables.add(variable);
+		List<Variable> potentialVariables = new ArrayList<Variable>(numParents + 1);
+		Variable variableNode = node.getVariable();
+
+		potentialVariables.add(variableNode);
 		if (!parents.isEmpty()) {
 			int indexOfParent = 0;
 			for (Node parent : parents) {
 				Variable parentVariable = parent.getVariable();
-				variables.add(parentVariable);
+				potentialVariables.add(parentVariable);
 				indexesOfParents[indexOfParent] = caseDatabase.getVariables().indexOf(parentVariable);
 				parentsStateNum[indexOfParent] = parentVariable.getNumStates();
 				indexOfParent++;
 			}
 		}
 
-		int numValues = variable.getNumStates();
-		TablePotential absoluteFreqPotential = new TablePotential(variables, PotentialRole.CONDITIONAL_PROBABILITY);
+		int numValues = variableNode.getNumStates();
+		TablePotential absoluteFreqPotential = new TablePotential(potentialVariables, PotentialRole.CONDITIONAL_PROBABILITY);
 		double[] absoluteFreqs = absoluteFreqPotential.getValues();
-		int iNode = caseDatabase.getVariables().indexOf(variable);
+		int iNode = caseDatabase.getVariables().indexOf(variableNode);
 
 		// Initialize the table
-		for (int i = 0; i < absoluteFreqs.length; i++) {
-			absoluteFreqs[i] = 0;
-		}
+		Arrays.fill(absoluteFreqs, 0);
 
-		variables.remove(0);
+		potentialVariables.remove(0);
 		// Compute the absolute frequencies
 		int[][] cases = caseDatabase.getCases();
 		for (int i = 0; i < cases.length; i++) {
@@ -296,6 +296,7 @@ public abstract class LearningAlgorithm {
 			}
 			absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
 		}
+
 		return absoluteFreqPotential;
 	}
 }

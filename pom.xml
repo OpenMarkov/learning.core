@@ -6,6 +6,7 @@
         <groupId>org.openmarkov</groupId>
         <artifactId>org.openmarkov</artifactId>
         <version>0.3.0-SNAPSHOT</version>
+        <relativePath>../org.openmarkov</relativePath>
     </parent>
 
     <artifactId>org.openmarkov.learning.core</artifactId>
@@ -16,6 +17,12 @@
             <groupId>org.openmarkov</groupId>
             <artifactId>org.openmarkov.core</artifactId>
             <version>0.3.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -81,12 +81,11 @@ public class LearningManager {
 	 *                      information of the nodes and links
 	 * @param modelNetUse   <code>boolean[]</code> use the positions of the nodes,
 	 *                      use also the initial links or use them fixed
-	 * @throws NormalizeNullVectorException
 	 * @throws EmptyModelNetException
 	 * @throws UnobservedVariablesException
 	 */
 	public LearningManager(CaseDatabase caseDatabase, String algorithmName, ProbNet modelNet, ModelNetUse modelNetUse)
-			throws NormalizeNullVectorException, EmptyModelNetException, UnobservedVariablesException {
+			throws EmptyModelNetException, UnobservedVariablesException {
 		this.caseDatabase = caseDatabase;
 		/* Check ModelNet is not null */
 		if (modelNetUse != null && modelNetUse.isUseModelNet()) {
