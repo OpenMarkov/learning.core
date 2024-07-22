@@ -119,9 +119,7 @@ public abstract class LearningAlgorithm {
 	 *                          editions with a positive associated score are returned.
 	 * @return <code>LearningEditProposal</code> with the best edition and its score.
 	 */
-	public LearningEditProposal getNextEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits) {
-		return null;
-	}
+	public abstract LearningEditProposal getNextEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits);
 
 	/**
 	 * Calculates the score associated to the given edit.
@@ -129,9 +127,7 @@ public abstract class LearningAlgorithm {
 	 * @param edit <code>PNEdit</code>
 	 * @return <code>LearningEditMotivation</code> motivation for the given edit
 	 */
-	public LearningEditMotivation getMotivation(PNEdit edit) {
-		return null;
-	}
+	public abstract LearningEditMotivation getMotivation(PNEdit edit);
 
 	/**
 	 * Takes a step in the algorithm
@@ -165,7 +161,7 @@ public abstract class LearningAlgorithm {
 	public ProbNet parametricLearning() throws NormalizeNullVectorException {
 
 		for (Node node : probNet.getNodes()) {
-			if (!node.getPotentials().isEmpty()) {	// Remove all the potentials
+			if (!node.getPotentials().isEmpty()) {	// Remove all the potentials of the node if any exists.
 				probNet.removePotentials(node);
 			}
 			TablePotential absoluteFrequencies = getAbsoluteFrequencies(node);

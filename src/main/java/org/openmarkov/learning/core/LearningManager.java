@@ -270,6 +270,13 @@ public class LearningManager {
 		return probNet;
 	}
 
+	/**
+	 * Identifies and returns the list of variables that are present in the model network
+	 * but missing from the database.
+	 * @param databaseVariables List of variables present in the database
+	 * @param modelNetVariables List of variables in the model network
+	 * @return A list of variables that are in the model network but not in the database
+	 */
 	private List<Variable> getMissingVariables(List<Variable> databaseVariables, List<Variable> modelNetVariables) {
 		List<Variable> missingVariables = new ArrayList<>(modelNetVariables);
 		for (Variable databaseVariable : databaseVariables) {
@@ -368,6 +375,14 @@ public class LearningManager {
 		}
 	}
 
+	/**
+	 * Updates the cases in the case database for a specific variable by mapping the states
+	 * from the original variable to the corresponding states in the model network variable.
+	 *
+	 * @param variableIndex index of the variable in the case database
+	 * @param originalVariable the original variable whose states are to be mapped
+	 * @param modelNetVariable the model network variable to which the states are mapped
+	 */
 	private void updateCases(int variableIndex, Variable originalVariable, Variable modelNetVariable) {
 		State state;
 

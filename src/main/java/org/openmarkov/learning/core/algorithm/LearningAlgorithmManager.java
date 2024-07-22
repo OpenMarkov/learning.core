@@ -30,7 +30,7 @@ public class LearningAlgorithmManager {
 	// Constructor
 	/**
 	 * Finds all learning algorithms using the plugin architecture, which means all those with the annotation
-	 * corresponding to <code>LearningAlorithmType</code> and stores them in a map.
+	 * corresponding to <code>LearningAlgorithmType</code> and stores them in a map.
 	 */
 	@SuppressWarnings("unchecked") public LearningAlgorithmManager() {
 		super();
@@ -56,6 +56,7 @@ public class LearningAlgorithmManager {
 	 * @return a learning algorithm class
 	 */
 	public final Class<? extends LearningAlgorithm> getByName(String name) {
+
 		return learningAlgorithms.get(name);
 	}
 
