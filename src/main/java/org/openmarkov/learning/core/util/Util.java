@@ -29,38 +29,42 @@ public class Util {
 	 *
 	 * @param probNet
 	 * @param caseDatabase
-	 * @param node         <code>Node</code> whose frequencies we want to
-	 *                     calculate.
-	 * @param variables    <code>ArrayList</code> formed by the variable associated
-	 *                     to the given node and the variables associated to its parents.
+	 * @param childNode       <code>Node</code> whose frequencies we want to
+	 *                        calculate.
+	 * @param parentVariables <code>ArrayList</code> formed by the variable associated
+	 *                        to the given node and the variables associated to its parents.
 	 * @return <code>TablePotential</code> with the absolute frequencies in
 	 * the database of each of the configurations of the given node and its
 	 * parents.
 	 */
-	private static TablePotential getAbsoluteFrequencies(ProbNet probNet, CaseDatabase caseDatabase, Node node,
-			List<Variable> variables) {
+	private static TablePotential getAbsoluteFrequencies(
+			ProbNet probNet,
+			CaseDatabase caseDatabase,
+			Node childNode,
+			List<Variable> parentVariables) {
+
 		int parentsConfigurations = 1;
-		int numValues = node.getVariable().getNumStates();
+		int numValues = childNode.getVariable().getNumStates();
 		// We miss the first one as it is the node itself, not one of its parents
-		int[] indexesOfParents = new int[variables.size() - 1];
+		int[] indexesOfParents = new int[parentVariables.size() - 1];
 		for (int i = 0; i < indexesOfParents.length; ++i) {
-			indexesOfParents[i] = caseDatabase.getVariables().indexOf(variables.get(i + 1));
-			parentsConfigurations *= variables.get(i + 1).getNumStates();
+			indexesOfParents[i] = caseDatabase.getVariables().indexOf(parentVariables.get(i + 1));
+			parentsConfigurations *= parentVariables.get(i + 1).getNumStates();
 		}
-		TablePotential absoluteFreqPotential = new TablePotential(variables, PotentialRole.CONDITIONAL_PROBABILITY);
+		TablePotential absoluteFreqPotential = new TablePotential(parentVariables, PotentialRole.CONDITIONAL_PROBABILITY);
 		double[] absoluteFreqs = absoluteFreqPotential.getValues();
 		// Initialize the table
 		for (int i = 0; i < parentsConfigurations * numValues; i++) {
 			absoluteFreqs[i] = 0;
 		}
-		variables.remove(0);
+		parentVariables.remove(0);
 		// Compute the absolute frequencies
 		int iCPT;
-		int iParent, iNode = caseDatabase.getVariables().indexOf(node.getVariable());
+		int iParent, iNode = caseDatabase.getVariables().indexOf(childNode.getVariable());
 		if (iNode == -1)
 			System.out.println("fdx");
 		int[][] cases = caseDatabase.getCases();
-		List<Node> nodes = probNet.getNodes(variables);
+		List<Node> nodes = probNet.getNodes(parentVariables);
 		for (int i = 0; i < cases.length; i++) {
 			iCPT = 0;
 			for (int j = 0; j < nodes.size(); ++j) {
@@ -89,9 +93,9 @@ public class Util {
 	 */
 	public static TablePotential getAbsoluteFreq(ProbNet probNet, CaseDatabase caseDatabase, Node node) {
 		List<Variable> variables = new ArrayList<Variable>();
-		variables.add((Variable) node.getVariable());
+		variables.add(node.getVariable());
 		for (Node parent : node.getParents()) {
-			variables.add((Variable) parent.getVariable());
+			variables.add(parent.getVariable());
 		}
 		return getAbsoluteFrequencies(probNet, caseDatabase, node, variables);
 	}
@@ -109,8 +113,8 @@ public class Util {
 	 */
 	public static TablePotential getAbsoluteFreqExtraParent(ProbNet probNet, CaseDatabase caseDatabase, Node node,
 			Node extraParent) {
-		List<Variable> variables = new ArrayList<Variable>();
-		variables.add((Variable) node.getVariable());
+		List<Variable> variables = new ArrayList<>();
+		variables.add(node.getVariable());
 
 		for (Node parent : node.getParents()) {
 			if (!variables.contains(parent.getVariable()))
@@ -135,7 +139,7 @@ public class Util {
 	 */
 	public static TablePotential getAbsoluteFreqRemovingParent(ProbNet probNet, CaseDatabase caseDatabase, Node node,
 			Node removedParent) {
-		List<Variable> variables = new ArrayList<Variable>();
+		List<Variable> variables = new ArrayList<>();
 		variables.add(node.getVariable());
 
 		List<Node> parents = node.getParents();
