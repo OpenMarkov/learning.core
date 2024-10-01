@@ -7,32 +7,59 @@
 
 package org.openmarkov.learning.core.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 
+/**
+ * This class represents the motivation of an edit based on a score.
+ */
 public class ScoreEditMotivation extends LearningEditMotivation {
-	private double score;
 
+	private final double score;
+
+	private final int DEFAULT_NUM_DECIMALS = 2;
+	private final int numDecimals;
+
+	// Constructor
+	/**
+	 * @param score the score of this motivation.
+	 */
 	public ScoreEditMotivation(double score) {
 		this.score = score;
+		this.numDecimals = DEFAULT_NUM_DECIMALS;
 	}
 
-	public int compareTo(LearningEditMotivation edit) {
-		int comparison = 0;
-		if (score > ((ScoreEditMotivation) edit).score) {
-			comparison = 1;
-		} else if (score < ((ScoreEditMotivation) edit).score) {
-			comparison = -1;
-		}
-		return comparison;
-	}
-
-	@Override public String toString() {
-		return new BigDecimal(score).setScale(2, BigDecimal.ROUND_FLOOR).toString();
+	public ScoreEditMotivation(double score, int numDecimals) {
+		this.score = score;
+		this.numDecimals = numDecimals;
 	}
 
 	/**
-	 * Returns the score.
+	 * Compares this ScoreEditMotivation with another LearningEditMotivation.
 	 *
+	 * @param edit the LearningEditMotivation to compare with.
+	 * @return a negative integer, zero, or a positive integer as this object
+	 *         is less than, equal to, or greater than the specified object.
+	 */
+	@Override public int compareTo(LearningEditMotivation edit) {
+		if (edit instanceof ScoreEditMotivation) {
+			return Double.compare(score, ((ScoreEditMotivation) edit).score);
+		} else {
+			throw new ClassCastException("Cannot compare ScoreEditMotivation with non-ScoreEditMotivation object.");
+		}
+	}
+
+	/**
+	 * Returns a string representation of this score, rounded to numDecimals (default = 2) decimal places.
+	 *
+	 * @return a string representation of the score.
+	 */
+	@Override public String toString() {
+		return new BigDecimal(score).setScale(numDecimals, BigDecimal.ROUND_FLOOR).toString();
+	}
+
+	/**
 	 * @return the score.
 	 */
 	public double getScore() {
