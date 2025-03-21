@@ -7,9 +7,7 @@
 
 package org.openmarkov.learning.core.preprocess;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
@@ -25,11 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class DiscretizationTests {
 	CaseDatabase database = null;
 	Variable varA, varB;
 
-	@BeforeAll public void setUp() {
+	@BeforeEach public void setUp() {
 		List<Variable> variables = new ArrayList<>();
 		varA = new Variable("A", "3", "?", "2", "4", "7", "5");
 		varB = new Variable("B", "2.6", "1.0", "-3.2", "0.01", "0.6", "1.2");

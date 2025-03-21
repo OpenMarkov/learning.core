@@ -7,9 +7,7 @@
 
 package org.openmarkov.learning.core.preprocess;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Variable;
 
@@ -18,12 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class MissingValuesTest {
 
 	CaseDatabase database = null;
 	Variable varA, varB;
 
-	@BeforeAll public void setUp() {
+	@BeforeEach public void setUp() {
 		List<Variable> variables = new ArrayList<>();
 		varA = new Variable("A", "a1", "?", "a0");
 		varB = new Variable("B", "b0", "b1");

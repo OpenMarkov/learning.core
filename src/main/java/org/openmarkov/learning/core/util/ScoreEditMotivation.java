@@ -7,8 +7,6 @@
 
 package org.openmarkov.learning.core.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.math.BigDecimal;
 
 /**
