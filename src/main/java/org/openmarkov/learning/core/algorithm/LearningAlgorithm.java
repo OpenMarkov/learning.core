@@ -161,7 +161,7 @@ public abstract class LearningAlgorithm {
 	public ProbNet parametricLearning() throws NormalizeNullVectorException {
 
 		for (Node node : probNet.getNodes()) {
-			if (!node.getPotentials().isEmpty()) {	// Remove all the potentials of the node if any exists.
+			if (node.getNumPotentials() == 0) {	// Remove all the potentials of the node if any exists.
 				probNet.removePotentials(node);
 			}
 			TablePotential absoluteFrequencies = getAbsoluteFrequencies(node);
@@ -263,7 +263,7 @@ public abstract class LearningAlgorithm {
 		Variable variableNode = node.getVariable();
 
 		potentialVariables.add(variableNode);
-		if (!parents.isEmpty()) {
+		if (numParents > 0) {
 			int indexOfParent = 0;
 			for (Node parent : parents) {
 				Variable parentVariable = parent.getVariable();

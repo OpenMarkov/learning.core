@@ -71,9 +71,8 @@ public class LearningManager {
 	 */
 	private CaseDatabase caseDatabase = null;
 
+	 // Constructor
 	/**
-	 * Constructor
-	 *
 	 * @param caseDatabase
 	 * @param algorithmName <code>LearningAlgorithm</code> indicating the algorithm
 	 *                      selected by the user.
@@ -86,6 +85,7 @@ public class LearningManager {
 	 */
 	public LearningManager(CaseDatabase caseDatabase, String algorithmName, ProbNet modelNet, ModelNetUse modelNetUse)
 			throws EmptyModelNetException, UnobservedVariablesException {
+
 		this.caseDatabase = caseDatabase;
 		/* Check ModelNet is not null */
 		if (modelNetUse != null && modelNetUse.isUseModelNet()) {
@@ -106,6 +106,7 @@ public class LearningManager {
 	}
 
 	public static Set<String> getAlgorithmNames() {
+
 		return learningAlgorithmManager.getLearningAlgorithmNames();
 	}
 
@@ -113,6 +114,7 @@ public class LearningManager {
 	 * Initialize the learning algorithm.
 	 */
 	public void init(LearningAlgorithm learningAlgorithm) {
+
 		this.learningAlgorithm = learningAlgorithm;
 		learningAlgorithm.init(modelNetUse);
 	}
@@ -122,6 +124,7 @@ public class LearningManager {
 	 * @throws NormalizeNullVectorException
 	 */
 	public void learn() throws NormalizeNullVectorException {
+
 		learningAlgorithm.run(modelNetUse);
 	}
 
@@ -131,6 +134,7 @@ public class LearningManager {
 	 * @return <code>ProbNet</code> containing learned net
 	 */
 	public ProbNet getLearnedNet() {
+
 		return this.learnedNet;
 	}
 
@@ -140,6 +144,7 @@ public class LearningManager {
 	 * @return the learningAlgorithm.
 	 */
 	public LearningAlgorithm getLearningAlgorithm() {
+		
 		return learningAlgorithm;
 	}
 
@@ -150,6 +155,7 @@ public class LearningManager {
 	 * @return <code>double</code> score of the net with the given edition
 	 */
 	public LearningEditMotivation getMotivation(PNEdit edit) {
+		
 		return learningAlgorithm.getMotivation(edit);
 	}
 
@@ -179,6 +185,7 @@ public class LearningManager {
 	 * Tells the learning algorithm to advance until the next phase
 	 */
 	public void goToNextPhase() throws NormalizeNullVectorException {
+		
 		this.learningAlgorithm.runTillNextPhase();
 	}
 
@@ -186,6 +193,7 @@ public class LearningManager {
 	 * Retrieves whether the LearningAlgorithm is in the last phase
 	 */
 	public boolean isLastPhase() {
+		
 		return this.learningAlgorithm.isLastPhase();
 	}
 
@@ -202,6 +210,7 @@ public class LearningManager {
 	public void applyEdit(PNEdit edit)
 			throws ConstraintViolationException, NonProjectablePotentialException,
 			WrongCriterionException, DoEditException, NormalizeNullVectorException {
+
 		this.learnedNet.doEdit(edit);
 		learningAlgorithm.parametricLearning();
 	}
@@ -232,6 +241,7 @@ public class LearningManager {
 	 */
 	private ProbNet applyModelNet(Class<? extends LearningAlgorithm> algorithmClass, CaseDatabase database,
 			ProbNet modelNet, ModelNetUse modelNetUse) throws UnobservedVariablesException {
+
 		ProbNet probNet = null;
 		List<Variable> missingVariables = getMissingVariables(database.getVariables(), modelNet.getVariables());
 		if (//!modelNetUse.isUseNodePositions() &&
@@ -278,6 +288,7 @@ public class LearningManager {
 	 * @return A list of variables that are in the model network but not in the database
 	 */
 	private List<Variable> getMissingVariables(List<Variable> databaseVariables, List<Variable> modelNetVariables) {
+
 		List<Variable> missingVariables = new ArrayList<>(modelNetVariables);
 		for (Variable databaseVariable : databaseVariables) {
 			int i = 0;
@@ -294,6 +305,7 @@ public class LearningManager {
 	}
 
 	public LearningAlgorithm getAlgorithmInstance(String name) {
+
 		List<Object> parameters = new ArrayList<>();
 		parameters.add(learnedNet);
 		parameters.add(caseDatabase);
@@ -306,6 +318,7 @@ public class LearningManager {
 	 * @param edit to block
 	 */
 	public void blockEdit(LearningEditProposal edit) {
+		
 		learningAlgorithm.blockEdit(edit);
 	}
 
@@ -315,6 +328,7 @@ public class LearningManager {
 	 * @param edit to block
 	 */
 	public void unblockEdit(LearningEditProposal edit) {
+		
 		learningAlgorithm.unblockEdit(edit);
 	}
 
@@ -322,6 +336,7 @@ public class LearningManager {
 	 * @return the blocked edits
 	 */
 	public List<LearningEditProposal> getBlockedEdits() {
+		
 		return learningAlgorithm.getBlockedEdits();
 	}
 
@@ -332,6 +347,7 @@ public class LearningManager {
 	 * @param modelNet - the modelNet to copy the node positions from
 	 */
 	private void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learntNet) {
+		
 		Node learntNetNode = null;
 
 		/* Take the positions of the nodes */
@@ -358,6 +374,7 @@ public class LearningManager {
 	 * @param modelNet
 	 */
 	private void adaptDatabaseToModelNet(CaseDatabase database, ProbNet modelNet) {
+		
 		for (Variable modelNetVariable : modelNet.getVariables()) {
 			Variable caseDatabaseVariable = database.getVariable(modelNetVariable.getName());
 			if (caseDatabaseVariable != null) {
@@ -384,6 +401,7 @@ public class LearningManager {
 	 * @param modelNetVariable the model network variable to which the states are mapped
 	 */
 	private void updateCases(int variableIndex, Variable originalVariable, Variable modelNetVariable) {
+		
 		State state;
 
 		for (int j = 0; j < caseDatabase.getCases().length; j++) {
