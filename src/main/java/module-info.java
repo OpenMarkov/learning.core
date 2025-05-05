@@ -1,6 +1,5 @@
 module org.openmarkov.learning.core {
 	requires org.openmarkov.core;
-	requires org.openmarkov.plugin;
 	
 	exports org.openmarkov.learning.core;
 	exports org.openmarkov.learning.core.algorithm;

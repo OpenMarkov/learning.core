@@ -83,6 +83,7 @@ public abstract class LearningAlgorithm {
 		int currentPhase = getPhase();
 		LearningEditProposal bestEditProposal = getBestEdit(true, true);
 		while ((bestEditProposal != null) && (currentPhase == getPhase())) {
+			System.out.println(bestEditProposal);
 			step(bestEditProposal.getEdit());
 			bestEditProposal = getBestEdit(true, true);
 		}
@@ -145,8 +146,8 @@ public abstract class LearningAlgorithm {
 			 * loop, asking the cache for the next best edition.
 			 */
 		} catch (Exception exception) {
-			System.err.println(exception.getMessage());
-			System.err.println(exception.getStackTrace());
+			System.err.println(exception);
+			exception.printStackTrace();
 		}
 		return probNet;
 	}
