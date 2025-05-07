@@ -270,10 +270,7 @@ public class LearningManager {
 			}
 
 			// ModelNetworkConstraint
-			try {
-				probNet.addConstraint(new ModelNetworkConstraint(modelNetUse, modelNet), false);
-			} catch (ConstraintViolationException e) {
-			}
+			probNet.addConstraint(new ModelNetworkConstraint(modelNetUse, modelNet));
 			adaptDatabaseToModelNet(database, modelNet);
 		}
 
