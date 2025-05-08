@@ -16,6 +16,7 @@ import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
+import org.openmarkov.core.test.TestSpeed;
 import org.openmarkov.learning.core.preprocess.exception.WrongDiscretizationLimitException;
 
 import java.util.ArrayList;
@@ -108,7 +109,8 @@ public class DiscretizationTests {
 		Assertions.assertEquals(2, newCases[7][0]);
 		Assertions.assertEquals(1, newCases[7][1]);
 	}
-
+	
+	@Tag(TestSpeed.SLOW)
 	@Test public void testDiscretizeModelNet()
 			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
 
