@@ -1,5 +1,6 @@
 module org.openmarkov.learning.core {
 	requires org.openmarkov.core;
+	requires commons.math3;
 	
 	exports org.openmarkov.learning.core;
 	exports org.openmarkov.learning.core.algorithm;

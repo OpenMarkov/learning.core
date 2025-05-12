@@ -8,6 +8,7 @@
 package org.openmarkov.learning.core.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * This class represents the motivation of an edit based on a score.
@@ -54,7 +55,7 @@ public class ScoreEditMotivation extends LearningEditMotivation {
 	 * @return a string representation of the score.
 	 */
 	@Override public String toString() {
-		return new BigDecimal(score).setScale(numDecimals, BigDecimal.ROUND_FLOOR).toString();
+		return new BigDecimal(score).setScale(numDecimals, RoundingMode.FLOOR).toString();
 	}
 
 	/**
