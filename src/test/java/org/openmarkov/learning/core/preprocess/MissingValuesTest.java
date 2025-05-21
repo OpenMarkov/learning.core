@@ -10,6 +10,7 @@ package org.openmarkov.learning.core.preprocess;
 import org.junit.jupiter.api.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Variable;
+import org.openmarkov.core.test.TestSpeed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +34,8 @@ public class MissingValuesTest {
 
 		database = new CaseDatabase(variables, cases);
 	}
-
+	
+	@Tag(TestSpeed.MEDIUM)
 	@Test public void testKeepMissingValues() {
 		Map<String, MissingValues.Option> preprocessOption = new HashMap<>();
 		preprocessOption.put("A", MissingValues.Option.KEEP);
