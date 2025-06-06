@@ -49,7 +49,17 @@ public abstract class LearningAlgorithm {
 	 * List of blocked edits
 	 */
 	protected List<LearningEditProposal> blockedEdits = new ArrayList<>();
-
+	
+	protected String classVariableName;
+	
+	public String getClassVariableName() {
+		return classVariableName;
+	}
+	
+	public void setClassVariableName(String classVariableName) {
+		this.classVariableName = classVariableName;
+	}
+	
 	protected int phase = 0;
 
 	// Constructor

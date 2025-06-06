@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class launches the learning algorithm and receives the results of
@@ -108,6 +109,16 @@ public class LearningManager {
 	public static Set<String> getAlgorithmNames() {
 
 		return learningAlgorithmManager.getLearningAlgorithmNames();
+	}
+	
+	public static Set<String> getDiscriminativeAlgorithmNames(){
+		return learningAlgorithmManager.getDiscriminativeLearningAlgorithmNames().stream().sorted().collect(Collectors.toSet());
+	}
+	
+	public static Set<String> getGenerativeAlgorithmNames(){
+		return learningAlgorithmManager.getLearningAlgorithmNames()
+									   .stream().filter(a-> !getDiscriminativeAlgorithmNames().contains(a)).collect(Collectors.toSet());
+		
 	}
 
 	/**

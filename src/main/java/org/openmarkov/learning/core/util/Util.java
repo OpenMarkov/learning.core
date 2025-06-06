@@ -37,7 +37,7 @@ public class Util {
 	 * the database of each of the configurations of the given node and its
 	 * parents.
 	 */
-	private static TablePotential getAbsoluteFrequencies(
+	public static TablePotential getAbsoluteFrequencies(
 			ProbNet probNet,
 			CaseDatabase caseDatabase,
 			Node childNode,

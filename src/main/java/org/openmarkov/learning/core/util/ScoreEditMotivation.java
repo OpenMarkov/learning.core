@@ -17,7 +17,7 @@ public class ScoreEditMotivation extends LearningEditMotivation {
 
 	private final double score;
 
-	private final int DEFAULT_NUM_DECIMALS = 2;
+	private final int DEFAULT_NUM_DECIMALS = 6;
 	private final int numDecimals;
 
 	// Constructor

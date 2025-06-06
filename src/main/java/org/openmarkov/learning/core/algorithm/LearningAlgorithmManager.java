@@ -17,6 +17,7 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class manages the learning algorithms.
@@ -105,7 +106,14 @@ public class LearningAlgorithmManager {
 	public final Set<String> getLearningAlgorithmNames() {
 		return learningAlgorithms.keySet();
 	}
-
+	
+	public final Set<String> getDiscriminativeLearningAlgorithmNames(){
+		return  learningAlgorithms.values().stream()
+								  .filter(s -> s.getAnnotation(LearningAlgorithmType.class).discriminative())
+								  .map(aClass -> aClass.getAnnotation(LearningAlgorithmType.class).name())
+								  .collect(Collectors.toSet());
+	}
+	
 	/**
 	 * Finds all learning algorithms.
 	 *
