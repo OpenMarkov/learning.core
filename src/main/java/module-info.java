@@ -1,4 +1,4 @@
-module org.openmarkov.learning.core {
+open module org.openmarkov.learning.core {
 	requires org.openmarkov.core;
 	requires commons.math3;
 	
