@@ -89,7 +89,7 @@ public abstract class LearningAlgorithm {
 	/**
 	 * Tells the learning algorithm to advance until the next phase
 	 */
-	public void runTillNextPhase() throws NormalizeNullVectorException {
+	public void runTillNextPhase() {
 		int currentPhase = getPhase();
 		LearningEditProposal bestEditProposal = getBestEdit(true, true);
 		while ((bestEditProposal != null) && (currentPhase == getPhase())) {

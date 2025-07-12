@@ -12,7 +12,7 @@ import org.openmarkov.core.model.network.Variable;
 import java.util.List;
 
 @SuppressWarnings("serial") public class UnobservedVariablesException extends OpenMarkovException {
-	List<Variable> unobservedVariables;
+	final List<Variable> unobservedVariables;
 
 	public UnobservedVariablesException(List<Variable> unobservedVariables) {
 		this.unobservedVariables = unobservedVariables;

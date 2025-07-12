@@ -74,7 +74,7 @@ public class Discretization {
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
 			Map<String, Integer> numIntervalsPerVariable, ProbNet modelNet)
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException, NodeNotFoundException {
 
 		List<Variable> newVariables = new ArrayList<>();
 
@@ -111,7 +111,7 @@ public class Discretization {
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
 			Map<String, Integer> numIntervalsPerVariable)
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException, NodeNotFoundException {
 		return process(database, discretizeOptions, numIntervalsPerVariable, null);
 	}
 
@@ -119,12 +119,11 @@ public class Discretization {
 	 * This function discretizes the database.
 	 *
 	 * @return <code>CaseDatabase</code> updated database
-	 * @throws WrongDiscretizationLimitException
 	 * @throws NodeNotFoundException
 	 * @throws InvalidStateException
 	 */
 	public static CaseDatabase process(CaseDatabase database, Discretization.Option discretizationOption,
-			int numIntervals) throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			int numIntervals) throws InvalidStateException, NodeNotFoundException {
 		Map<String, Option> discretizeOptions = new HashMap<>();
 		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
 
@@ -140,12 +139,11 @@ public class Discretization {
 	 * This function discretizes the database.
 	 *
 	 * @return <code>CaseDatabase</code> updated database
-	 * @throws WrongDiscretizationLimitException
 	 * @throws NodeNotFoundException
 	 * @throws InvalidStateException
 	 */
 	public static CaseDatabase process(CaseDatabase database, ProbNet modelNet)
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException, NodeNotFoundException {
 		Map<String, Option> discretizeOptions = new HashMap<>();
 		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
 
@@ -264,10 +262,9 @@ public class Discretization {
 	 * @param database     <code>int[][]</code> database cases
 	 * @param numIntervals
 	 * @throws InvalidStateException
-	 * @throws NodeNotFoundException
 	 */
 	private static Variable discretizeEqualFreq(Variable variable, CaseDatabase database, int numIntervals)
-			throws InvalidStateException, NodeNotFoundException {
+			throws InvalidStateException {
 		Variable newVariable;
 		State[] states = variable.getStates();
 		List<Double> intervalLimits = new ArrayList<Double>();
@@ -368,13 +365,11 @@ public class Discretization {
 	 * @param newVariables
 	 * @param discretizeOptions <code>ArrayList</code> discretization option
 	 *                          selected for each variable.
-	 * @throws NodeNotFoundException
-	 * @throws WrongDiscretizationLimitException
 	 * @throws InvalidStateException
 	 */
 	private static int[][] discretizeCases(CaseDatabase database, List<Variable> newVariables,
 			Map<String, Option> discretizeOptions)
-			throws NodeNotFoundException, WrongDiscretizationLimitException, InvalidStateException {
+			throws InvalidStateException {
 		int[][] oldCases = database.getCases();
 		int[][] newCases = new int[oldCases.length][newVariables.size()];
 

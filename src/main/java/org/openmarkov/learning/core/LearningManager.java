@@ -195,7 +195,7 @@ public class LearningManager {
 	/**
 	 * Tells the learning algorithm to advance until the next phase
 	 */
-	public void goToNextPhase() throws NormalizeNullVectorException {
+	public void goToNextPhase() {
 		
 		this.learningAlgorithm.runTillNextPhase();
 	}
@@ -213,14 +213,12 @@ public class LearningManager {
 	 *
 	 * @param edit
 	 * @throws DoEditException
-	 * @throws WrongCriterionException
-	 * @throws NonProjectablePotentialException
 	 * @throws ConstraintViolationException
 	 * @throws NormalizeNullVectorException
 	 */
 	public void applyEdit(PNEdit edit)
-			throws ConstraintViolationException, NonProjectablePotentialException,
-			WrongCriterionException, DoEditException, NormalizeNullVectorException {
+			throws ConstraintViolationException,
+			DoEditException, NormalizeNullVectorException {
 
 		this.learnedNet.doEdit(edit);
 		learningAlgorithm.parametricLearning();
