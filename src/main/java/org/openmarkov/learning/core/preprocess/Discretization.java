@@ -8,13 +8,11 @@
 package org.openmarkov.learning.core.preprocess;
 
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
-import org.openmarkov.learning.core.preprocess.exception.WrongDiscretizationLimitException;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -74,7 +72,7 @@ public class Discretization {
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
 			Map<String, Integer> numIntervalsPerVariable, ProbNet modelNet)
-			throws InvalidStateException, NodeNotFoundException {
+			throws InvalidStateException {
 
 		List<Variable> newVariables = new ArrayList<>();
 
@@ -111,7 +109,7 @@ public class Discretization {
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
 			Map<String, Integer> numIntervalsPerVariable)
-			throws InvalidStateException, NodeNotFoundException {
+			throws InvalidStateException {
 		return process(database, discretizeOptions, numIntervalsPerVariable, null);
 	}
 
@@ -119,11 +117,10 @@ public class Discretization {
 	 * This function discretizes the database.
 	 *
 	 * @return <code>CaseDatabase</code> updated database
-	 * @throws NodeNotFoundException
 	 * @throws InvalidStateException
 	 */
 	public static CaseDatabase process(CaseDatabase database, Discretization.Option discretizationOption,
-			int numIntervals) throws InvalidStateException, NodeNotFoundException {
+			int numIntervals) throws InvalidStateException {
 		Map<String, Option> discretizeOptions = new HashMap<>();
 		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
 
@@ -139,11 +136,10 @@ public class Discretization {
 	 * This function discretizes the database.
 	 *
 	 * @return <code>CaseDatabase</code> updated database
-	 * @throws NodeNotFoundException
 	 * @throws InvalidStateException
 	 */
 	public static CaseDatabase process(CaseDatabase database, ProbNet modelNet)
-			throws InvalidStateException, NodeNotFoundException {
+			throws InvalidStateException {
 		Map<String, Option> discretizeOptions = new HashMap<>();
 		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
 
@@ -163,8 +159,7 @@ public class Discretization {
 	 * @param modelNet    <code>ProbNet</code> net from which to tak the
 	 *                    information of the discretization
 	 */
-	private static Variable discretizeFromModelNet(Variable oldVariable, ProbNet modelNet)
-			throws NodeNotFoundException {
+	private static Variable discretizeFromModelNet(Variable oldVariable, ProbNet modelNet) {
 
 		Variable newVariable = oldVariable;
 

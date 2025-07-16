@@ -12,9 +12,6 @@ import org.openmarkov.core.action.InvertLinkEdit;
 import org.openmarkov.core.action.OrientLinkEdit;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.action.RemoveLinkEdit;
-import org.openmarkov.core.exception.NodeNotFoundException;
-import org.openmarkov.core.exception.NonProjectablePotentialException;
-import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.constraint.ConstraintBehavior;
@@ -58,69 +55,65 @@ import java.util.List;
 		List<PNEdit> edits = new ArrayList<PNEdit>();
 		Node source, destination;
 		if (modelNetUse.isStartFromModelNet()) {
-			try {
-				/*
-				 * Check for prohibited additions. If the link we want to add
-				 * was not present in the model net, it is not allowed.
-				 */
-				if (!modelNetUse.isLinkAdditionAllowed()) {
-					edits = UtilConstraints.getSimpleEditsByType(edit, AddLinkEdit.class);
-					for (PNEdit simpleEdit : edits) {
-						source = modelNet.getNode(((AddLinkEdit) simpleEdit).getVariable1().getName());
-						destination = modelNet.getNode(((AddLinkEdit) simpleEdit).getVariable2().getName());
-						if ((modelNet.getLink(source, destination, true) == null) && (
-								modelNet.getLink(source, destination, true) == null
-						)) {
-							return false;
-						}
-					}
-				}
-				/*
-				 * Check for prohibited deletions. If the link we want to remove
-				 * was in the model net, the elimination is not allowed.
-				 */
-				if (!modelNetUse.isLinkRemovalAllowed()) {
-					edits = UtilConstraints.getSimpleEditsByType(edit, RemoveLinkEdit.class);
-					for (PNEdit simpleEdit : edits) {
-						source = modelNet.getNode(((RemoveLinkEdit) simpleEdit).getVariable1().getName());
-						destination = modelNet.getNode(((RemoveLinkEdit) simpleEdit).getVariable2().getName());
-						if ((modelNet.getLink(source, destination, true) != null) || (
-								modelNet.getLink(destination, source, true) != null
-						)) {
-							return false;
-						}
-					}
-				}
-				/*
-				 * Check for prohibited inversions. If the link we want to
-				 * invert was in the model net, it is not allowed.
-				 */
-				if (!modelNetUse.isLinkInversionAllowed()) {
-					edits = UtilConstraints.getSimpleEditsByType(edit, InvertLinkEdit.class);
-					for (PNEdit simpleEdit : edits) {
-						source = modelNet.getNode(((InvertLinkEdit) simpleEdit).getVariable1().getName());
-						destination = modelNet.getNode(((InvertLinkEdit) simpleEdit).getVariable2().getName());
-						if ((modelNet.getLink(source, destination, true) != null)) {
-							return false;
-						}
-					}
-					edits = UtilConstraints.getSimpleEditsByType(edit, OrientLinkEdit.class);
-					for (PNEdit simpleEdit : edits) {
-						source = modelNet.getNode(((OrientLinkEdit) simpleEdit).getVariable1().getName());
-						destination = modelNet.getNode(((OrientLinkEdit) simpleEdit).getVariable2().getName());
-						if ((modelNet.getLink(destination, source, true) != null)) {
-							return false;
-						}
-					}
-				}
-			} catch (NodeNotFoundException e) {
-				return (false);
-			}
-		}
+            /*
+             * Check for prohibited additions. If the link we want to add
+             * was not present in the model net, it is not allowed.
+             */
+            if (!modelNetUse.isLinkAdditionAllowed()) {
+                edits = UtilConstraints.getSimpleEditsByType(edit, AddLinkEdit.class);
+                for (PNEdit simpleEdit : edits) {
+                    source = modelNet.getNode(((AddLinkEdit) simpleEdit).getVariable1().getName());
+                    destination = modelNet.getNode(((AddLinkEdit) simpleEdit).getVariable2().getName());
+                    if ((modelNet.getLink(source, destination, true) == null) && (
+                            modelNet.getLink(source, destination, true) == null
+                    )) {
+                        return false;
+                    }
+                }
+            }
+            /*
+             * Check for prohibited deletions. If the link we want to remove
+             * was in the model net, the elimination is not allowed.
+             */
+            if (!modelNetUse.isLinkRemovalAllowed()) {
+                edits = UtilConstraints.getSimpleEditsByType(edit, RemoveLinkEdit.class);
+                for (PNEdit simpleEdit : edits) {
+                    source = modelNet.getNode(((RemoveLinkEdit) simpleEdit).getVariable1().getName());
+                    destination = modelNet.getNode(((RemoveLinkEdit) simpleEdit).getVariable2().getName());
+                    if ((modelNet.getLink(source, destination, true) != null) || (
+                            modelNet.getLink(destination, source, true) != null
+                    )) {
+                        return false;
+                    }
+                }
+            }
+            /*
+             * Check for prohibited inversions. If the link we want to
+             * invert was in the model net, it is not allowed.
+             */
+            if (!modelNetUse.isLinkInversionAllowed()) {
+                edits = UtilConstraints.getSimpleEditsByType(edit, InvertLinkEdit.class);
+                for (PNEdit simpleEdit : edits) {
+                    source = modelNet.getNode(((InvertLinkEdit) simpleEdit).getVariable1().getName());
+                    destination = modelNet.getNode(((InvertLinkEdit) simpleEdit).getVariable2().getName());
+                    if ((modelNet.getLink(source, destination, true) != null)) {
+                        return false;
+                    }
+                }
+                edits = UtilConstraints.getSimpleEditsByType(edit, OrientLinkEdit.class);
+                for (PNEdit simpleEdit : edits) {
+                    source = modelNet.getNode(((OrientLinkEdit) simpleEdit).getVariable1().getName());
+                    destination = modelNet.getNode(((OrientLinkEdit) simpleEdit).getVariable2().getName());
+                    if ((modelNet.getLink(destination, source, true) != null)) {
+                        return false;
+                    }
+                }
+            }
+        }
 		return true;
 	}
 
-	@Override protected String getMessage() {
+	@Override protected String constraintDescription() {
 		return "tried to add, remove or invert the wrong link";
 	}
 

@@ -9,7 +9,6 @@ package org.openmarkov.learning.core.preprocess;
 
 import org.junit.jupiter.api.*;
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.NodeNotFoundException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.PartitionedInterval;
@@ -17,7 +16,6 @@ import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.core.test.TestSpeed;
-import org.openmarkov.learning.core.preprocess.exception.WrongDiscretizationLimitException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +40,7 @@ public class DiscretizationTests {
 	}
 
 	@Test public void testNoDiscretize()
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException {
 		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
 		discretizeOptions.put("A", Discretization.Option.NONE);
 		discretizeOptions.put("B", Discretization.Option.NONE);
@@ -58,7 +56,7 @@ public class DiscretizationTests {
 	}
 
 	@Test public void testDiscretizeEqualWidth()
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException {
 		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
 		discretizeOptions.put("A", Discretization.Option.EQUAL_WIDTH);
 		discretizeOptions.put("B", Discretization.Option.EQUAL_WIDTH);
@@ -84,7 +82,7 @@ public class DiscretizationTests {
 	}
 
 	@Test public void testDiscretizeEqualFreq()
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException {
 		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
 		discretizeOptions.put("A", Discretization.Option.EQUAL_FREQ);
 		discretizeOptions.put("B", Discretization.Option.EQUAL_FREQ);
@@ -112,7 +110,7 @@ public class DiscretizationTests {
 	
 	@Tag(TestSpeed.SLOW)
 	@Test public void testDiscretizeModelNet()
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException {
 
 		State[] statesA = { new State("(-Infinity, -2]"), new State("(-2, 2]"), new State("(2, +Infinity]"),
 				new State("?") };
@@ -143,7 +141,7 @@ public class DiscretizationTests {
 	}
 
 	@Test public void testDiscretizeModelNetFS()
-			throws InvalidStateException, NodeNotFoundException, WrongDiscretizationLimitException {
+			throws InvalidStateException {
 
 		List<Variable> variables = new ArrayList<>();
 		varA = new Variable("A", "st.quo", "higher", "lower");

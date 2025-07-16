@@ -8,13 +8,10 @@
 package org.openmarkov.learning.core;
 
 import org.openmarkov.core.action.PNEdit;
+import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.exception.InvalidStateException;
-import org.openmarkov.core.exception.NodeNotFoundException;
-import org.openmarkov.core.exception.NonProjectablePotentialException;
-import org.openmarkov.core.exception.NormalizeNullVectorException;
-import org.openmarkov.core.exception.WrongCriterionException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.NodeType;
@@ -132,9 +129,9 @@ public class LearningManager {
 
 	/**
 	 * Main method to launch the learning process.
-	 * @throws NormalizeNullVectorException
+	 * @throws CannotNormalizeNullVectorException
 	 */
-	public void learn() throws NormalizeNullVectorException {
+	public void learn() throws CannotNormalizeNullVectorException {
 
 		learningAlgorithm.run(modelNetUse);
 	}
@@ -214,11 +211,11 @@ public class LearningManager {
 	 * @param edit
 	 * @throws DoEditException
 	 * @throws ConstraintViolationException
-	 * @throws NormalizeNullVectorException
+	 * @throws CannotNormalizeNullVectorException
 	 */
 	public void applyEdit(PNEdit edit)
 			throws ConstraintViolationException,
-			DoEditException, NormalizeNullVectorException {
+			DoEditException, CannotNormalizeNullVectorException {
 
 		this.learnedNet.doEdit(edit);
 		learningAlgorithm.parametricLearning();
@@ -359,15 +356,12 @@ public class LearningManager {
 		/* Take the positions of the nodes */
 		if (modelNet != null) {
 			for (Node modelNetNode : modelNet.getNodes()) {
-				try {
-					learntNetNode = learntNet.getNode(modelNetNode.getVariable().getName());
-					if (learntNetNode != null) {
-						double x = modelNetNode.getCoordinateX();
-						double y = modelNetNode.getCoordinateY();
-						learntNetNode.setCoordinateX(x);
-						learntNetNode.setCoordinateY(y);
-					}
-				} catch (NodeNotFoundException e) {
+				learntNetNode = learntNet.getNode(modelNetNode.getVariable().getName());
+				if (learntNetNode != null) {
+					double x = modelNetNode.getCoordinateX();
+					double y = modelNetNode.getCoordinateY();
+					learntNetNode.setCoordinateX(x);
+					learntNetNode.setCoordinateY(y);
 				}
 			}
 		}

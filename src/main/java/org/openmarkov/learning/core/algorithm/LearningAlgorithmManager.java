@@ -7,19 +7,14 @@
 
 package org.openmarkov.learning.core.algorithm;
 
-import org.openmarkov.plugin.Filter;
-import org.openmarkov.plugin.PluginLoader;
-import org.openmarkov.plugin.service.FilterIF;
-import org.openmarkov.plugin.service.PluginLoaderIF;
+import org.jetbrains.annotations.NotNull;
+import org.openmarkov.plugin.PluginSearch;
 
-import java.lang.annotation.AnnotationFormatError;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidParameterException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class manages the learning algorithms.
@@ -27,8 +22,7 @@ import java.util.stream.Collectors;
 public class LearningAlgorithmManager {
     
     // Attributes
-    private final PluginLoaderIF pluginsLoader;
-    private final HashMap<String, Class<? extends LearningAlgorithm>> learningAlgorithms;
+    private final HashMap<String, Class<LearningAlgorithm>> learningAlgorithms;
     
     // Constructor
     
@@ -37,20 +31,11 @@ public class LearningAlgorithmManager {
      * corresponding to <code>LearningAlgorithmType</code> and stores them in a map.
      */
     @SuppressWarnings("unchecked") public LearningAlgorithmManager() {
-        super();
-        this.pluginsLoader = new PluginLoader();
         learningAlgorithms = new HashMap<>();
-        
-        for (Class<?> plugin : findAllLearningAlgorithms()) {
-            // Uses the plugin architecture to find all learning algorithms annotated with LearningAlgorithmType
+        findAllLearningAlgorithms().forEach(plugin->{
             LearningAlgorithmType lAnnotation = plugin.getAnnotation(LearningAlgorithmType.class);
-            if (LearningAlgorithm.class.isAssignableFrom(plugin)) {
-                learningAlgorithms.put(lAnnotation.name(), (Class<? extends LearningAlgorithm>) plugin);
-            } else {
-                throw new AnnotationFormatError(
-                        "LearningAlgorithmType annotation must be in a class that extends LearningAlgorithm");
-            }
-        }
+            learningAlgorithms.put(lAnnotation.name(), plugin);
+        });
     }
     
     /**
@@ -72,26 +57,20 @@ public class LearningAlgorithmManager {
      * @return a learning algorithm.
      */
     public final LearningAlgorithm getByName(String name, List<Object> parameters) {
-        LearningAlgorithm instance = null;
-        try {
-            Constructor<?>[] constructors = learningAlgorithms.get(name).getConstructors();
-            for (Constructor<?> constructor : constructors) {
-                Class<?>[] parameterTypes = constructor.getParameterTypes();
-                if (parameterTypes.length == parameters.size()) {
-                    for (int paramaterIndex = 0; paramaterIndex < parameterTypes.length; ++paramaterIndex) {
-                        if (!parameterTypes[paramaterIndex].isAssignableFrom(
-                                parameters.get(paramaterIndex).getClass())) {
-                            throw new InvalidParameterException(
-                                    paramaterIndex + " th parameter of the constructor of " + name + " should be a " + parameterTypes[paramaterIndex]
-                                            + " and is a " + parameters.get(paramaterIndex).getClass());
-                        }
+        LearningAlgorithm instance = Arrays
+                .stream(this.learningAlgorithms.get(name).getConstructors())
+                .filter(constructor -> constructor.getParameterCount() == parameters.size())
+                .map(constructor -> {
+                    try {
+                        return (LearningAlgorithm) constructor.newInstance(parameters.toArray());
+                    } catch (InstantiationException | IllegalAccessException |
+                             InvocationTargetException ignored) {
+                        return null;
                     }
-                    instance = (LearningAlgorithm) constructor.newInstance(parameters.toArray());
-                }
-            }
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | RuntimeException e) {
-            e.printStackTrace();
-        }
+                })
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
         if (instance == null)
             throw new InvalidParameterException();
         return instance;
@@ -118,8 +97,11 @@ public class LearningAlgorithmManager {
      *
      * @return a list of learning algorithms.
      */
-    private List<Class<?>> findAllLearningAlgorithms() {
-        return pluginsLoader.loadAllPlugins(Filter.filter().toBeAnnotatedBy(LearningAlgorithmType.class));
+    private @NotNull Stream<Class<LearningAlgorithm>> findAllLearningAlgorithms() {
+        return PluginSearch.init()
+                           .annotatedWith(LearningAlgorithmType.class)
+                           .childrenOf(LearningAlgorithm.class)
+                           .stream();
     }
     
 }

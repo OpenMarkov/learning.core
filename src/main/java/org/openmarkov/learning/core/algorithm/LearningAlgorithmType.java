@@ -7,22 +7,15 @@
 
 package org.openmarkov.learning.core.algorithm;
 
+import org.openmarkov.core.annotation.Limits;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// The <code>Retention</code> annotation specifies how the marked annotation is stored:
-// <code>RetentionPolicy.RUNTIME</code> means that the annotation will be available at runtime.
-@Retention(RetentionPolicy.RUNTIME)
-
-// The @Target annotation indicates the contexts in which an annotation is applicable.
-// ElementType.TYPE means that the annotation can be applied to any element of a type (class, interface, enum)
-@Target(ElementType.TYPE)
-
-// The interface annotated <code>LearningAlgorithmType</code>
-// is a special interface that allows metadata to be added to classes, methods, variables, etc.
-public @interface LearningAlgorithmType {
+@Limits(classesThatCanBeAnnotated = LearningAlgorithm.class)
+@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.TYPE) public @interface LearningAlgorithmType {
     
     String name(); // The name will be stored in the annotation of the algorithm.
     
