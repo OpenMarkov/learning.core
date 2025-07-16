@@ -15,6 +15,7 @@ import java.util.List;
 	final List<Variable> unobservedVariables;
 
 	public UnobservedVariablesException(List<Variable> unobservedVariables) {
+		super("UnobservedVariablesException");
 		this.unobservedVariables = unobservedVariables;
 	}
 
