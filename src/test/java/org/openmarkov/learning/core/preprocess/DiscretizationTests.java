@@ -8,7 +8,6 @@
 package org.openmarkov.learning.core.preprocess;
 
 import org.junit.jupiter.api.*;
-import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.PartitionedInterval;
@@ -39,8 +38,7 @@ public class DiscretizationTests {
 		database = new CaseDatabase(variables, cases);
 	}
 
-	@Test public void testNoDiscretize()
-			throws InvalidStateException {
+	@Test public void testNoDiscretize() {
 		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
 		discretizeOptions.put("A", Discretization.Option.NONE);
 		discretizeOptions.put("B", Discretization.Option.NONE);
@@ -55,8 +53,7 @@ public class DiscretizationTests {
 		Assertions.assertEquals(database.getCases().length, newDatabase.getCases().length);
 	}
 
-	@Test public void testDiscretizeEqualWidth()
-			throws InvalidStateException {
+	@Test public void testDiscretizeEqualWidth() {
 		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
 		discretizeOptions.put("A", Discretization.Option.EQUAL_WIDTH);
 		discretizeOptions.put("B", Discretization.Option.EQUAL_WIDTH);
@@ -81,8 +78,7 @@ public class DiscretizationTests {
 
 	}
 
-	@Test public void testDiscretizeEqualFreq()
-			throws InvalidStateException {
+	@Test public void testDiscretizeEqualFreq() {
 		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
 		discretizeOptions.put("A", Discretization.Option.EQUAL_FREQ);
 		discretizeOptions.put("B", Discretization.Option.EQUAL_FREQ);
@@ -109,8 +105,7 @@ public class DiscretizationTests {
 	}
 	
 	@Tag(TestSpeed.SLOW)
-	@Test public void testDiscretizeModelNet()
-			throws InvalidStateException {
+	@Test public void testDiscretizeModelNet() {
 
 		State[] statesA = { new State("(-Infinity, -2]"), new State("(-2, 2]"), new State("(2, +Infinity]"),
 				new State("?") };
@@ -140,8 +135,7 @@ public class DiscretizationTests {
 		Assertions.assertEquals(1, newCases[7][1]);
 	}
 
-	@Test public void testDiscretizeModelNetFS()
-			throws InvalidStateException {
+	@Test public void testDiscretizeModelNetFS() {
 
 		List<Variable> variables = new ArrayList<>();
 		varA = new Variable("A", "st.quo", "higher", "lower");

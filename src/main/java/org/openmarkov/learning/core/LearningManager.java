@@ -11,7 +11,6 @@ import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
 import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.DoEditException;
-import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.NodeType;
@@ -406,13 +405,10 @@ public class LearningManager {
 
 		for (int j = 0; j < caseDatabase.getCases().length; j++) {
 			state = originalVariable.getStates()[caseDatabase.getCases()[j][variableIndex]];
-			try {
-				caseDatabase.getCases()[j][variableIndex] = modelNetVariable.getStateIndex(state.getName());
-			} catch (InvalidStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+            int stateIndex = modelNetVariable.getStateIndex(state.getName());
+            if(stateIndex == -1) continue;
+            caseDatabase.getCases()[j][variableIndex] = stateIndex;
+        }
 	}
 
 }

@@ -7,7 +7,6 @@
 
 package org.openmarkov.learning.core.preprocess;
 
-import org.openmarkov.core.exception.InvalidStateException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
@@ -77,12 +76,8 @@ public class MissingValues {
 	private static int[] getMissingStateIndices(List<Variable> variables) {
 		int[] missingStateIndices = new int[variables.size()];
 		for (int i = 0; i < variables.size(); ++i) {
-			try {
-				missingStateIndices[i] = variables.get(i).getStateIndex("?");
-			} catch (InvalidStateException e) {
-				missingStateIndices[i] = -1;
-			}
-		}
+            missingStateIndices[i] = variables.get(i).getStateIndex("?");
+        }
 		return missingStateIndices;
 	}
 
