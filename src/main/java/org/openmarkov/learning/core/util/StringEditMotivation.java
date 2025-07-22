@@ -14,7 +14,7 @@ public class StringEditMotivation extends LearningEditMotivation {
 		this.motivation = motivation;
 	}
 
-	public int compareTo(LearningEditMotivation edit) {
+	@Override public int compareTo(LearningEditMotivation edit) {
 		return 0;
 	}
 
