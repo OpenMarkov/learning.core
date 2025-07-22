@@ -42,12 +42,11 @@ public class ScoreEditMotivation extends LearningEditMotivation {
 	 *         is less than, equal to, or greater than the specified object.
 	 */
 	@Override public int compareTo(LearningEditMotivation edit) {
-		if (edit instanceof ScoreEditMotivation) {
-			return Double.compare(score, ((ScoreEditMotivation) edit).score);
-		} else {
-			throw new ClassCastException("Cannot compare ScoreEditMotivation with non-ScoreEditMotivation object.");
+		if (edit instanceof ScoreEditMotivation scoreEditMotivation) {
+			return Double.compare(this.score, scoreEditMotivation.score);
 		}
-	}
+		return 0;
+    }
 
 	/**
 	 * Returns a string representation of this score, rounded to numDecimals (default = 2) decimal places.
