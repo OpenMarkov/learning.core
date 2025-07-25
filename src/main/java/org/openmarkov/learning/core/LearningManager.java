@@ -9,7 +9,6 @@ package org.openmarkov.learning.core;
 
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
-import org.openmarkov.core.exception.ConstraintViolationException;
 import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
@@ -213,11 +212,10 @@ public class LearningManager {
 	 * @throws CannotNormalizeNullVectorException
 	 */
 	public void applyEdit(PNEdit edit)
-			throws ConstraintViolationException,
-			DoEditException, CannotNormalizeNullVectorException {
-
-		this.learnedNet.doEdit(edit);
-		learningAlgorithm.parametricLearning();
+			throws DoEditException, CannotNormalizeNullVectorException {
+        
+        edit.doEdit(this.learnedNet);
+        learningAlgorithm.parametricLearning();
 	}
 
 	/**

@@ -8,7 +8,6 @@
 package org.openmarkov.learning.core.util;
 
 import org.openmarkov.core.action.PNEdit;
-import org.openmarkov.core.exception.ConstraintViolationException;
 
 /**
  * An <code>LearningEditProposal</code> stores a <code>PNEdit</code> and the
@@ -27,17 +26,9 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 
 	protected LearningEditMotivation motivation;
 
-	protected ConstraintViolationException violatedConstraint;
-
 	public LearningEditProposal(PNEdit edit, LearningEditMotivation motivation) {
 		this.edit = edit;
 		this.motivation = motivation;
-		this.violatedConstraint = null;
-	}
-
-	public LearningEditProposal(PNEdit edit, LearningEditMotivation motivation, ConstraintViolationException e) {
-		this(edit, motivation);
-		this.violatedConstraint = e;
 	}
 
 	public PNEdit getEdit() {
@@ -48,12 +39,8 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 		return motivation;
 	}
 
-	public Exception getViolatedConstraint() {
-		return violatedConstraint;
-	}
-
 	public boolean isAllowed() {
-		return violatedConstraint == null;
+		return true;
 	}
 
 	public boolean equals(Object obj) {

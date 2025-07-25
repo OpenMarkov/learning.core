@@ -9,7 +9,7 @@ package org.openmarkov.learning.core.algorithm;
 
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
-import org.openmarkov.core.exception.ConstraintViolationException;
+import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.ProbNet;
@@ -114,7 +114,7 @@ public abstract class LearningAlgorithm {
      * that can be done to the network that is being learnt.
      *
      * @param onlyAllowedEdits  If this parameter is true, only those editions
-     *                          that do not provoke a ConstraintViolationException are returned
+     *                          that do not provoke a ConstraintViolated are returned
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
      * @return <code>LearningEditProposal</code> with the best edition and its score.
@@ -126,7 +126,7 @@ public abstract class LearningAlgorithm {
      * that can be done to the network that is being learnt.
      *
      * @param onlyAllowedEdits  If this parameter is true, only those editions
-     *                          that do not provoke a ConstraintViolationException are returned
+     *                          that do not provoke a ConstraintViolated are returned
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
      * @return <code>LearningEditProposal</code> with the best edition and its score.
@@ -149,14 +149,12 @@ public abstract class LearningAlgorithm {
         /* If there have been any improvements on the score, we update
          * the learnedNet. */
         try {
-            probNet.doEdit(bestEdition);
-        } catch (ConstraintViolationException ex) {
-            System.out.println("Proposed edition: " + bestEdition.toString() + " not allowed by the Model Network, skipping.");
+            bestEdition.doEdit(probNet);
+        } catch (DoEditException exception) {
             /* If the edition was not allowed (ModelNetworkconstraint)
              * the algorithm just goes through the next iteration of the
              * loop, asking the cache for the next best edition.
              */
-        } catch (Exception exception) {
             System.err.println(exception);
             exception.printStackTrace();
         }
@@ -233,7 +231,7 @@ public abstract class LearningAlgorithm {
         //Announce edit to check whether it is allowed or not
         try {
             edit.getProbNet().getPNESupport().announceEdit(edit);
-        } catch (ConstraintViolationException e) {
+        } catch (DoEditException.ConstraintViolated e) {
             isAllowed = false;
         }
         return isAllowed;
