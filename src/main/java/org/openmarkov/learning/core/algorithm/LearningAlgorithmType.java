@@ -19,8 +19,8 @@ import java.lang.annotation.Target;
     
     String name(); // The name will be stored in the annotation of the algorithm.
     
-    boolean discriminative() default false;
+    boolean discriminative();
     
-    boolean supportsUnobservedVariables() default false;
+    boolean supportsUnobservedVariables();
     
 }

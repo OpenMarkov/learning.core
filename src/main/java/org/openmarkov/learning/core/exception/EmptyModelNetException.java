@@ -7,17 +7,12 @@
 
 package org.openmarkov.learning.core.exception;
 
-import org.openmarkov.core.exception.OpenMarkovException;
+import org.openmarkov.core.exception.BundledOpenMarkovException;
 
 /**
  * Thrown when model net is null
  *
  * @author Iñigo
  */
-@SuppressWarnings("serial") public class EmptyModelNetException extends OpenMarkovException {
-    
-    public EmptyModelNetException(){
-        super("EmptyModelNetException");
-    }
-    
+@SuppressWarnings("serial") public class EmptyModelNetException extends BundledOpenMarkovException {
 }
