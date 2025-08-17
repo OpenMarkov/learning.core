@@ -10,6 +10,8 @@ package org.openmarkov.learning.core;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
 import org.openmarkov.core.exception.DoEditException;
+import org.openmarkov.core.exception.InvalidArgumentException;
+import org.openmarkov.core.exception.UnreacheableException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.NodeType;
@@ -27,10 +29,7 @@ import org.openmarkov.learning.core.util.LearningEditMotivation;
 import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +88,7 @@ public class LearningManager {
             if (modelNet == null) {
                 throw new EmptyModelNetException();
             }
-            this.learnedNet = applyModelNet(learningAlgorithmManager.getByName(algorithmName), caseDatabase, modelNet,
+            this.learnedNet = applyModelNet(learningAlgorithmManager.getClassByName(algorithmName), caseDatabase, modelNet,
                                             modelNetUse);
         } else {
             this.learnedNet = new ProbNet();
@@ -108,10 +107,7 @@ public class LearningManager {
     }
     
     public static Set<String> getDiscriminativeAlgorithmNames() {
-        return learningAlgorithmManager.getDiscriminativeLearningAlgorithmNames()
-                                       .stream()
-                                       .sorted()
-                                       .collect(Collectors.toSet());
+        return new HashSet<>(learningAlgorithmManager.getDiscriminativeLearningAlgorithmNames());
     }
     
     public static Set<String> getGenerativeAlgorithmNames() {
@@ -236,7 +232,7 @@ public class LearningManager {
         LinkedHashMap<String, String> newIO = learnedNet.additionalProperties;
         State[] defaultNodeStates = {new State("present"), new State("absent")};
         learnedNet.setDefaultStates(defaultNodeStates);
-        newIO.put("hasElviraProperties", new String("yes"));
+        newIO.put("hasElviraProperties", "yes");
         learnedNet.additionalProperties = newIO;
     }
     
@@ -312,11 +308,11 @@ public class LearningManager {
     }
     
     public LearningAlgorithm getAlgorithmInstance(String name) {
-        
-        List<Object> parameters = new ArrayList<>();
-        parameters.add(learnedNet);
-        parameters.add(caseDatabase);
-        return learningAlgorithmManager.getByName(name, parameters);
+        try {
+            return LearningManager.learningAlgorithmManager.getByName(name, List.of(this.learnedNet, this.caseDatabase));
+        } catch (InvalidArgumentException e) {
+            throw new UnreacheableException(e);
+        }
     }
     
     /**

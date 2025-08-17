@@ -54,7 +54,7 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 	}
 
 	public String toString() {
-		return new StringBuilder().append(edit.toString() + " " + motivation).toString();
+        return edit.toString() + " " + motivation;
 	}
 
 	@Override public int compareTo(LearningEditProposal editProposal) {

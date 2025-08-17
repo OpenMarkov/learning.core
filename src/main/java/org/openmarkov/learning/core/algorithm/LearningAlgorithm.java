@@ -8,6 +8,8 @@
 package org.openmarkov.learning.core.algorithm;
 
 import org.openmarkov.core.action.PNEdit;
+import org.openmarkov.core.annotation.ImplementationRequirements;
+import org.openmarkov.core.annotation.RequiredConstructor;
 import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
 import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.io.database.CaseDatabase;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@ImplementationRequirements(requiresOneOfTheseConstructors = @RequiredConstructor({ProbNet.class, CaseDatabase.class}))
 /**
  * Abstract learning algorithm.
  */
@@ -73,6 +76,7 @@ public abstract class LearningAlgorithm {
      * Method invoked to run the algorithm.
      *
      * @param modelNetUse ModelNetUse
+     *
      * @throws CannotNormalizeNullVectorException
      */
     public void run(ModelNetUse modelNetUse) throws CannotNormalizeNullVectorException {
@@ -117,6 +121,7 @@ public abstract class LearningAlgorithm {
      *                          that do not provoke a ConstraintViolated are returned
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
+     *
      * @return <code>LearningEditProposal</code> with the best edition and its score.
      */
     public abstract LearningEditProposal getBestEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits);
@@ -129,6 +134,7 @@ public abstract class LearningAlgorithm {
      *                          that do not provoke a ConstraintViolated are returned
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
+     *
      * @return <code>LearningEditProposal</code> with the best edition and its score.
      */
     public abstract LearningEditProposal getNextEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits);
@@ -137,6 +143,7 @@ public abstract class LearningAlgorithm {
      * Calculates the score associated to the given edit.
      *
      * @param edit <code>PNEdit</code>
+     *
      * @return <code>LearningEditMotivation</code> motivation for the given edit
      */
     public abstract LearningEditMotivation getMotivation(PNEdit edit);
@@ -169,7 +176,6 @@ public abstract class LearningAlgorithm {
      * @throws CannotNormalizeNullVectorException
      */
     public ProbNet parametricLearning() throws CannotNormalizeNullVectorException {
-        
         for (Node node : probNet.getNodes()) {
             if (node.getNumPotentials() == 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);
@@ -179,7 +185,6 @@ public abstract class LearningAlgorithm {
                 absoluteFrequencies.values[j] += alpha;
             probNet.addPotential(DiscretePotentialOperations.normalize(absoluteFrequencies));
         }
-        
         return probNet;
     }
     
@@ -255,6 +260,7 @@ public abstract class LearningAlgorithm {
      *
      * @param node <code>Node</code> whose frequencies we want to
      *             calculate.
+     *
      * @return <code>TablePotential(node,parents)</code> with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents.

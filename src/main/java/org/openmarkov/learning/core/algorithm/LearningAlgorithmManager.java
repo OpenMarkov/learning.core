@@ -8,10 +8,10 @@
 package org.openmarkov.learning.core.algorithm;
 
 import org.jetbrains.annotations.NotNull;
+import org.openmarkov.core.exception.InvalidArgumentException;
 import org.openmarkov.plugin.PluginSearch;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,8 +44,7 @@ public class LearningAlgorithmManager {
      * @param name the algorithm name.
      * @return a learning algorithm class
      */
-    public final Class<? extends LearningAlgorithm> getByName(String name) {
-        
+    public final Class<? extends LearningAlgorithm> getClassByName(String name) {
         return learningAlgorithms.get(name);
     }
     
@@ -56,7 +55,7 @@ public class LearningAlgorithmManager {
      * @param parameters the parameters of the algorithm constructor.
      * @return a learning algorithm.
      */
-    public final LearningAlgorithm getByName(String name, List<Object> parameters) {
+    public final LearningAlgorithm getByName(String name, List<Object> parameters) throws InvalidArgumentException {
         LearningAlgorithm instance = Arrays
                 .stream(this.learningAlgorithms.get(name).getConstructors())
                 .filter(constructor -> constructor.getParameterCount() == parameters.size())
@@ -72,7 +71,7 @@ public class LearningAlgorithmManager {
                 .findFirst()
                 .orElse(null);
         if (instance == null)
-            throw new InvalidParameterException();
+            throw new InvalidArgumentException("there is no Learning Algorithm that can be constructed with said arguments");
         return instance;
     }
     

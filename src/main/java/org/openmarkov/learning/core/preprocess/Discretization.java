@@ -203,7 +203,7 @@ public class Discretization {
         double min = calculateVariableMin(variable);
         double step = (max - min) / (double) numIntervals;
         for (int i = 0; i < numIntervals; i++) {
-            states[i] = new State(new String("(" + (min + (i * step)) + " , " + (min + ((i + 1) * step)) + "]"));
+            states[i] = new State("(" + (min + (i * step)) + " , " + (min + ((i + 1) * step)) + "]");
             belongsToLeftSide[i] = true;
             limits[i] = min + (i * step);
         }
@@ -295,7 +295,7 @@ public class Discretization {
         double[] limits = new double[numIntervals + 1];
         boolean[] belongsToLeftSide = new boolean[numIntervals + 1];
         for (int i = 0; i < numIntervals; i++) {
-            newStates[i] = new State(new String("(" + intervalLimits.get(i) + " , " + intervalLimits.get(i + 1) + "]"));
+            newStates[i] = new State("(" + intervalLimits.get(i) + " , " + intervalLimits.get(i + 1) + "]");
             belongsToLeftSide[i] = true;
             limits[i] = intervalLimits.get(i);
         }
