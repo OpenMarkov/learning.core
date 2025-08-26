@@ -10,7 +10,7 @@ package org.openmarkov.learning.core.util;
 import org.openmarkov.core.action.PNEdit;
 
 /**
- * An <code>LearningEditProposal</code> stores a <code>PNEdit</code> and the
+ * An {@code LearningEditProposal} stores a {@code PNEdit} and the
  * increment of score associated to this edition. Also it stores a pointer
  * to the constraint violated by this edition.
  *
@@ -38,8 +38,8 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 	public LearningEditMotivation getMotivation() {
 		return motivation;
 	}
-
-	public boolean isAllowed() {
+    
+    public static boolean isAllowed() {
 		return true;
 	}
 

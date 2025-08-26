@@ -20,7 +20,6 @@ import org.openmarkov.core.model.network.constraint.UtilConstraints;
 import org.openmarkov.core.model.network.constraint.annotation.Constraint;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +51,7 @@ import java.util.List;
 	}
 
 	@Override public boolean checkEdit(ProbNet probNet, PNEdit edit) {
-		List<PNEdit> edits = new ArrayList<PNEdit>();
+        List<PNEdit> edits;
 		Node source, destination;
 		if (modelNetUse.isStartFromModelNet()) {
             /*

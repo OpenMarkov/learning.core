@@ -32,8 +32,8 @@ public class MissingValues {
 	 * This function removes the missing state of variables with missing values
 	 * and removes the cases with missing values according to the preprocessOptions
 	 *
-	 * @param database         <code>CaseDatabase</code> database to preprocess
-	 * @param preprocessOption <code>Map&lt;Variable, MissingValues.Option&gt;</code> containing the preprocess
+     * @param database         {@code CaseDatabase} database to preprocess
+     * @param preprocessOption {@code Map<Variable, MissingValues.Option>} containing the preprocess
 	 *                         option selected for each variable
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, MissingValues.Option> preprocessOption) {
@@ -84,9 +84,9 @@ public class MissingValues {
 	/**
 	 * This function checks if a case contains missing values
 	 *
-	 * @param variables <code>List</code> variables to preprocess
-	 * @param caseData  <code>int[]</code> case we want to verify
-	 * @return <code>boolean</code> true if the case contains missing values
+     * @param variables {@code List} variables to preprocess
+     * @param caseData  {@code int[]} case we want to verify
+     * @return {@code boolean} true if the case contains missing values
 	 */
 	private static boolean containsMissingValues(List<Variable> variables, int[] caseData) {
 		boolean containsMissingValues = false;
@@ -102,9 +102,9 @@ public class MissingValues {
 	 * This function removes the "?" of each variable whose preprocessOption
 	 * is ELIMINATE
 	 *
-	 * @param preprocessOptions <code>Map&lt;Variable, MissingValues.Option&gt;</code> preprocess option for each
+     * @param preprocessOptions {@code Map<Variable, MissingValues.Option>} preprocess option for each
 	 *                          variable
-	 * @param variables         <code>List</code> of variables
+     * @param variables         {@code List} of variables
 	 */
 	private static List<Variable> removeMissingState(Map<String, MissingValues.Option> preprocessOptions,
 			List<Variable> variables) {
@@ -124,8 +124,8 @@ public class MissingValues {
 	/**
 	 * This function removes the "?" state
 	 *
-	 * @param states <code>String[]</code> original states
-	 * @return <code>String[]</code> original states without "?"
+     * @param states {@code String[]} original states
+     * @return {@code String[]} original states without "?"
 	 */
 	private static State[] removeMissingState(State[] states) {
 		ArrayList<State> newStates = new ArrayList<State>();

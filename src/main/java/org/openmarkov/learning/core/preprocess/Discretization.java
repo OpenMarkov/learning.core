@@ -42,7 +42,7 @@ public class Discretization {
     /**
      * This function determines whether a variable is numeric or not
      *
-     * @param variable <code>Variable</code>
+     * @param variable {@code Variable}
      * @return true if the variable is numeric
      */
     public static boolean isNumeric(Variable variable) {
@@ -67,7 +67,7 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
-     * @return <code>CaseDatabase</code> updated database
+     * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
                                        Map<String, Integer> numIntervalsPerVariable, ProbNet modelNet) {
@@ -75,22 +75,13 @@ public class Discretization {
         List<Variable> newVariables = new ArrayList<>();
         
         for (Variable variable : database.getVariables()) {
-            Variable newVariable = variable;
             int numIntervals = numIntervalsPerVariable.get(variable.getName());
-            switch (discretizeOptions.get(variable.getName())) {
-                case EQUAL_WIDTH:
-                    newVariable = discretizeEqualWidth(variable, numIntervals);
-                    break;
-                case EQUAL_FREQ:
-                    newVariable = discretizeEqualFreq(variable, database, numIntervals);
-                    break;
-                case MODEL_NET:
-                    newVariable = discretizeFromModelNet(variable, modelNet);
-                    break;
-                default:
-                    newVariable = variable;
-                    break;
-            }
+            Variable newVariable = switch (discretizeOptions.get(variable.getName())) {
+                case EQUAL_WIDTH -> discretizeEqualWidth(variable, numIntervals);
+                case EQUAL_FREQ -> discretizeEqualFreq(variable, database, numIntervals);
+                case MODEL_NET -> discretizeFromModelNet(variable, modelNet);
+                default -> variable;
+            };
             newVariables.add(newVariable);
         }
         
@@ -103,7 +94,7 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
-     * @return <code>CaseDatabase</code> updated database
+     * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
                                        Map<String, Integer> numIntervalsPerVariable) {
@@ -113,7 +104,7 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
-     * @return <code>CaseDatabase</code> updated database
+     * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, Discretization.Option discretizationOption,
                                        int numIntervals) {
@@ -131,7 +122,7 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
-     * @return <code>CaseDatabase</code> updated database
+     * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, ProbNet modelNet) {
         Map<String, Option> discretizeOptions = new HashMap<>();
@@ -149,8 +140,8 @@ public class Discretization {
      * This function makes the discretization of a variable taking the
      * information from a model net
      *
-     * @param oldVariable <code>Variable</code> variable to discretize
-     * @param modelNet    <code>ProbNet</code> net from which to tak the
+     * @param oldVariable {@code Variable} variable to discretize
+     * @param modelNet    {@code ProbNet} net from which to tak the
      *                    information of the discretization
      */
     private static Variable discretizeFromModelNet(Variable oldVariable, ProbNet modelNet) {
@@ -162,7 +153,7 @@ public class Discretization {
             
             boolean missingValuesInDB = oldVariable.containsState("?");
             boolean missingValuesInModelNet = modelNetVariable.containsState("?");
-            State[] newStates = null;
+            State[] newStates;
             if (missingValuesInDB && !missingValuesInModelNet) {
                 // Add "missing value" state
                 newStates = new State[modelNetVariable.getNumStates() + 1];
@@ -190,7 +181,6 @@ public class Discretization {
     }
     
     private static Variable discretizeEqualWidth(Variable variable, int numIntervals) {
-        Variable newVariable;
         
         //Create a new discretized variable
         boolean containsMissingValues = variable.containsState("?");
@@ -201,7 +191,7 @@ public class Discretization {
         double[] limits = new double[numIntervals + 1];
         double max = calculateVariableMax(variable);
         double min = calculateVariableMin(variable);
-        double step = (max - min) / (double) numIntervals;
+        double step = (max - min) / numIntervals;
         for (int i = 0; i < numIntervals; i++) {
             states[i] = new State("(" + (min + (i * step)) + " , " + (min + ((i + 1) * step)) + "]");
             belongsToLeftSide[i] = true;
@@ -215,8 +205,8 @@ public class Discretization {
         if (containsMissingValues) {
             states[numStates - 1] = new State("?");
         }
-        newVariable = new Variable(variable.getName(), states, new PartitionedInterval(limits, belongsToLeftSide),
-                                   0.001);
+        Variable newVariable = new Variable(variable.getName(), states, new PartitionedInterval(limits, belongsToLeftSide),
+                                            0.001);
         
         return newVariable;
     }
@@ -229,15 +219,14 @@ public class Discretization {
      * 4, making two intervals of "equal frequency" would lead to an interval
      * of frequency 200 and an interval of frequency 7.
      *
-     * @param variable     <code>Variable</code> variable to discretize
-     * @param database     <code>int[][]</code> database cases
+     * @param variable     {@code Variable} variable to discretize
+     * @param database     {@code int[][]} database cases
      * @param numIntervals
      */
     private static Variable discretizeEqualFreq(Variable variable, CaseDatabase database, int numIntervals) {
-        Variable newVariable;
         State[] states = variable.getStates();
         List<Double> intervalLimits = new ArrayList<Double>();
-        double accruedFreq = 0, stateFreq = 0, validCaseNum, intervalFreq;
+        double accruedFreq = 0, stateFreq;
         int stateIndex;
         NumberFormat nf = NumberFormat.getNumberInstance(new Locale("en"));
         DecimalFormat decimalFormat = (DecimalFormat) nf;
@@ -259,14 +248,14 @@ public class Discretization {
         }
         
         // number of cases with valid data, i.e. all minus the missing values
-        validCaseNum = casesForVariable.length;
+        double validCaseNum = casesForVariable.length;
         int missingStateIndex = variable.getStateIndex("?");
         if (missingStateIndex != -1) {
             validCaseNum = casesForVariable.length - histogram[missingStateIndex];
         }
         
         //calculate approximate frequency of each interval
-        intervalFreq = validCaseNum / (double) numIntervals;
+        double intervalFreq = validCaseNum / numIntervals;
         intervalLimits.add(Double.NEGATIVE_INFINITY);
         
         for (Double state : orderedStates) {
@@ -310,8 +299,8 @@ public class Discretization {
             newStates[numStates - 1] = new State("?");
         }
         
-        newVariable = new Variable(variable.getName(), newStates, new PartitionedInterval(limits, belongsToLeftSide),
-                                   0.001);
+        Variable newVariable = new Variable(variable.getName(), newStates, new PartitionedInterval(limits, belongsToLeftSide),
+                                            0.001);
         
         return newVariable;
     }
@@ -320,9 +309,9 @@ public class Discretization {
      * This function updates the database cases to adapt them to the new
      * states of the discretized variables.
      *
-     * @param database          <code>int[][]</code> original database cases
+     * @param database          {@code int[][]} original database cases
      * @param newVariables
-     * @param discretizeOptions <code>ArrayList</code> discretization option
+     * @param discretizeOptions {@code ArrayList} discretization option
      *                          selected for each variable.
      */
     private static int[][] discretizeCases(CaseDatabase database, List<Variable> newVariables,
@@ -356,7 +345,7 @@ public class Discretization {
                             if (oldStates[oldCases[i][j]].getName().equals("?")) {
                                 newCases[i][j] = missingValeStateIndex;
                             } else {
-                                Double value = Double.parseDouble(oldStates[oldCases[i][j]].getName());
+                                double value = Double.parseDouble(oldStates[oldCases[i][j]].getName());
                                 // We search for the interval in which the value is contained
                                 int k = 1;
                                 boolean matched = false;

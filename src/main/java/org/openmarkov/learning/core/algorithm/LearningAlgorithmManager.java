@@ -28,7 +28,7 @@ public class LearningAlgorithmManager {
     
     /**
      * Finds all learning algorithms using the plugin architecture, which means all those with the annotation
-     * corresponding to <code>LearningAlgorithmType</code> and stores them in a map.
+     * corresponding to {@code LearningAlgorithmType} and stores them in a map.
      */
     @SuppressWarnings("unchecked") public LearningAlgorithmManager() {
         learningAlgorithms = new HashMap<>();
@@ -96,7 +96,7 @@ public class LearningAlgorithmManager {
      *
      * @return a list of learning algorithms.
      */
-    private @NotNull Stream<Class<LearningAlgorithm>> findAllLearningAlgorithms() {
+    private static @NotNull Stream<Class<LearningAlgorithm>> findAllLearningAlgorithms() {
         return PluginSearch.init()
                            .annotatedWith(LearningAlgorithmType.class)
                            .childrenOf(LearningAlgorithm.class)

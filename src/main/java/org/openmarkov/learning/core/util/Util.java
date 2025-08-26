@@ -29,11 +29,11 @@ public class Util {
 	 *
 	 * @param probNet
 	 * @param caseDatabase
-	 * @param childNode       <code>Node</code> whose frequencies we want to
+     * @param childNode       {@code Node} whose frequencies we want to
 	 *                        calculate.
-	 * @param parentVariables <code>ArrayList</code> formed by the variable associated
+     * @param parentVariables {@code ArrayList} formed by the variable associated
 	 *                        to the given node and the variables associated to its parents.
-	 * @return <code>TablePotential</code> with the absolute frequencies in
+     * @return {@code TablePotential} with the absolute frequencies in
 	 * the database of each of the configurations of the given node and its
 	 * parents.
 	 */
@@ -85,9 +85,9 @@ public class Util {
 	 * parent.
 	 *
 	 * @param probNet
-	 * @param node         <code>Node</code> whose frequencies we want to calculate.
+     * @param node         {@code Node} whose frequencies we want to calculate.
 	 * @param caseDatabase
-	 * @return <code>TablePotential</code> with the absolute frequencies in the
+     * @return {@code TablePotential} with the absolute frequencies in the
 	 * database of each of the configurations of the given node and its
 	 * parents and a given extra parent.
 	 */
@@ -105,9 +105,9 @@ public class Util {
 	 * configurations of the given node and its parents and a given extra
 	 * parent.
 	 *
-	 * @param node        <code>Node</code> whose frequencies we want to calculate.
-	 * @param extraParent <code>Node</code>
-	 * @return <code>TablePotential</code> with the absolute frequencies in the
+     * @param node        {@code Node} whose frequencies we want to calculate.
+     * @param extraParent {@code Node}
+     * @return {@code TablePotential} with the absolute frequencies in the
 	 * database of each of the configurations of the given node and its
 	 * parents and a given extra parent.
 	 */
@@ -130,10 +130,10 @@ public class Util {
 	 * Calculate the absolute frequencies in the database of each of the
 	 * configurations of the given node and its parents except one.
 	 *
-	 * @param node          <code>Node</code> whose frequencies we want to calculate.
-	 * @param removedParent <code>Node</code> that we do not want to include
+     * @param node          {@code Node} whose frequencies we want to calculate.
+     * @param removedParent {@code Node} that we do not want to include
 	 *                      in the calculations
-	 * @return <code>TablePotential</code> with the absolute frequencies in
+     * @return {@code TablePotential} with the absolute frequencies in
 	 * the database of each of the configurations of the given node and its
 	 * parents except one.
 	 */

@@ -54,7 +54,7 @@ public class LearningManager {
     /**
      * ProbNet to learn.
      */
-    private ProbNet learnedNet = null;
+    private ProbNet learnedNet;
     
     /**
      * Structure that specifies use of model net
@@ -64,17 +64,17 @@ public class LearningManager {
     /**
      * Case database
      */
-    private CaseDatabase caseDatabase = null;
+    private CaseDatabase caseDatabase;
     
     // Constructor
     
     /**
      * @param caseDatabase
-     * @param algorithmName <code>LearningAlgorithm</code> indicating the algorithm
+     * @param algorithmName {@code LearningAlgorithm} indicating the algorithm
      *                      selected by the user.
-     * @param modelNet      <code>ProbNet</code> Net from which take the
+     * @param modelNet      {@code ProbNet} Net from which take the
      *                      information of the nodes and links
-     * @param modelNetUse   <code>boolean[]</code> use the positions of the nodes,
+     * @param modelNetUse   {@code boolean[]} use the positions of the nodes,
      *                      use also the initial links or use them fixed
      * @throws EmptyModelNetException
      * @throws UnobservedVariablesException
@@ -97,7 +97,7 @@ public class LearningManager {
             }
         }
         
-        this.addElviraProperties(learnedNet);
+        LearningManager.addElviraProperties(learnedNet);
         this.modelNetUse = modelNetUse;
     }
     
@@ -140,7 +140,7 @@ public class LearningManager {
     /**
      * Returns learned net
      *
-     * @return <code>ProbNet</code> containing learned net
+     * @return {@code ProbNet} containing learned net
      */
     public ProbNet getLearnedNet() {
         
@@ -160,8 +160,8 @@ public class LearningManager {
     /**
      * Scores the associated network with the given edition.
      *
-     * @param edit <code>PNEdit</code>
-     * @return <code>double</code> score of the net with the given edition
+     * @param edit {@code PNEdit}
+     * @return {@code double} score of the net with the given edition
      */
     public LearningEditMotivation getMotivation(PNEdit edit) {
         
@@ -224,10 +224,10 @@ public class LearningManager {
     /**
      * Adds elvira properties to the learned net.
      *
-     * @param learnedNet <code>ProbNet</code> which receives the elvira
+     * @param learnedNet {@code ProbNet} which receives the elvira
      *                   properties.
      */
-    private void addElviraProperties(ProbNet learnedNet) {
+    private static void addElviraProperties(ProbNet learnedNet) {
         
         LinkedHashMap<String, String> newIO = learnedNet.additionalProperties;
         State[] defaultNodeStates = {new State("present"), new State("absent")};
@@ -290,7 +290,7 @@ public class LearningManager {
      * @param modelNetVariables List of variables in the model network
      * @return A list of variables that are in the model network but not in the database
      */
-    private List<Variable> getMissingVariables(List<Variable> databaseVariables, List<Variable> modelNetVariables) {
+    private static List<Variable> getMissingVariables(List<Variable> databaseVariables, List<Variable> modelNetVariables) {
         
         List<Variable> missingVariables = new ArrayList<>(modelNetVariables);
         for (Variable databaseVariable : databaseVariables) {
@@ -349,9 +349,9 @@ public class LearningManager {
      *
      * @param modelNet - the modelNet to copy the node positions from
      */
-    private void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learntNet) {
+    private static void copyNodePositionsFromModelNet(ProbNet modelNet, ProbNet learntNet) {
         
-        Node learntNetNode = null;
+        Node learntNetNode;
         
         /* Take the positions of the nodes */
         if (modelNet != null) {

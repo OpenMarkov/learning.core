@@ -122,7 +122,7 @@ public abstract class LearningAlgorithm {
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
      *
-     * @return <code>LearningEditProposal</code> with the best edition and its score.
+     * @return {@code LearningEditProposal} with the best edition and its score.
      */
     public abstract LearningEditProposal getBestEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits);
     
@@ -135,16 +135,16 @@ public abstract class LearningAlgorithm {
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
      *
-     * @return <code>LearningEditProposal</code> with the best edition and its score.
+     * @return {@code LearningEditProposal} with the best edition and its score.
      */
     public abstract LearningEditProposal getNextEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits);
     
     /**
      * Calculates the score associated to the given edit.
      *
-     * @param edit <code>PNEdit</code>
+     * @param edit {@code PNEdit}
      *
-     * @return <code>LearningEditMotivation</code> motivation for the given edit
+     * @return {@code LearningEditMotivation} motivation for the given edit
      */
     public abstract LearningEditMotivation getMotivation(PNEdit edit);
     
@@ -231,7 +231,7 @@ public abstract class LearningAlgorithm {
         return false;
     }
     
-    protected boolean isAllowed(PNEdit edit) {
+    protected static boolean isAllowed(PNEdit edit) {
         boolean isAllowed = true;
         //Announce edit to check whether it is allowed or not
         try {
@@ -258,10 +258,10 @@ public abstract class LearningAlgorithm {
      * Calculate the absolute frequencies in the database of each of the
      * configurations of the given node and its parents.
      *
-     * @param node <code>Node</code> whose frequencies we want to
+     * @param node {@code Node} whose frequencies we want to
      *             calculate.
      *
-     * @return <code>TablePotential(node,parents)</code> with the absolute frequencies in
+     * @return {@code TablePotential(node,parents)} with the absolute frequencies in
      * the database of each of the configurations of the given node and its
      * parents.
      */
