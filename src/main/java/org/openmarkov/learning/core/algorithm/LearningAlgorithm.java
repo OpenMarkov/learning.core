@@ -10,7 +10,7 @@ package org.openmarkov.learning.core.algorithm;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.annotation.ImplementationRequirements;
 import org.openmarkov.core.annotation.RequiredConstructor;
-import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
+import org.openmarkov.core.exception.CannotNormalizePotentialException;
 import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
@@ -77,9 +77,9 @@ public abstract class LearningAlgorithm {
      *
      * @param modelNetUse ModelNetUse
      *
-     * @throws CannotNormalizeNullVectorException
+     * @throws CannotNormalizePotentialException
      */
-    public void run(ModelNetUse modelNetUse) throws CannotNormalizeNullVectorException {
+    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException {
         init(modelNetUse);
         /* Main loop */
         LearningEditProposal bestEdition = getBestEdit(true, true);
@@ -173,9 +173,9 @@ public abstract class LearningAlgorithm {
      * normalizing the absolute frequencies of the configurations of
      * the parents.
      *
-     * @throws CannotNormalizeNullVectorException
+     * @throws CannotNormalizePotentialException
      */
-    public ProbNet parametricLearning() throws CannotNormalizeNullVectorException {
+    public ProbNet parametricLearning() throws CannotNormalizePotentialException {
         for (Node node : probNet.getNodes()) {
             if (node.getNumPotentials() == 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);

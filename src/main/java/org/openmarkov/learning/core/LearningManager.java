@@ -8,7 +8,7 @@
 package org.openmarkov.learning.core;
 
 import org.openmarkov.core.action.PNEdit;
-import org.openmarkov.core.exception.CannotNormalizeNullVectorException;
+import org.openmarkov.core.exception.CannotNormalizePotentialException;
 import org.openmarkov.core.exception.DoEditException;
 import org.openmarkov.core.exception.InvalidArgumentException;
 import org.openmarkov.core.exception.UnreacheableException;
@@ -130,9 +130,9 @@ public class LearningManager {
     /**
      * Main method to launch the learning process.
      *
-     * @throws CannotNormalizeNullVectorException
+     * @throws CannotNormalizePotentialException
      */
-    public void learn() throws CannotNormalizeNullVectorException {
+    public void learn() throws CannotNormalizePotentialException {
         
         learningAlgorithm.run(modelNetUse);
     }
@@ -212,10 +212,10 @@ public class LearningManager {
      * @param edit
      * @throws DoEditException
      * @throws ConstraintViolationException
-     * @throws CannotNormalizeNullVectorException
+     * @throws CannotNormalizePotentialException
      */
     public void applyEdit(PNEdit edit)
-            throws DoEditException, CannotNormalizeNullVectorException {
+            throws DoEditException, CannotNormalizePotentialException {
         
         edit.doEdit(this.learnedNet);
         learningAlgorithm.parametricLearning();
@@ -250,8 +250,8 @@ public class LearningManager {
         
         ProbNet probNet = null;
         List<Variable> missingVariables = getMissingVariables(database.getVariables(), modelNet.getVariables());
-        if (!algorithmClass.getAnnotation(LearningAlgorithmType.class).supportsUnobservedVariables()
-                && !missingVariables.isEmpty()) {
+        if (!algorithmClass.getAnnotation(LearningAlgorithmType.class)
+                           .supportsUnobservedVariables() && !missingVariables.isEmpty()) {
             List<Variable> latentVariables = new ArrayList<>(modelNet.getVariables());
             latentVariables.removeAll(database.getVariables());
             throw new UnobservedVariablesException(algorithmClass, latentVariables);

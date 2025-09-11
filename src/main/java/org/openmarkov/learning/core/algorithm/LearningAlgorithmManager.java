@@ -70,8 +70,9 @@ public class LearningAlgorithmManager {
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
-        if (instance == null)
+        if (instance == null) {
             throw new InvalidArgumentException("there is no Learning Algorithm that can be constructed with said arguments");
+        }
         return instance;
     }
     

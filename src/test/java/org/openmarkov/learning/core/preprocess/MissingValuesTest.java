@@ -10,7 +10,7 @@ package org.openmarkov.learning.core.preprocess;
 import org.junit.jupiter.api.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Variable;
-import org.openmarkov.core.test.TestSpeed;
+import org.openmarkov.core.testTags.TestSpeed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
