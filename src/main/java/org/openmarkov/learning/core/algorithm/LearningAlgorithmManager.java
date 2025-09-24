@@ -71,7 +71,7 @@ public class LearningAlgorithmManager {
                 .findFirst()
                 .orElse(null);
         if (instance == null) {
-            throw new InvalidArgumentException("there is no Learning Algorithm that can be constructed with said arguments");
+            throw new InvalidArgumentException("there is no Learning Algorithm that can be constructed with these arguments: " + parameters);
         }
         return instance;
     }
