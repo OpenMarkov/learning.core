@@ -10,8 +10,8 @@ package org.openmarkov.learning.core.algorithm;
 import org.openmarkov.core.action.PNEdit;
 import org.openmarkov.core.annotation.ImplementationRequirements;
 import org.openmarkov.core.annotation.RequiredConstructor;
-import org.openmarkov.core.exception.CannotNormalizePotentialException;
-import org.openmarkov.core.exception.DoEditException;
+import org.openmarkov.core.annotation.ToCheck;
+import org.openmarkov.core.exception.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.ProbNet;
@@ -79,12 +79,25 @@ public abstract class LearningAlgorithm {
      *
      * @throws CannotNormalizePotentialException
      */
-    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException {
+    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
         init(modelNetUse);
         /* Main loop */
         LearningEditProposal bestEdition = getBestEdit(true, true);
         while (bestEdition != null) {
-            step(bestEdition.getEdit());
+            PNEdit bestEdition1 = bestEdition.getEdit();
+            @ToCheck(reasonKind = ToCheck.ReasonKind.PROBABLE_BUG,
+                    reasonDescription = "Does this code work as the comment is telling it does?")
+            var check = false;
+            /* If there have been any improvements on the score, we update
+             * the learnedNet. */
+            try {
+                bestEdition1.doEdit(probNet);
+            } catch (DoEditException exception) {
+                /* If the edition was not allowed (ModelNetworkconstraint)
+                 * the algorithm just goes through the next iteration of the
+                 * loop, asking the cache for the next best edition.
+                 */
+            }
             bestEdition = getBestEdit(true, true);
         }
         /* Parametric Learning */
@@ -99,7 +112,20 @@ public abstract class LearningAlgorithm {
         LearningEditProposal bestEditProposal = getBestEdit(true, true);
         while ((bestEditProposal != null) && (currentPhase == getPhase())) {
             System.out.println(bestEditProposal);
-            step(bestEditProposal.getEdit());
+            PNEdit bestEdition = bestEditProposal.getEdit();
+            @ToCheck(reasonKind = ToCheck.ReasonKind.PROBABLE_BUG,
+                    reasonDescription = "Does this code work as the comment is telling it does?")
+            var check = false;
+            /* If there have been any improvements on the score, we update
+             * the learnedNet. */
+            try {
+                bestEdition.doEdit(probNet);
+            } catch (DoEditException exception) {
+                /* If the edition was not allowed (ModelNetworkconstraint)
+                 * the algorithm just goes through the next iteration of the
+                 * loop, asking the cache for the next best edition.
+                 */
+            }
             bestEditProposal = getBestEdit(true, true);
         }
     }
@@ -149,33 +175,13 @@ public abstract class LearningAlgorithm {
     public abstract LearningEditMotivation getMotivation(PNEdit edit);
     
     /**
-     * Takes a step in the algorithm
-     */
-    protected ProbNet step(PNEdit bestEdition) {
-        
-        /* If there have been any improvements on the score, we update
-         * the learnedNet. */
-        try {
-            bestEdition.doEdit(probNet);
-        } catch (DoEditException exception) {
-            /* If the edition was not allowed (ModelNetworkconstraint)
-             * the algorithm just goes through the next iteration of the
-             * loop, asking the cache for the next best edition.
-             */
-            System.err.println(exception);
-            exception.printStackTrace();
-        }
-        return probNet;
-    }
-    
-    /**
      * This function creates the Potentials associated to each node,
      * normalizing the absolute frequencies of the configurations of
      * the parents.
      *
      * @throws CannotNormalizePotentialException
      */
-    public ProbNet parametricLearning() throws CannotNormalizePotentialException {
+    public ProbNet parametricLearning() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
         for (Node node : probNet.getNodes()) {
             if (node.getNumPotentials() == 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);

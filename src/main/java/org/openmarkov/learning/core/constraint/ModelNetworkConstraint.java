@@ -111,12 +111,8 @@ import java.util.List;
         }
 		return true;
 	}
-
-	@Override protected String constraintDescription() {
-		return "tried to add, remove or invert the wrong link";
-	}
-
-	/**
+    
+    /**
 	 * Sets the modelNetUse.
 	 *
 	 * @param modelNetUse the modelNetUse to set.

@@ -8,10 +8,7 @@
 package org.openmarkov.learning.core;
 
 import org.openmarkov.core.action.PNEdit;
-import org.openmarkov.core.exception.CannotNormalizePotentialException;
-import org.openmarkov.core.exception.DoEditException;
-import org.openmarkov.core.exception.InvalidArgumentException;
-import org.openmarkov.core.exception.UnreacheableException;
+import org.openmarkov.core.exception.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.NodeType;
@@ -132,8 +129,7 @@ public class LearningManager {
      *
      * @throws CannotNormalizePotentialException
      */
-    public void learn() throws CannotNormalizePotentialException {
-        
+    public void learn() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
         learningAlgorithm.run(modelNetUse);
     }
     
@@ -215,8 +211,7 @@ public class LearningManager {
      * @throws CannotNormalizePotentialException
      */
     public void applyEdit(PNEdit edit)
-            throws DoEditException, CannotNormalizePotentialException {
-        
+            throws DoEditException, CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
         edit.doEdit(this.learnedNet);
         learningAlgorithm.parametricLearning();
     }
