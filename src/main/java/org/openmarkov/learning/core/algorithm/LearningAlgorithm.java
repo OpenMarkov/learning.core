@@ -241,7 +241,7 @@ public abstract class LearningAlgorithm {
         boolean isAllowed = true;
         //Announce edit to check whether it is allowed or not
         try {
-            edit.getProbNet().getPNESupport().announceEdit(edit);
+            edit.checkConstraintsWillBeMet();
         } catch (DoEditException.ConstraintViolated e) {
             isAllowed = false;
         }

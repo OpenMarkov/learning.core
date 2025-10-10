@@ -19,7 +19,7 @@ import org.openmarkov.core.model.network.VariableType;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithmManager;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithmType;
-import org.openmarkov.learning.core.constraint.ModelNetworkConstraint;
+import org.openmarkov.core.model.network.constraint.ModelNetworkConstraint;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
 import org.openmarkov.learning.core.exception.UnobservedVariablesException;
 import org.openmarkov.learning.core.util.LearningEditMotivation;
@@ -73,6 +73,7 @@ public class LearningManager {
      *                      information of the nodes and links
      * @param modelNetUse   {@code boolean[]} use the positions of the nodes,
      *                      use also the initial links or use them fixed
+     *
      * @throws EmptyModelNetException
      * @throws UnobservedVariablesException
      */
@@ -157,6 +158,7 @@ public class LearningManager {
      * Scores the associated network with the given edition.
      *
      * @param edit {@code PNEdit}
+     *
      * @return {@code double} score of the net with the given edition
      */
     public LearningEditMotivation getMotivation(PNEdit edit) {
@@ -206,6 +208,7 @@ public class LearningManager {
      * Applies the edit passed to the learnedNet and updates parameters
      *
      * @param edit
+     *
      * @throws DoEditException
      * @throws ConstraintViolationException
      * @throws CannotNormalizePotentialException
@@ -238,6 +241,7 @@ public class LearningManager {
      * @param algorithmClass
      * @param modelNetUse    use of the model net selected by the user.
      * @param modelNet       structure of the net to add the constraints
+     *
      * @throws UnobservedVariablesException
      */
     private ProbNet applyModelNet(Class<? extends LearningAlgorithm> algorithmClass, CaseDatabase database,
@@ -270,7 +274,7 @@ public class LearningManager {
             }
             
             // ModelNetworkConstraint
-            probNet.addConstraint(new ModelNetworkConstraint(modelNetUse, modelNet));
+            probNet.addConstraint(new ModelNetworkConstraint(modelNet, modelNetUse.isLinkAdditionAllowed(), modelNetUse.isLinkRemovalAllowed(), modelNetUse.isLinkInversionAllowed()));
             adaptDatabaseToModelNet(database, modelNet);
         }
         
@@ -283,6 +287,7 @@ public class LearningManager {
      *
      * @param databaseVariables List of variables present in the database
      * @param modelNetVariables List of variables in the model network
+     *
      * @return A list of variables that are in the model network but not in the database
      */
     private static List<Variable> getMissingVariables(List<Variable> databaseVariables, List<Variable> modelNetVariables) {
