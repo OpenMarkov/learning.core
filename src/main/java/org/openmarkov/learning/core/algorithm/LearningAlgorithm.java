@@ -7,7 +7,7 @@
 
 package org.openmarkov.learning.core.algorithm;
 
-import org.openmarkov.core.action.PNEdit;
+import org.openmarkov.core.action.base.PNEdit;
 import org.openmarkov.core.annotation.ImplementationRequirements;
 import org.openmarkov.core.annotation.RequiredConstructor;
 import org.openmarkov.core.annotation.ToCheck;
@@ -144,7 +144,7 @@ public abstract class LearningAlgorithm {
      * that can be done to the network that is being learnt.
      *
      * @param onlyAllowedEdits  If this parameter is true, only those editions
-     *                          that do not provoke a ConstraintViolated are returned
+     *                          that do not provoke a ConstraintViolatedException are returned
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
      *
@@ -157,7 +157,7 @@ public abstract class LearningAlgorithm {
      * that can be done to the network that is being learnt.
      *
      * @param onlyAllowedEdits  If this parameter is true, only those editions
-     *                          that do not provoke a ConstraintViolated are returned
+     *                          that do not provoke a ConstraintViolatedException are returned
      * @param onlyPositiveEdits If this parameter is true, only those
      *                          editions with a positive associated score are returned.
      *
@@ -242,7 +242,7 @@ public abstract class LearningAlgorithm {
         //Announce edit to check whether it is allowed or not
         try {
             edit.checkConstraintsWillBeMet();
-        } catch (DoEditException.ConstraintViolated e) {
+        } catch (ConstraintViolatedException e) {
             isAllowed = false;
         }
         return isAllowed;

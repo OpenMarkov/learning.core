@@ -7,7 +7,7 @@
 
 package org.openmarkov.learning.core.util;
 
-import org.openmarkov.core.action.PNEdit;
+import org.openmarkov.core.action.base.PNEdit;
 
 /**
  * An {@code LearningEditProposal} stores a {@code PNEdit} and the
