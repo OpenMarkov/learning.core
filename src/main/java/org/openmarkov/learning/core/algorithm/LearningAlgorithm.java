@@ -7,6 +7,7 @@
 
 package org.openmarkov.learning.core.algorithm;
 
+import org.openmarkov.core.action.base.ConstraintChecker;
 import org.openmarkov.core.action.base.PNEdit;
 import org.openmarkov.core.annotation.ImplementationRequirements;
 import org.openmarkov.core.annotation.RequiredConstructor;
@@ -79,7 +80,7 @@ public abstract class LearningAlgorithm {
      *
      * @throws CannotNormalizePotentialException
      */
-    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
+    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints, ConstraintViolatedException {
         init(modelNetUse);
         /* Main loop */
         LearningEditProposal bestEdition = getBestEdit(true, true);
@@ -91,7 +92,7 @@ public abstract class LearningAlgorithm {
             /* If there have been any improvements on the score, we update
              * the learnedNet. */
             try {
-                bestEdition1.doEdit(probNet);
+                bestEdition1.executeEdit();
             } catch (DoEditException exception) {
                 /* If the edition was not allowed (ModelNetworkconstraint)
                  * the algorithm just goes through the next iteration of the
@@ -119,7 +120,7 @@ public abstract class LearningAlgorithm {
             /* If there have been any improvements on the score, we update
              * the learnedNet. */
             try {
-                bestEdition.doEdit(probNet);
+                bestEdition.executeEdit();
             } catch (DoEditException exception) {
                 /* If the edition was not allowed (ModelNetworkconstraint)
                  * the algorithm just goes through the next iteration of the
@@ -181,7 +182,7 @@ public abstract class LearningAlgorithm {
      *
      * @throws CannotNormalizePotentialException
      */
-    public ProbNet parametricLearning() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
+    public ProbNet parametricLearning() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints, ConstraintViolatedException {
         for (Node node : probNet.getNodes()) {
             if (node.getNumPotentials() == 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);
@@ -238,14 +239,15 @@ public abstract class LearningAlgorithm {
     }
     
     protected static boolean isAllowed(PNEdit edit) {
-        boolean isAllowed = true;
         //Announce edit to check whether it is allowed or not
         try {
-            edit.checkConstraintsWillBeMet();
+            ConstraintChecker constraintChecker = new ConstraintChecker(edit.getProbNet());
+            edit.checkConstraintsWillBeMet(constraintChecker);
+            constraintChecker.buildAndThrow();
+            return true;
         } catch (ConstraintViolatedException e) {
-            isAllowed = false;
+            return false;
         }
-        return isAllowed;
     }
     
     public int getPhase() {

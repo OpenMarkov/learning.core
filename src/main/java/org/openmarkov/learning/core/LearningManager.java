@@ -130,7 +130,7 @@ public class LearningManager {
      *
      * @throws CannotNormalizePotentialException
      */
-    public void learn() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
+    public void learn() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints, ConstraintViolatedException {
         learningAlgorithm.run(modelNetUse);
     }
     
@@ -215,7 +215,7 @@ public class LearningManager {
      */
     public void applyEdit(PNEdit edit)
             throws DoEditException, CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints {
-        edit.doEdit(this.learnedNet);
+        edit.executeEdit();
         learningAlgorithm.parametricLearning();
     }
     
