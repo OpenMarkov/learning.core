@@ -192,7 +192,6 @@ public class LearningManager {
      * Tells the learning algorithm to advance until the next phase
      */
     public void goToNextPhase() {
-        
         this.learningAlgorithm.runTillNextPhase();
     }
     
