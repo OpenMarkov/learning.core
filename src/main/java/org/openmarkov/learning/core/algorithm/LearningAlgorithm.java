@@ -9,9 +9,9 @@ package org.openmarkov.learning.core.algorithm;
 
 import org.openmarkov.core.action.base.ConstraintChecker;
 import org.openmarkov.core.action.base.PNEdit;
-import org.openmarkov.core.annotation.ImplementationRequirements;
-import org.openmarkov.core.annotation.RequiredConstructor;
-import org.openmarkov.core.annotation.ToCheck;
+import org.openmarkov.core.developmentStaticAnalysis.requirements.ImplementationRequirements;
+import org.openmarkov.core.developmentStaticAnalysis.requirements.RequiredConstructor;
+import org.openmarkov.core.developmentStaticAnalysis.ToCheck;
 import org.openmarkov.core.exception.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
