@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class LearningAlgorithmManager {
     
     // Attributes
-    private final HashMap<String, Class<LearningAlgorithm>> learningAlgorithms;
+    private final HashMap<String, Class<? extends LearningAlgorithm>> learningAlgorithms;
     
     // Constructor
     
@@ -97,7 +97,7 @@ public class LearningAlgorithmManager {
      *
      * @return a list of learning algorithms.
      */
-    private static @NotNull Stream<Class<LearningAlgorithm>> findAllLearningAlgorithms() {
+    private static @NotNull Stream<Class<? extends LearningAlgorithm>> findAllLearningAlgorithms() {
         return PluginSearch.init()
                            .annotatedWith(LearningAlgorithmType.class)
                            .childrenOf(LearningAlgorithm.class)
