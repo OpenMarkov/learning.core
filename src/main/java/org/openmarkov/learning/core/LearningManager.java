@@ -27,7 +27,7 @@ import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class launches the learning algorithm and receives the results of
@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
  * @since OpenMarkov 1.0
  */
 public class LearningManager {
-    
-    private static LearningAlgorithmManager learningAlgorithmManager = new LearningAlgorithmManager();
     
     /**
      * Learning algorithm
@@ -77,7 +75,7 @@ public class LearningManager {
      * @throws EmptyModelNetException
      * @throws UnobservedVariablesException
      */
-    public LearningManager(CaseDatabase caseDatabase, String algorithmName, ProbNet modelNet, ModelNetUse modelNetUse)
+    public LearningManager(CaseDatabase caseDatabase, Class<? extends LearningAlgorithm> algorithmName, ProbNet modelNet, ModelNetUse modelNetUse)
             throws EmptyModelNetException, UnobservedVariablesException {
         
         this.caseDatabase = caseDatabase;
@@ -86,8 +84,7 @@ public class LearningManager {
             if (modelNet == null) {
                 throw new EmptyModelNetException();
             }
-            this.learnedNet = applyModelNet(learningAlgorithmManager.getClassByName(algorithmName), caseDatabase, modelNet,
-                                            modelNetUse);
+            this.learnedNet = applyModelNet(algorithmName, caseDatabase, modelNet,                                            modelNetUse);
         } else {
             this.learnedNet = new ProbNet();
             for (Variable variable : caseDatabase.getVariables()) {
@@ -99,20 +96,15 @@ public class LearningManager {
         this.modelNetUse = modelNetUse;
     }
     
-    public static Set<String> getAlgorithmNames() {
+    public static Stream<Class<? extends LearningAlgorithm>> getGenerativeAlgorithms() {
+        return LearningAlgorithmManager.INSTANCE.getLearningAlgorithms()
+                                                .filter(a -> !LearningAlgorithmManager.info(a).discriminative());
         
-        return learningAlgorithmManager.getLearningAlgorithmNames();
     }
     
-    public static Set<String> getDiscriminativeAlgorithmNames() {
-        return new HashSet<>(learningAlgorithmManager.getDiscriminativeLearningAlgorithmNames());
-    }
-    
-    public static Set<String> getGenerativeAlgorithmNames() {
-        return learningAlgorithmManager.getLearningAlgorithmNames()
-                                       .stream()
-                                       .filter(a -> !getDiscriminativeAlgorithmNames().contains(a))
-                                       .collect(Collectors.toSet());
+    public static Stream<Class<? extends LearningAlgorithm>> getDiscriminativeAlgorithms() {
+        return LearningAlgorithmManager.INSTANCE.getLearningAlgorithms()
+                                                .filter(a -> LearningAlgorithmManager.info(a).discriminative());
         
     }
     
@@ -306,9 +298,9 @@ public class LearningManager {
         return missingVariables;
     }
     
-    public LearningAlgorithm getAlgorithmInstance(String name) {
+    public LearningAlgorithm instanciate(Class<? extends LearningAlgorithm> algorithmClass) {
         try {
-            return LearningManager.learningAlgorithmManager.getByName(name, List.of(this.learnedNet, this.caseDatabase));
+            return LearningAlgorithmManager.INSTANCE.instanciateByClass(algorithmClass, List.of(this.learnedNet, this.caseDatabase));
         } catch (InvalidArgumentException e) {
             throw new UnreacheableException(e);
         }

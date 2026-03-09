@@ -7,11 +7,14 @@
 
 package org.openmarkov.learning.core.preprocess;
 
+import org.jetbrains.annotations.NotNull;
 import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.localize.Localizable;
 import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
+import org.openmarkov.core.stringformat.LocalizationFormatter;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -35,8 +38,8 @@ import java.util.Map;
  */
 public class Discretization {
     
-    public static Discretization.Option[] getOptions() {
-        return Discretization.Option.values();
+    public static Option[] getOptions() {
+        return Option.values();
     }
     
     /**
@@ -106,7 +109,7 @@ public class Discretization {
      *
      * @return {@code CaseDatabase} updated database
      */
-    public static CaseDatabase process(CaseDatabase database, Discretization.Option discretizationOption,
+    public static CaseDatabase process(CaseDatabase database, Option discretizationOption,
                                        int numIntervals) {
         Map<String, Option> discretizeOptions = new HashMap<>();
         Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
@@ -129,7 +132,7 @@ public class Discretization {
         Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
         
         for (Variable variable : database.getVariables()) {
-            discretizeOptions.put(variable.getName(), Discretization.Option.MODEL_NET);
+            discretizeOptions.put(variable.getName(), Option.MODEL_NET);
             numIntervalsPerVariable.put(variable.getName(), -1);
         }
         
@@ -409,8 +412,22 @@ public class Discretization {
         return min;
     }
     
-    public enum Option {
-        NONE, EQUAL_FREQ, EQUAL_WIDTH, MODEL_NET
+    public enum Option implements Localizable {
+        NONE, EQUAL_FREQ, EQUAL_WIDTH, MODEL_NET;
+        
+        
+        @Override public @NotNull String path() {
+            return "";
+        }
+        
+        @Override public @NotNull String localize(LocalizationFormatter formatter) {
+            return switch (this){
+                case NONE -> "Do not discretize";
+                case EQUAL_FREQ -> "Equal frequency intervals";
+                case EQUAL_WIDTH -> "Equal width intervals";
+                case MODEL_NET -> "Use model network";
+            };
+        }
     }
     
 }

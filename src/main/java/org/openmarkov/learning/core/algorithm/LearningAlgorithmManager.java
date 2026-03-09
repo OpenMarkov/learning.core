@@ -13,7 +13,6 @@ import org.openmarkov.plugin.PluginSearch;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -21,8 +20,14 @@ import java.util.stream.Stream;
  */
 public class LearningAlgorithmManager {
     
+    public static final LearningAlgorithmManager INSTANCE = new LearningAlgorithmManager();
+    
     // Attributes
-    private final HashMap<String, Class<? extends LearningAlgorithm>> learningAlgorithms;
+    private final List<Class<? extends LearningAlgorithm>> learningAlgorithms;
+    
+    public Stream<Class<? extends LearningAlgorithm>> getLearningAlgorithms() {
+        return this.learningAlgorithms.stream();
+    }
     
     // Constructor
     
@@ -30,34 +35,17 @@ public class LearningAlgorithmManager {
      * Finds all learning algorithms using the plugin architecture, which means all those with the annotation
      * corresponding to {@code LearningAlgorithmType} and stores them in a map.
      */
-    @SuppressWarnings("unchecked") public LearningAlgorithmManager() {
-        learningAlgorithms = new HashMap<>();
-        findAllLearningAlgorithms().forEach(plugin->{
-            LearningAlgorithmType lAnnotation = plugin.getAnnotation(LearningAlgorithmType.class);
-            learningAlgorithms.put(lAnnotation.name(), plugin);
-        });
+    private LearningAlgorithmManager() {
+        this.learningAlgorithms = LearningAlgorithmManager.findAllLearningAlgorithms().toList();
     }
     
-    /**
-     * Returns the class of the learning algorithm whose name is passed
-     *
-     * @param name the algorithm name.
-     * @return a learning algorithm class
-     */
-    public final Class<? extends LearningAlgorithm> getClassByName(String name) {
-        return learningAlgorithms.get(name);
+    public static LearningAlgorithmType info(Class<? extends LearningAlgorithm> plugin) {
+        return plugin.getAnnotation(LearningAlgorithmType.class);
     }
     
-    /**
-     * Returns a learning algorithm by name.
-     *
-     * @param name       the algorithm name.
-     * @param parameters the parameters of the algorithm constructor.
-     * @return a learning algorithm.
-     */
-    public final LearningAlgorithm getByName(String name, List<Object> parameters) throws InvalidArgumentException {
+    public final LearningAlgorithm instanciateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) throws InvalidArgumentException {
         LearningAlgorithm instance = Arrays
-                .stream(this.learningAlgorithms.get(name).getConstructors())
+                .stream(algorithmClass.getConstructors())
                 .filter(constructor -> constructor.getParameterCount() == parameters.size())
                 .map(constructor -> {
                     try {
@@ -76,21 +64,6 @@ public class LearningAlgorithmManager {
         return instance;
     }
     
-    /**
-     * Returns all learning algorithm names.
-     *
-     * @return a list of learning algorithms.
-     */
-    public final Set<String> getLearningAlgorithmNames() {
-        return learningAlgorithms.keySet();
-    }
-    
-    public final Set<String> getDiscriminativeLearningAlgorithmNames() {
-        return learningAlgorithms.values().stream()
-                                 .filter(s -> s.getAnnotation(LearningAlgorithmType.class).discriminative())
-                                 .map(aClass -> aClass.getAnnotation(LearningAlgorithmType.class).name())
-                                 .collect(Collectors.toSet());
-    }
     
     /**
      * Finds all learning algorithms.

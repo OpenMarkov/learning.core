@@ -7,9 +7,12 @@
 
 package org.openmarkov.learning.core.preprocess;
 
+import org.jetbrains.annotations.NotNull;
 import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.localize.Localizable;
 import org.openmarkov.core.model.network.State;
 import org.openmarkov.core.model.network.Variable;
+import org.openmarkov.core.stringformat.LocalizationFormatter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ public class MissingValues {
      * @param preprocessOption {@code Map<Variable, MissingValues.Option>} containing the preprocess
 	 *                         option selected for each variable
 	 */
-	public static CaseDatabase process(CaseDatabase database, Map<String, MissingValues.Option> preprocessOption) {
+	public static CaseDatabase process(CaseDatabase database, Map<String, Option> preprocessOption) {
 		// remove the "?" state
 		List<Variable> oldVariables = database.getVariables();
 		int[] missingStatesIndices = getMissingStateIndices(oldVariables);
@@ -48,7 +51,7 @@ public class MissingValues {
 		for (int i = 0; i < oldCases.length; i++) {
 			keepCase[i] = true;
 			for (int j = 0; j < database.getVariables().size(); j++) {
-				keepCase[i] &= preprocessOption.get(oldVariables.get(j).getName()) != MissingValues.Option.ELIMINATE
+				keepCase[i] &= preprocessOption.get(oldVariables.get(j).getName()) != Option.ELIMINATE
 						|| !containsMissingValues(oldVariables, oldCases[i]);
 			}
 			if (keepCase[i]) {
@@ -106,12 +109,12 @@ public class MissingValues {
 	 *                          variable
      * @param variables         {@code List} of variables
 	 */
-	private static List<Variable> removeMissingState(Map<String, MissingValues.Option> preprocessOptions,
+	private static List<Variable> removeMissingState(Map<String, Option> preprocessOptions,
 			List<Variable> variables) {
 		List<Variable> preprocessedVariables = new ArrayList<>();
 
 		for (Variable variable : variables) {
-			if (preprocessOptions.get(variable.getName()) == MissingValues.Option.ELIMINATE) {
+			if (preprocessOptions.get(variable.getName()) == Option.ELIMINATE) {
 				Variable newVariable = new Variable(variable.getName(), removeMissingState(variable.getStates()));
 				preprocessedVariables.add(newVariable);
 			} else {
@@ -140,13 +143,24 @@ public class MissingValues {
 		return newStates.toArray(statesAux);
 	}
 
-	public static MissingValues.Option[] getOptions() {
-		return MissingValues.Option.values();
+	public static Option[] getOptions() {
+		return Option.values();
 	}
 
 	/* Options to manage absent values*/
-	public enum Option implements Serializable {
-		KEEP, ELIMINATE
+	public enum Option implements Serializable, Localizable {
+		KEEP, ELIMINATE;
+		
+		@Override public @NotNull String path() {
+			return "";
+		}
+		
+		@Override public @NotNull String localize(LocalizationFormatter formatter) {
+			return switch (this){
+                case KEEP -> "Keep records with missing values";
+                case ELIMINATE -> "Erase records with missing values";
+            };
+		}
 	}
 
 }
