@@ -184,7 +184,7 @@ public abstract class LearningAlgorithm {
      */
     public ProbNet parametricLearning() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints, ConstraintViolatedException {
         for (Node node : probNet.getNodes()) {
-            if (node.getNumPotentials() == 0) {    // Remove all the potentials of the node if any exists.
+            if (node.getNumPotentials() > 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);
             }
             TablePotential absoluteFrequencies = getAbsoluteFrequencies(node);
