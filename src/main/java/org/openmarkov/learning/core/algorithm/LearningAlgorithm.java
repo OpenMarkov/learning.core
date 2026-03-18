@@ -80,7 +80,7 @@ public abstract class LearningAlgorithm {
      *
      * @throws CannotNormalizePotentialException
      */
-    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints, ConstraintViolatedException {
+    public void run(ModelNetUse modelNetUse) throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedConstraints, ConstraintViolatedException {
         init(modelNetUse);
         /* Main loop */
         LearningEditProposal bestEdition = getBestEdit(true, true);
@@ -182,7 +182,7 @@ public abstract class LearningAlgorithm {
      *
      * @throws CannotNormalizePotentialException
      */
-    public ProbNet parametricLearning() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedContraints, ConstraintViolatedException {
+    public ProbNet parametricLearning() throws CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedConstraints, ConstraintViolatedException {
         for (Node node : probNet.getNodes()) {
             if (node.getNumPotentials() > 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);
