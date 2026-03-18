@@ -44,7 +44,7 @@ public class LearningAlgorithmManager {
         return plugin.getAnnotation(LearningAlgorithmType.class);
     }
     
-    public final LearningAlgorithm instanciateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) throws InvalidArgumentException {
+    public final LearningAlgorithm instanciateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) {
         LearningAlgorithm instance = Arrays
                 .stream(algorithmClass.getConstructors())
                 .filter(constructor -> constructor.getParameterCount() == parameters.size())
