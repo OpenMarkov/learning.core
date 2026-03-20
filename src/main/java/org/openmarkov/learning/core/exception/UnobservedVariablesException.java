@@ -6,6 +6,7 @@
  */
 package org.openmarkov.learning.core.exception;
 
+import org.openmarkov.core.exception.OpenMarkovException;
 import org.openmarkov.core.exception.IBundledOpenMarkovException;
 import org.openmarkov.core.model.network.Variable;
 import org.openmarkov.learning.core.algorithm.LearningAlgorithm;
@@ -13,7 +14,7 @@ import org.openmarkov.learning.core.algorithm.LearningAlgorithmType;
 
 import java.util.List;
 
-public class UnobservedVariablesException extends Exception implements IBundledOpenMarkovException {
+public class UnobservedVariablesException extends OpenMarkovException {
     
     public UnobservedVariablesException(Class<? extends LearningAlgorithm> algorithmClass, List<Variable> latentVariables) {
         this.algorithmType = algorithmClass.getAnnotation(LearningAlgorithmType.class);

@@ -7,6 +7,7 @@
 
 package org.openmarkov.learning.core.exception;
 
+import org.openmarkov.core.exception.OpenMarkovException;
 import org.openmarkov.core.exception.IBundledOpenMarkovException;
 
 /**
@@ -15,7 +16,7 @@ import org.openmarkov.core.exception.IBundledOpenMarkovException;
  * @author Iñigo
  */
 @SuppressWarnings("serial")
-public class EmptyModelNetException extends Exception implements IBundledOpenMarkovException {
+public class EmptyModelNetException extends OpenMarkovException {
     
     @Override public String toString() {
         return IBundledOpenMarkovException.toString(this);
