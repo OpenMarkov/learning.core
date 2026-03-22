@@ -225,11 +225,9 @@ public class LearningManager {
      */
     private static void addElviraProperties(ProbNet learnedNet) {
         
-        LinkedHashMap<String, String> newIO = learnedNet.additionalProperties;
         State[] defaultNodeStates = {new State("present"), new State("absent")};
         learnedNet.setDefaultStates(defaultNodeStates);
-        newIO.put("hasElviraProperties", "yes");
-        learnedNet.additionalProperties = newIO;
+        learnedNet.putAdditionalProperty("hasElviraProperties", "yes");
     }
     
     /**
