@@ -129,8 +129,6 @@ public class LearningManager {
     
     /**
      * Main method to launch the learning process.
-     *
-     * @
      */
     public void learn() {
         learningAlgorithm.run(modelNetUse);

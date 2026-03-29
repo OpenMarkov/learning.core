@@ -84,8 +84,6 @@ public abstract class LearningAlgorithm {
      * Method invoked to run the algorithm.
      *
      * @param modelNetUse ModelNetUse
-     *
-     * @
      */
     public void run(ModelNetUse modelNetUse) {
         init(modelNetUse);
@@ -186,8 +184,6 @@ public abstract class LearningAlgorithm {
      * This function creates the Potentials associated to each node,
      * normalizing the absolute frequencies of the configurations of
      * the parents.
-     *
-     * @
      */
     public ProbNet parametricLearning() {
         for (Node node : probNet.getNodes()) {
