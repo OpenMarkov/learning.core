@@ -14,8 +14,18 @@ import org.openmarkov.learning.core.algorithm.LearningAlgorithmType;
 
 import java.util.List;
 
+/**
+ * Thrown when a learning algorithm that does not support unobserved variables
+ * encounters variables in the model network that are absent from the database.
+ */
 public class UnobservedVariablesException extends OpenMarkovException {
-    
+
+    /**
+     * Constructs an UnobservedVariablesException.
+     *
+     * @param algorithmClass  the learning algorithm class that cannot handle unobserved variables
+     * @param latentVariables the list of variables present in the model net but absent from the database
+     */
     public UnobservedVariablesException(Class<? extends LearningAlgorithm> algorithmClass, List<Variable> latentVariables) {
         this.algorithmType = algorithmClass.getAnnotation(LearningAlgorithmType.class);
         this.algorithmClass = algorithmClass;

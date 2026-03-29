@@ -27,8 +27,8 @@ public class Util {
 	 * Calculate the absolute frequencies in the database of each of the
 	 * configurations of the given node and its parents.
 	 *
-	 * @param probNet
-	 * @param caseDatabase
+	 * @param probNet          the probabilistic network
+	 * @param caseDatabase     the case database
      * @param childNode       {@code Node} whose frequencies we want to
 	 *                        calculate.
      * @param parentVariables {@code ArrayList} formed by the variable associated
@@ -84,9 +84,9 @@ public class Util {
 	 * configurations of the given node and its parents and a given extra
 	 * parent.
 	 *
-	 * @param probNet
+	 * @param probNet      the probabilistic network
      * @param node         {@code Node} whose frequencies we want to calculate.
-	 * @param caseDatabase
+	 * @param caseDatabase the case database
      * @return {@code TablePotential} with the absolute frequencies in the
 	 * database of each of the configurations of the given node and its
 	 * parents and a given extra parent.
@@ -111,8 +111,8 @@ public class Util {
 	 * database of each of the configurations of the given node and its
 	 * parents and a given extra parent.
 	 */
-	public static TablePotential getAbsoluteFreqExtraParent(ProbNet probNet, CaseDatabase caseDatabase, Node node,
-			Node extraParent) {
+	public static TablePotential getAbsoluteFreqExtraParent(ProbNet probNet, CaseDatabase caseDatabase,
+			Node node, Node extraParent) {
 		List<Variable> variables = new ArrayList<>();
 		variables.add(node.getVariable());
 
@@ -137,8 +137,8 @@ public class Util {
 	 * the database of each of the configurations of the given node and its
 	 * parents except one.
 	 */
-	public static TablePotential getAbsoluteFreqRemovingParent(ProbNet probNet, CaseDatabase caseDatabase, Node node,
-			Node removedParent) {
+	public static TablePotential getAbsoluteFreqRemovingParent(ProbNet probNet, CaseDatabase caseDatabase,
+			Node node, Node removedParent) {
 		List<Variable> variables = new ArrayList<>();
 		variables.add(node.getVariable());
 

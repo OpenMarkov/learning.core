@@ -64,7 +64,7 @@ public class LearningManager {
     // Constructor
     
     /**
-     * @param caseDatabase
+     * @param caseDatabase  the case database to learn from
      * @param algorithmName {@code LearningAlgorithm} indicating the algorithm
      *                      selected by the user.
      * @param modelNet      {@code ProbNet} Net from which take the
@@ -96,12 +96,22 @@ public class LearningManager {
         this.modelNetUse = modelNetUse;
     }
     
+    /**
+     * Returns all registered generative (non-discriminative) learning algorithms.
+     *
+     * @return a stream of generative learning algorithm classes
+     */
     public static Stream<Class<? extends LearningAlgorithm>> getGenerativeAlgorithms() {
         return LearningAlgorithmManager.INSTANCE.getLearningAlgorithms()
                                                 .filter(a -> !LearningAlgorithmManager.info(a).discriminative());
         
     }
     
+    /**
+     * Returns all registered discriminative learning algorithms.
+     *
+     * @return a stream of discriminative learning algorithm classes
+     */
     public static Stream<Class<? extends LearningAlgorithm>> getDiscriminativeAlgorithms() {
         return LearningAlgorithmManager.INSTANCE.getLearningAlgorithms()
                                                 .filter(a -> LearningAlgorithmManager.info(a).discriminative());
@@ -159,10 +169,11 @@ public class LearningManager {
     }
     
     /**
-     * Retrieves the best edition suggested by the learning algorithm
+     * Retrieves the best edition suggested by the learning algorithm.
      *
-     * @param onlyAllowedEdits
-     * @param onlyPositiveEdits
+     * @param onlyAllowedEdits  if true, only constraint-compliant edits are returned
+     * @param onlyPositiveEdits if true, only edits with positive score are returned
+     * @return the best edit proposal, or null if none is available
      */
     public LearningEditProposal getBestEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits) {
         
@@ -170,10 +181,11 @@ public class LearningManager {
     }
     
     /**
-     * Retrieves the next best edition suggested by the learning algorithm
+     * Retrieves the next best edition suggested by the learning algorithm.
      *
-     * @param onlyAllowedEdits
-     * @param onlyPositiveEdits
+     * @param onlyAllowedEdits  if true, only constraint-compliant edits are returned
+     * @param onlyPositiveEdits if true, only edits with positive score are returned
+     * @return the next best edit proposal, or null if none is available
      */
     public LearningEditProposal getNextEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits) {
         
@@ -188,7 +200,9 @@ public class LearningManager {
     }
     
     /**
-     * Retrieves whether the LearningAlgorithm is in the last phase
+     * Retrieves whether the LearningAlgorithm is in the last phase.
+     *
+     * @return true if the algorithm is in its last phase
      */
     public boolean isLastPhase() {
         
@@ -198,10 +212,9 @@ public class LearningManager {
     /**
      * Applies the edit passed to the learnedNet and updates parameters
      *
-     * @param edit
+     * @param edit the edit to apply
      *
-     * @throws DoEditException
-     * @
+     * @throws DoEditException if the edit cannot be executed
      */
     public void applyEdit(PNEdit edit)
             throws DoEditException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedConstraints {
@@ -234,11 +247,15 @@ public class LearningManager {
      * Adds links and constraints depending on the structure of the model net
      * and the option selected by the user.
      *
-     * @param algorithmClass
+     * @param algorithmClass the learning algorithm class
+     * @param database       the case database
      * @param modelNetUse    use of the model net selected by the user.
      * @param modelNet       structure of the net to add the constraints
      *
      * @throws UnobservedVariablesException
+     */
+    /**
+     * @return the configured {@code ProbNet} with model net constraints applied
      */
     private ProbNet applyModelNet(Class<? extends LearningAlgorithm> algorithmClass, CaseDatabase database,
                                   ProbNet modelNet, ModelNetUse modelNetUse) throws UnobservedVariablesException {
@@ -303,6 +320,12 @@ public class LearningManager {
         return missingVariables;
     }
     
+    /**
+     * Instantiates a learning algorithm using the learned network and the case database.
+     *
+     * @param algorithmClass the class of the algorithm to instantiate
+     * @return the instantiated learning algorithm
+     */
     public LearningAlgorithm instanciate(Class<? extends LearningAlgorithm> algorithmClass) {
         try {
             return LearningAlgorithmManager.INSTANCE.instanciateByClass(algorithmClass, List.of(this.learnedNet, this.caseDatabase));
@@ -364,10 +387,11 @@ public class LearningManager {
     }
     
     /**
-     * Adapt case database to model network's variables
+     * Adapts the case database to match the model network's variable definitions,
+     * including state ordering and variable types.
      *
-     * @param database
-     * @param modelNet
+     * @param database the case database to adapt
+     * @param modelNet the model network providing variable definitions
      */
     private void adaptDatabaseToModelNet(CaseDatabase database, ProbNet modelNet) {
         

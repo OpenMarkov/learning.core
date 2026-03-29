@@ -38,6 +38,11 @@ import java.util.Map;
  */
 public class Discretization {
     
+    /**
+     * Returns all available discretization options.
+     *
+     * @return an array of all {@code Option} enum values
+     */
     public static Option[] getOptions() {
         return Option.values();
     }
@@ -70,6 +75,10 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
+     * @param database                 the case database to discretize
+     * @param discretizeOptions        discretization option per variable name
+     * @param numIntervalsPerVariable  number of intervals per variable name
+     * @param modelNet                 optional model network for MODEL_NET discretization
      * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
@@ -97,6 +106,9 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
+     * @param database                 the case database to discretize
+     * @param discretizeOptions        discretization option per variable name
+     * @param numIntervalsPerVariable  number of intervals per variable name
      * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
@@ -107,6 +119,9 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
+     * @param database             the case database to discretize
+     * @param discretizationOption the discretization option to apply to all variables
+     * @param numIntervals         the number of intervals for all variables
      * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, Option discretizationOption,
@@ -125,6 +140,8 @@ public class Discretization {
     /**
      * This function discretizes the database.
      *
+     * @param database the case database to discretize
+     * @param modelNet the model network whose discretization intervals are used
      * @return {@code CaseDatabase} updated database
      */
     public static CaseDatabase process(CaseDatabase database, ProbNet modelNet) {

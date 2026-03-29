@@ -7,6 +7,11 @@
 
 package org.openmarkov.learning.core.util;
 
+/**
+ * Configuration for how a model network constrains the learning process.
+ * Controls whether to use node positions, start from the model network structure,
+ * and which link operations are allowed.
+ */
 public final class ModelNetUse {
     
     private final boolean useModelNet;
@@ -16,6 +21,16 @@ public final class ModelNetUse {
     private final boolean allowLinkRemoval;
     private final boolean allowLinkInversion;
 
+	/**
+	 * Constructs a ModelNetUse configuration with the specified options.
+	 *
+	 * @param useModelNet        whether to use the model network at all
+	 * @param useNodePositions   whether to copy node positions from the model network
+	 * @param startFromModelNet  whether to start learning from the model network structure
+	 * @param allowLinkAddition  whether to allow adding links during learning
+	 * @param allowLinkRemoval   whether to allow removing links during learning
+	 * @param allowLinkInversion whether to allow inverting links during learning
+	 */
 	public ModelNetUse(boolean useModelNet, boolean useNodePositions, boolean startFromModelNet,
 			boolean allowLinkAddition, boolean allowLinkRemoval, boolean allowLinkInversion) {
 		this.useNodePositions = useNodePositions;
@@ -30,6 +45,9 @@ public final class ModelNetUse {
         }
 	}
 
+	/**
+	 * Constructs a default ModelNetUse with all options disabled.
+	 */
 	public ModelNetUse() {
 		this(false, false, false, false, false, false);
 	}

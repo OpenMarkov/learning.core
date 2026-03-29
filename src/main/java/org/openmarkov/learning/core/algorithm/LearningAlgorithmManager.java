@@ -40,10 +40,25 @@ public class LearningAlgorithmManager {
         this.learningAlgorithms = LearningAlgorithmManager.findAllLearningAlgorithms().toList();
     }
     
+    /**
+     * Returns the {@code LearningAlgorithmType} annotation for the given algorithm class.
+     *
+     * @param plugin the algorithm class to inspect
+     * @return the {@code LearningAlgorithmType} annotation, or null if not present
+     */
     public static LearningAlgorithmType info(Class<? extends LearningAlgorithm> plugin) {
         return plugin.getAnnotation(LearningAlgorithmType.class);
     }
     
+    /**
+     * Instantiates a learning algorithm by its class, using reflection to find a constructor
+     * that matches the given parameters by count.
+     *
+     * @param algorithmClass the class of the learning algorithm to instantiate
+     * @param parameters     the constructor arguments
+     * @return the instantiated learning algorithm
+     * @throws InvalidArgumentException if no matching constructor is found
+     */
     public final LearningAlgorithm instanciateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) {
         LearningAlgorithm instance = Arrays
                 .stream(algorithmClass.getConstructors())

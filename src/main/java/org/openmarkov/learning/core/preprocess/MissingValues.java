@@ -38,6 +38,7 @@ public class MissingValues {
      * @param database         {@code CaseDatabase} database to preprocess
      * @param preprocessOption {@code Map<Variable, MissingValues.Option>} containing the preprocess
 	 *                         option selected for each variable
+	 * @return a new {@code CaseDatabase} with missing values handled according to the selected options
 	 */
 	public static CaseDatabase process(CaseDatabase database, Map<String, Option> preprocessOption) {
 		// remove the "?" state
@@ -143,6 +144,11 @@ public class MissingValues {
 		return newStates.toArray(statesAux);
 	}
 
+	/**
+	 * Returns all available missing values handling options.
+	 *
+	 * @return an array of all {@code Option} enum values
+	 */
 	public static Option[] getOptions() {
 		return Option.values();
 	}

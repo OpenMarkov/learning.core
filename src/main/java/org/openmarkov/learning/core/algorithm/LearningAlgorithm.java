@@ -67,6 +67,13 @@ public abstract class LearningAlgorithm {
     protected int phase = 0;
     
     // Constructor
+    /**
+     * Constructs a learning algorithm with the given network, database, and Laplace smoothing parameter.
+     *
+     * @param probNet      the probabilistic network to learn
+     * @param caseDatabase the case database to learn from
+     * @param alpha        the Laplace smoothing parameter for parametric learning
+     */
     public LearningAlgorithm(ProbNet probNet, CaseDatabase caseDatabase, double alpha) {
         this.probNet = probNet;
         this.caseDatabase = caseDatabase;
@@ -205,9 +212,9 @@ public abstract class LearningAlgorithm {
     }
     
     /**
-     * Blocks edit
+     * Unblocks a previously blocked edit.
      *
-     * @param edit to block
+     * @param edit the edit to unblock
      */
     public void unblockEdit(LearningEditProposal edit) {
         blockedEdits.remove(edit);
@@ -221,14 +228,21 @@ public abstract class LearningAlgorithm {
     }
     
     /**
-     * Blocks edit
+     * Checks whether the given edit proposal is blocked.
      *
-     * @param edit to block
+     * @param edit the edit proposal to check
+     * @return true if the edit is in the blocked list
      */
     public boolean isBlocked(LearningEditProposal edit) {
         return blockedEdits.contains(edit);
     }
     
+    /**
+     * Checks whether the given edit is blocked.
+     *
+     * @param edit the edit to check
+     * @return true if the edit is blocked
+     */
     public boolean isBlocked(PNEdit edit) {
         for (LearningEditProposal editProposal : blockedEdits) {
             if (editProposal.getEdit().equals(edit)) {
@@ -238,6 +252,12 @@ public abstract class LearningAlgorithm {
         return false;
     }
     
+    /**
+     * Checks whether the given edit is allowed by the network's constraints.
+     *
+     * @param edit the edit to check
+     * @return true if the edit does not violate any constraint
+     */
     protected static boolean isAllowed(PNEdit edit) {
         //Announce edit to check whether it is allowed or not
         try {

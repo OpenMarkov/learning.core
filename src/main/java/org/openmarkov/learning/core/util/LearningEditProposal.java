@@ -26,6 +26,12 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 
 	protected LearningEditMotivation motivation;
 
+	/**
+	 * Constructs a learning edit proposal with the given edit and its motivation.
+	 *
+	 * @param edit       the network edit
+	 * @param motivation the motivation (score or description) for this edit
+	 */
 	public LearningEditProposal(PNEdit edit, LearningEditMotivation motivation) {
 		this.edit = edit;
 		this.motivation = motivation;
@@ -39,6 +45,11 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 		return motivation;
 	}
     
+    /**
+     * Returns whether this edit proposal is allowed. Always returns true.
+     *
+     * @return true
+     */
     public static boolean isAllowed() {
 		return true;
 	}

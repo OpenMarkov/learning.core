@@ -29,6 +29,12 @@ public class ScoreEditMotivation extends LearningEditMotivation {
 		this.numDecimals = DEFAULT_NUM_DECIMALS;
 	}
 
+	/**
+	 * Constructs a ScoreEditMotivation with the given score and number of decimal places for display.
+	 *
+	 * @param score      the score of this motivation
+	 * @param numDecimals the number of decimal places for string representation
+	 */
 	public ScoreEditMotivation(double score, int numDecimals) {
 		this.score = score;
 		this.numDecimals = numDecimals;
