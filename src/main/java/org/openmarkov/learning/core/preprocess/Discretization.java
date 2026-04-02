@@ -241,7 +241,7 @@ public class Discretization {
      *
      * @param variable     {@code Variable} variable to discretize
      * @param database     {@code int[][]} database cases
-     * @param numIntervals
+     * @param numIntervals the num intervals
      */
     private static Variable discretizeEqualFreq(Variable variable, CaseDatabase database, int numIntervals) {
         State[] states = variable.getStates();
@@ -330,7 +330,7 @@ public class Discretization {
      * states of the discretized variables.
      *
      * @param database          {@code int[][]} original database cases
-     * @param newVariables
+     * @param newVariables the new variables
      * @param discretizeOptions {@code ArrayList} discretization option
      *                          selected for each variable.
      */

@@ -72,8 +72,8 @@ public class LearningManager {
      * @param modelNetUse   {@code boolean[]} use the positions of the nodes,
      *                      use also the initial links or use them fixed
      *
-     * @throws EmptyModelNetException
-     * @throws UnobservedVariablesException
+     * @throws EmptyModelNetException if empty model net occurs
+     * @throws UnobservedVariablesException if unobserved variables occurs
      */
     public LearningManager(CaseDatabase caseDatabase, Class<? extends LearningAlgorithm> algorithmName, ProbNet modelNet, ModelNetUse modelNetUse)
             throws EmptyModelNetException, UnobservedVariablesException {
@@ -250,7 +250,7 @@ public class LearningManager {
      * @param modelNetUse    use of the model net selected by the user.
      * @param modelNet       structure of the net to add the constraints
      *
-     * @throws UnobservedVariablesException
+     * @throws UnobservedVariablesException if unobserved variables occurs
      */
     /**
      * @return the configured {@code ProbNet} with model net constraints applied
