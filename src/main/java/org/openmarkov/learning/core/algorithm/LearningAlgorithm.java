@@ -192,7 +192,7 @@ public abstract class LearningAlgorithm {
             }
             TablePotential absoluteFrequencies = getAbsoluteFrequencies(node);
             for (int j = 0; j < absoluteFrequencies.getTableSize(); j++)
-                absoluteFrequencies.values[j] += alpha;
+                absoluteFrequencies.getValues()[j] += alpha;
             probNet.addPotential(DiscretePotentialOperations.normalize(absoluteFrequencies));
         }
         return probNet;
