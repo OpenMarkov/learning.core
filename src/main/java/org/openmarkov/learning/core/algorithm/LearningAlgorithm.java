@@ -37,22 +37,22 @@ public abstract class LearningAlgorithm {
     /**
      * Parameter for the parametric learning.
      */
-    protected double alpha;
+    protected final double alpha;
     
     /**
      * Net to learn
      */
-    protected ProbNet probNet;
+    protected final ProbNet probNet;
     
     /**
      * Case database
      */
-    protected CaseDatabase caseDatabase;
+    protected final CaseDatabase caseDatabase;
     
     /**
      * List of blocked edits
      */
-    protected List<LearningEditProposal> blockedEdits = new ArrayList<>();
+    protected final List<LearningEditProposal> blockedEdits = new ArrayList<>();
     
     protected String classVariableName;
     
@@ -64,7 +64,7 @@ public abstract class LearningAlgorithm {
         this.classVariableName = classVariableName;
     }
     
-    protected int phase = 0;
+    protected final int phase = 0;
     
     // Constructor
     /**

@@ -12,7 +12,7 @@ package org.openmarkov.learning.core.util;
  * (rather than a numeric score) is associated with the edit.
  */
 public class StringEditMotivation extends LearningEditMotivation {
-	private String motivation;
+	private final String motivation;
 
 	/**
 	 * Constructs a StringEditMotivation with the given textual description.

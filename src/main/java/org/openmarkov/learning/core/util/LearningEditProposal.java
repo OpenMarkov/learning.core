@@ -22,9 +22,9 @@ import org.openmarkov.core.action.base.PNEdit;
  */
 public class LearningEditProposal implements Comparable<LearningEditProposal> {
 
-	protected PNEdit edit;
+	protected final PNEdit edit;
 
-	protected LearningEditMotivation motivation;
+	protected final LearningEditMotivation motivation;
 
 	/**
 	 * Constructs a learning edit proposal with the given edit and its motivation.

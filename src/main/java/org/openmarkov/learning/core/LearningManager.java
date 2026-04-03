@@ -59,7 +59,7 @@ public class LearningManager {
     /**
      * Case database
      */
-    private CaseDatabase caseDatabase;
+    private final CaseDatabase caseDatabase;
     
     // Constructor
     
