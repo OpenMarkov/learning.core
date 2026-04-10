@@ -68,8 +68,6 @@ public abstract class LearningAlgorithm {
         this.classVariableName = classVariableName;
     }
     
-    protected final int phase = 0;
-    
     // Constructor
     /**
      * Constructs a learning algorithm with the given network, database, and Laplace smoothing parameter.
@@ -255,7 +253,7 @@ public abstract class LearningAlgorithm {
     }
     
     public int getPhase() {
-        return phase;
+        return 0;
     }
     
     /**
