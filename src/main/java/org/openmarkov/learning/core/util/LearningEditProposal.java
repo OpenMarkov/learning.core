@@ -9,6 +9,8 @@ package org.openmarkov.learning.core.util;
 
 import org.openmarkov.core.action.base.PNEdit;
 
+import java.util.Objects;
+
 /**
  * An {@code LearningEditProposal} stores a {@code PNEdit} and the
  * increment of score associated to this edition. Also it stores a pointer
@@ -54,14 +56,19 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 		return true;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if ((obj == null) || (obj.getClass() != this.getClass()))
 			return false;
-		return (this.edit.equals(((LearningEditProposal) obj).edit)) && (
-				this.motivation.equals(((LearningEditProposal) obj).motivation)
-		);
+		LearningEditProposal other = (LearningEditProposal) obj;
+		return this.edit.equals(other.edit) && this.motivation.equals(other.motivation);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(edit, motivation);
 	}
 
 	public String toString() {
