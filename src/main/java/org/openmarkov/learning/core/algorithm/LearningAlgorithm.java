@@ -11,7 +11,6 @@ import org.openmarkov.core.action.base.ConstraintChecker;
 import org.openmarkov.core.action.base.PNEdit;
 import org.openmarkov.core.developmentStaticAnalysis.requirements.ImplementationRequirements;
 import org.openmarkov.core.developmentStaticAnalysis.requirements.RequiredConstructor;
-import org.openmarkov.core.developmentStaticAnalysis.ToCheck;
 import org.openmarkov.core.exception.*;
 import org.openmarkov.core.io.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
@@ -95,19 +94,11 @@ public abstract class LearningAlgorithm {
         /* Main loop */
         LearningEditProposal bestEdition = getBestEdit(true, true);
         while (bestEdition != null) {
-            PNEdit bestEdition1 = bestEdition.getEdit();
-            @ToCheck(reasonKind = ToCheck.ReasonKind.PROBABLE_BUG,
-                    reasonDescription = "Does this code work as the comment is telling it does?")
-            var check = false;
-            /* If there have been any improvements on the score, we update
-             * the learnedNet. */
+            PNEdit bestEdit = bestEdition.getEdit();
             try {
-                bestEdition1.executeEdit();
+                bestEdit.executeEdit();
             } catch (DoEditException exception) {
-                /* If the edition was not allowed (ModelNetworkconstraint)
-                 * the algorithm just goes through the next iteration of the
-                 * loop, asking the cache for the next best edition.
-                 */
+                logger.debug("Edit not allowed by constraint, skipping: {}", bestEdit, exception);
             }
             bestEdition = getBestEdit(true, true);
         }
@@ -123,19 +114,11 @@ public abstract class LearningAlgorithm {
         LearningEditProposal bestEditProposal = getBestEdit(true, true);
         while ((bestEditProposal != null) && (currentPhase == getPhase())) {
             logger.debug("{}", bestEditProposal);
-            PNEdit bestEdition = bestEditProposal.getEdit();
-            @ToCheck(reasonKind = ToCheck.ReasonKind.PROBABLE_BUG,
-                    reasonDescription = "Does this code work as the comment is telling it does?")
-            var check = false;
-            /* If there have been any improvements on the score, we update
-             * the learnedNet. */
+            PNEdit bestEdit = bestEditProposal.getEdit();
             try {
-                bestEdition.executeEdit();
+                bestEdit.executeEdit();
             } catch (DoEditException exception) {
-                /* If the edition was not allowed (ModelNetworkconstraint)
-                 * the algorithm just goes through the next iteration of the
-                 * loop, asking the cache for the next best edition.
-                 */
+                logger.debug("Edit not allowed by constraint, skipping: {}", bestEdit, exception);
             }
             bestEditProposal = getBestEdit(true, true);
         }
