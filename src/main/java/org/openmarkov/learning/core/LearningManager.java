@@ -49,12 +49,12 @@ public class LearningManager {
     /**
      * ProbNet to learn.
      */
-    private ProbNet learnedNet;
+    private final ProbNet learnedNet;
     
     /**
      * Structure that specifies use of model net
      */
-    private ModelNetUse modelNetUse;
+    private final ModelNetUse modelNetUse;
     
     /**
      * Case database
@@ -251,8 +251,7 @@ public class LearningManager {
      * @param modelNet       structure of the net to add the constraints
      *
      * @throws UnobservedVariablesException if unobserved variables occurs
-     */
-    /**
+     *
      * @return the configured {@code ProbNet} with model net constraints applied
      */
     private ProbNet applyModelNet(Class<? extends LearningAlgorithm> algorithmClass, CaseDatabase database,
@@ -324,9 +323,9 @@ public class LearningManager {
      * @param algorithmClass the class of the algorithm to instantiate
      * @return the instantiated learning algorithm
      */
-    public LearningAlgorithm instanciate(Class<? extends LearningAlgorithm> algorithmClass) {
+    public LearningAlgorithm instantiate(Class<? extends LearningAlgorithm> algorithmClass) {
         try {
-            return LearningAlgorithmManager.INSTANCE.instanciateByClass(algorithmClass, List.of(this.learnedNet, this.caseDatabase));
+            return LearningAlgorithmManager.INSTANCE.instantiateByClass(algorithmClass, List.of(this.learnedNet, this.caseDatabase));
         } catch (InvalidArgumentException e) {
             throw new UnreachableException(e);
         }

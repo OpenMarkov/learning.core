@@ -62,7 +62,7 @@ public class LearningAlgorithmManager {
      * @return the instantiated learning algorithm
      * @throws InvalidArgumentException if no matching constructor is found
      */
-    public final LearningAlgorithm instanciateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) {
+    public final LearningAlgorithm instantiateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) {
         LearningAlgorithm instance = Arrays
                 .stream(algorithmClass.getConstructors())
                 .filter(constructor -> constructor.getParameterCount() == parameters.size())

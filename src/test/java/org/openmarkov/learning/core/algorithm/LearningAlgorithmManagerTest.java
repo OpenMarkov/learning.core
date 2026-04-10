@@ -50,30 +50,30 @@ class LearningAlgorithmManagerTest {
     }
 
     @Test
-    void instanciateByClassCreatesDummyAlgorithm() {
+    void instantiateByClassCreatesDummyAlgorithm() {
         ProbNet probNet = new ProbNet();
         Variable vA = new Variable("A", "0", "1");
         probNet.addNode(vA, NodeType.CHANCE);
         CaseDatabase db = new CaseDatabase(List.of(vA), new int[][]{{0}});
 
         LearningAlgorithm instance = LearningAlgorithmManager.INSTANCE
-                .instanciateByClass(DummyLearningAlgorithm.class, List.of(probNet, db));
+                .instantiateByClass(DummyLearningAlgorithm.class, List.of(probNet, db));
 
         assertThat(instance).isInstanceOf(DummyLearningAlgorithm.class);
     }
 
     @Test
-    void instanciateByClassThrowsForWrongParameterCount() {
+    void instantiateByClassThrowsForWrongParameterCount() {
         assertThatThrownBy(() ->
-                LearningAlgorithmManager.INSTANCE.instanciateByClass(
+                LearningAlgorithmManager.INSTANCE.instantiateByClass(
                         DummyLearningAlgorithm.class, List.of("wrong")))
                 .isInstanceOf(InvalidArgumentException.class);
     }
 
     @Test
-    void instanciateByClassThrowsForNoParameters() {
+    void instantiateByClassThrowsForNoParameters() {
         assertThatThrownBy(() ->
-                LearningAlgorithmManager.INSTANCE.instanciateByClass(
+                LearningAlgorithmManager.INSTANCE.instantiateByClass(
                         DummyLearningAlgorithm.class, List.of()))
                 .isInstanceOf(InvalidArgumentException.class);
     }
