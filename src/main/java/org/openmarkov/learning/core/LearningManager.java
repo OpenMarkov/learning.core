@@ -92,7 +92,6 @@ public class LearningManager {
             }
         }
         
-        LearningManager.addElviraProperties(learnedNet);
         this.modelNetUse = modelNetUse;
     }
     
@@ -215,7 +214,7 @@ public class LearningManager {
      * @throws DoEditException if the edit cannot be executed
      */
     public void applyEdit(PNEdit edit)
-            throws DoEditException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedConstraints {
+            throws DoEditException, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedConstraints {
         edit.executeEdit();
         learningAlgorithm.parametricLearning();
     }
@@ -226,19 +225,6 @@ public class LearningManager {
      */
     public ProbNet runParametricLearning() {
         return learningAlgorithm.parametricLearning();
-    }
-    
-    /**
-     * Adds elvira properties to the learned net.
-     *
-     * @param learnedNet {@code ProbNet} which receives the elvira
-     *                   properties.
-     */
-    private static void addElviraProperties(ProbNet learnedNet) {
-        
-        State[] defaultNodeStates = {new State("present"), new State("absent")};
-        learnedNet.setDefaultStates(defaultNodeStates);
-        learnedNet.putAdditionalProperty("hasElviraProperties", "yes");
     }
     
     /**
