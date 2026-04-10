@@ -57,7 +57,6 @@ public class Util {
 		for (int i = 0; i < parentsConfigurations * numValues; i++) {
 			absoluteFreqs[i] = 0;
 		}
-		parentVariables.remove(0);
 		// Compute the absolute frequencies
 		int iCPT;
 		int iParent, iNode = caseDatabase.getVariables().indexOf(childNode.getVariable());
@@ -66,7 +65,8 @@ public class Util {
 					"Variable '" + childNode.getVariable().getName() + "' not found in the case database");
 		}
 		int[][] cases = caseDatabase.getCases();
-		List<Node> nodes = probNet.getNodes(parentVariables);
+		List<Variable> onlyParentVariables = parentVariables.subList(1, parentVariables.size());
+		List<Node> nodes = probNet.getNodes(onlyParentVariables);
 		for (int i = 0; i < cases.length; i++) {
 			iCPT = 0;
 			for (int j = 0; j < nodes.size(); ++j) {
@@ -97,7 +97,7 @@ public class Util {
 	 * parents and a given extra parent.
 	 */
 	public static TablePotential getAbsoluteFreq(ProbNet probNet, CaseDatabase caseDatabase, Node node) {
-		List<Variable> variables = new ArrayList<Variable>();
+		List<Variable> variables = new ArrayList<>();
 		variables.add(node.getVariable());
 		for (Node parent : node.getParents()) {
 			variables.add(parent.getVariable());
