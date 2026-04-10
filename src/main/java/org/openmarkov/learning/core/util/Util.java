@@ -61,8 +61,10 @@ public class Util {
 		// Compute the absolute frequencies
 		int iCPT;
 		int iParent, iNode = caseDatabase.getVariables().indexOf(childNode.getVariable());
-		if (iNode == -1)
-			System.out.println("fdx");
+		if (iNode == -1) {
+			throw new IllegalArgumentException(
+					"Variable '" + childNode.getVariable().getName() + "' not found in the case database");
+		}
 		int[][] cases = caseDatabase.getCases();
 		List<Node> nodes = probNet.getNodes(parentVariables);
 		for (int i = 0; i < cases.length; i++) {
@@ -71,9 +73,12 @@ public class Util {
 				iParent = indexesOfParents[j];
 				iCPT = iCPT * nodes.get(j).getVariable().getNumStates() + cases[i][iParent];
 			}
-			if (numValues * iCPT + cases[i][iNode] >= absoluteFreqs.length)
-				System.out.println("fdx");
-
+			if (numValues * iCPT + cases[i][iNode] >= absoluteFreqs.length) {
+				throw new IllegalStateException(
+						"Frequency table index out of bounds for variable '" + childNode.getVariable().getName()
+								+ "': index=" + (numValues * iCPT + cases[i][iNode])
+								+ ", table size=" + absoluteFreqs.length);
+			}
 			absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
 		}
 		return absoluteFreqPotential;

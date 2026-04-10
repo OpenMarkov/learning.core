@@ -24,16 +24,21 @@ import org.openmarkov.learning.core.util.LearningEditMotivation;
 import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@ImplementationRequirements(requiresOneOfTheseConstructors = @RequiredConstructor({ProbNet.class, CaseDatabase.class}))
 /**
  * Abstract learning algorithm.
  */
+@ImplementationRequirements(requiresOneOfTheseConstructors = @RequiredConstructor({ProbNet.class, CaseDatabase.class}))
 public abstract class LearningAlgorithm {
-    
+
+    private static final Logger logger = LogManager.getLogger(LearningAlgorithm.class);
+
     /**
      * Parameter for the parametric learning.
      */
@@ -117,7 +122,7 @@ public abstract class LearningAlgorithm {
         int currentPhase = getPhase();
         LearningEditProposal bestEditProposal = getBestEdit(true, true);
         while ((bestEditProposal != null) && (currentPhase == getPhase())) {
-            System.out.println(bestEditProposal);
+            logger.debug("{}", bestEditProposal);
             PNEdit bestEdition = bestEditProposal.getEdit();
             @ToCheck(reasonKind = ToCheck.ReasonKind.PROBABLE_BUG,
                     reasonDescription = "Does this code work as the comment is telling it does?")
@@ -295,7 +300,7 @@ public abstract class LearningAlgorithm {
         int numParents = parents.size();
         int[] indexesOfParents = new int[numParents];
         int[] parentsStateNum = new int[numParents];
-        List<Variable> potentialVariables = new ArrayList<Variable>(numParents + 1);
+        List<Variable> potentialVariables = new ArrayList<>(numParents + 1);
         Variable variableNode = node.getVariable();
         
         potentialVariables.add(variableNode);
@@ -318,15 +323,15 @@ public abstract class LearningAlgorithm {
         // Initialize the table
         Arrays.fill(absoluteFreqs, 0);
         
-        potentialVariables.remove(0);
+        potentialVariables.removeFirst();
         // Compute the absolute frequencies
         int[][] cases = caseDatabase.getCases();
-        for (int i = 0; i < cases.length; i++) {
+        for (int[] aCase : cases) {
             int iCPT = 0;
             for (int j = numParents - 1; j >= 0; --j) {
-                iCPT = iCPT * parentsStateNum[j] + cases[i][indexesOfParents[j]];
+                iCPT = (iCPT * parentsStateNum[j]) + aCase[indexesOfParents[j]];
             }
-            absoluteFreqs[numValues * iCPT + cases[i][iNode]]++;
+            absoluteFreqs[numValues * iCPT + aCase[iNode]]++;
         }
         
         return absoluteFreqPotential;

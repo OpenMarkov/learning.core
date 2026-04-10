@@ -2,6 +2,7 @@ open module org.openmarkov.learning.core {
 	requires org.openmarkov.core;
 	requires commons.math3;
     requires org.jetbrains.annotations;
+    requires org.apache.logging.log4j;
     
     exports org.openmarkov.learning.core;
 	exports org.openmarkov.learning.core.algorithm;
