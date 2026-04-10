@@ -13,9 +13,17 @@ import org.openmarkov.core.model.network.potential.TablePotential;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class UtilTest {
+/**
+ * Tests for {@link Util}: verifies absolute frequency calculation for nodes with and
+ * without parents, extra/removed parent variants, error handling for missing variables,
+ * and that input lists are not mutated.
+ *
+ * @author Manuel Arias
+ */
+class UtilTest {
 
     private ProbNet probNet;
     private CaseDatabase caseDatabase;
@@ -23,7 +31,7 @@ public class UtilTest {
     private Node nodeB;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         probNet = new ProbNet();
         Variable vA = new Variable("A", "0", "1");
         Variable vB = new Variable("B", "0", "1");
@@ -38,104 +46,156 @@ public class UtilTest {
         // A=1, B=0
         // A=1, B=1
         // A=0, B=0
-        // Counts:
-        // A=0: 3, A=1: 2
-        // B=0: 3, B=1: 2
-        // (A=0, B=0): 2
-        // (A=0, B=1): 1
-        // (A=1, B=0): 1
-        // (A=1, B=1): 1
+        // Counts: A=0:3, A=1:2, B=0:3, B=1:2
+        // Joint: (A=0,B=0):2, (A=0,B=1):1, (A=1,B=0):1, (A=1,B=1):1
         int[][] cases = {
-                { 0, 0 },
-                { 0, 1 },
-                { 1, 0 },
-                { 1, 1 },
-                { 0, 0 }
+                {0, 0},
+                {0, 1},
+                {1, 0},
+                {1, 1},
+                {0, 0}
         };
 
         caseDatabase = new CaseDatabase(variables, cases);
     }
 
     @Test
-    public void testGetAbsoluteFrequenciesNoParents() {
-        // Node A has no parents
+    void getAbsoluteFrequenciesNoParents() {
         TablePotential freq = Util.getAbsoluteFreq(probNet, caseDatabase, nodeA);
 
-        // Expecting [3.0, 2.0]
         double[] values = freq.getValues();
-        assertEquals(3.0, values[0], 0.001);
-        assertEquals(2.0, values[1], 0.001);
+        assertThat(values).hasSize(2);
+        assertThat(values[0]).isEqualTo(3.0);
+        assertThat(values[1]).isEqualTo(2.0);
     }
 
     @Test
-    public void testGetAbsoluteFrequenciesWithParent() {
-        // Add link A -> B
+    void getAbsoluteFrequenciesWithParent() {
         probNet.addLink(nodeA, nodeB, true);
 
-        // Node B has parent A
         TablePotential freq = Util.getAbsoluteFreq(probNet, caseDatabase, nodeB);
 
-        // Expected structure is [B|A=0, B|A=1] (depending on variable order in
-        // Potential)
-        // Util.getAbsoluteFrequencies puts childNode as first in list, then parents.
-        // But TablePotential usually stores values in order of variables.
-        // Let's check variables in potential
-        // List<Variable> vars = freq.getVariables();
-        // vars should contain B and A.
-
-        // getAbsoluteFrequencies implementation:
-        // parentsConfigurations *= ...
-        // It iterates parents first?
-        // Let's verify standard potential indexing in OpenMarkov:
-        // usually strides are: first variable varies fastest (or last? need to check).
-        // OpenMarkov standard: Last variable varies fastest (Little Endian vs Big
-        // Endian).
-        // Actually, let's just check the values.
-        // We expect (A=0, B=0)=2, (A=0, B=1)=1, (A=1, B=0)=1, (A=1, B=1)=1
-
         double[] values = freq.getValues();
-        // Sum should be 5
-        double sum = 0;
-        for (double v : values)
-            sum += v;
-        assertEquals(5.0, sum, 0.001);
+        double sum = Arrays.stream(values).sum();
+        assertThat(sum).isEqualTo(5.0);
 
-        // We can check specific configurations if we knew the order.
-        // Assuming strictly correctness of counts first:
-        // There should be one '2.0' and three '1.0's.
-        int count2 = 0;
-        int count1 = 0;
-        for (double v : values) {
-            if (Math.abs(v - 2.0) < 0.001)
-                count2++;
-            if (Math.abs(v - 1.0) < 0.001)
-                count1++;
-        }
-        assertEquals(1, count2, "Should have one configuration with count 2");
-        assertEquals(3, count1, "Should have three configurations with count 1");
+        // Should have one configuration with count 2 and three with count 1
+        long count2 = Arrays.stream(values).filter(v -> Math.abs(v - 2.0) < 0.001).count();
+        long count1 = Arrays.stream(values).filter(v -> Math.abs(v - 1.0) < 0.001).count();
+        assertThat(count2).as("configurations with count 2").isEqualTo(1);
+        assertThat(count1).as("configurations with count 1").isEqualTo(3);
     }
 
     @Test
-    public void testGetAbsoluteFreqExtraParent() {
-        // Node B, extra parent A (not linked in graph)
+    void getAbsoluteFreqExtraParentAddsParent() {
+        // No link in the graph, but extraParent adds A as parent of B
         TablePotential freq = Util.getAbsoluteFreqExtraParent(probNet, caseDatabase, nodeB, nodeA);
 
         double[] values = freq.getValues();
-        // Same expectations as previous test: one 2.0, three 1.0s
-        double sum = 0;
-        for (double v : values)
-            sum += v;
-        assertEquals(5.0, sum, 0.001);
+        double sum = Arrays.stream(values).sum();
+        assertThat(sum).isEqualTo(5.0);
 
-        int count2 = 0;
-        int count1 = 0;
-        for (double v : values) {
-            if (Math.abs(v - 2.0) < 0.001)
-                count2++;
-            if (Math.abs(v - 1.0) < 0.001)
-                count1++;
-        }
-        assertEquals(1, count2);
-        assertEquals(3, count1);
+        long count2 = Arrays.stream(values).filter(v -> Math.abs(v - 2.0) < 0.001).count();
+        long count1 = Arrays.stream(values).filter(v -> Math.abs(v - 1.0) < 0.001).count();
+        assertThat(count2).isEqualTo(1);
+        assertThat(count1).isEqualTo(3);
+    }
+
+    @Test
+    void getAbsoluteFreqExtraParentWithNullExtraParent() {
+        // Null extraParent should behave like getAbsoluteFreq
+        TablePotential freqWithNull = Util.getAbsoluteFreqExtraParent(probNet, caseDatabase, nodeB, null);
+        TablePotential freqNormal = Util.getAbsoluteFreq(probNet, caseDatabase, nodeB);
+
+        assertThat(freqWithNull.getValues()).isEqualTo(freqNormal.getValues());
+    }
+
+    @Test
+    void getAbsoluteFreqExtraParentDoesNotDuplicateExistingParent() {
+        probNet.addLink(nodeA, nodeB, true);
+
+        // A is already parent of B, passing it again as extraParent should not add it twice
+        TablePotential freq = Util.getAbsoluteFreqExtraParent(probNet, caseDatabase, nodeB, nodeA);
+
+        double[] values = freq.getValues();
+        // 2 states for B * 2 states for A = 4 entries
+        assertThat(values).hasSize(4);
+    }
+
+    @Test
+    void getAbsoluteFreqRemovingParentExcludesParent() {
+        probNet.addLink(nodeA, nodeB, true);
+
+        // Remove parent A, so B should have marginal frequencies
+        TablePotential freq = Util.getAbsoluteFreqRemovingParent(probNet, caseDatabase, nodeB, nodeA);
+
+        double[] values = freq.getValues();
+        // Without parents: just B marginal counts => B=0:3, B=1:2
+        assertThat(values).hasSize(2);
+        assertThat(values[0]).isEqualTo(3.0);
+        assertThat(values[1]).isEqualTo(2.0);
+    }
+
+    @Test
+    void getAbsoluteFreqRemovingParentWithMultipleParents() {
+        Variable vC = new Variable("C", "0", "1");
+        Node nodeC = probNet.addNode(vC, NodeType.CHANCE);
+
+        // Rebuild database with 3 variables
+        List<Variable> variables = Arrays.asList(
+                nodeA.getVariable(), nodeB.getVariable(), vC);
+        int[][] cases = {
+                {0, 0, 0},
+                {0, 1, 1},
+                {1, 0, 0},
+                {1, 1, 1},
+                {0, 0, 0}
+        };
+        CaseDatabase db3 = new CaseDatabase(variables, cases);
+
+        // C has parents A and B
+        probNet.addLink(nodeA, nodeC, true);
+        probNet.addLink(nodeB, nodeC, true);
+
+        // Remove parent A, keep parent B
+        TablePotential freq = Util.getAbsoluteFreqRemovingParent(probNet, db3, nodeC, nodeA);
+
+        double[] values = freq.getValues();
+        // 2 states for C * 2 states for B = 4 entries
+        assertThat(values).hasSize(4);
+        double sum = Arrays.stream(values).sum();
+        assertThat(sum).isEqualTo(5.0);
+    }
+
+    @Test
+    void getAbsoluteFrequenciesThrowsForMissingVariable() {
+        ProbNet otherNet = new ProbNet();
+        Variable vX = new Variable("X", "0", "1");
+        Node nodeX = otherNet.addNode(vX, NodeType.CHANCE);
+
+        assertThatThrownBy(() -> Util.getAbsoluteFreq(otherNet, caseDatabase, nodeX))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("X");
+    }
+
+    @Test
+    void frequenciesSumToTotalCaseCount() {
+        // For any node without parents, frequencies should sum to number of cases
+        TablePotential freqA = Util.getAbsoluteFreq(probNet, caseDatabase, nodeA);
+        TablePotential freqB = Util.getAbsoluteFreq(probNet, caseDatabase, nodeB);
+
+        assertThat(Arrays.stream(freqA.getValues()).sum()).isEqualTo(5.0);
+        assertThat(Arrays.stream(freqB.getValues()).sum()).isEqualTo(5.0);
+    }
+
+    @Test
+    void getAbsoluteFreqDoesNotMutateInputList() {
+        // Verify the subList fix: calling getAbsoluteFreqExtraParent should not mutate anything
+        probNet.addLink(nodeA, nodeB, true);
+        int parentsBefore = nodeB.getParents().size();
+
+        Util.getAbsoluteFreq(probNet, caseDatabase, nodeB);
+
+        assertThat(nodeB.getParents()).hasSize(parentsBefore);
     }
 }

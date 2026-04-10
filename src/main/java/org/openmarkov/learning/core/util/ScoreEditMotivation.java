@@ -7,8 +7,11 @@
 
 package org.openmarkov.learning.core.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 /**
  * This class represents the motivation of an edit based on a score.
@@ -47,7 +50,7 @@ public class ScoreEditMotivation extends LearningEditMotivation {
 	 * @return a negative integer, zero, or a positive integer as this object
 	 *         is less than, equal to, or greater than the specified object.
 	 */
-	@Override public int compareTo(LearningEditMotivation edit) {
+	@Override public int compareTo(@NotNull LearningEditMotivation edit) {
 		if (edit instanceof ScoreEditMotivation scoreEditMotivation) {
 			return Double.compare(this.score, scoreEditMotivation.score);
 		}
@@ -68,5 +71,18 @@ public class ScoreEditMotivation extends LearningEditMotivation {
 	 */
 	public double getScore() {
 		return score;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		ScoreEditMotivation other = (ScoreEditMotivation) obj;
+		return Double.compare(this.score, other.score) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(score);
 	}
 }

@@ -7,6 +7,10 @@
 
 package org.openmarkov.learning.core.util;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
 /**
  * A text-based motivation for a learning edit, used when a descriptive reason
  * (rather than a numeric score) is associated with the edit.
@@ -23,7 +27,7 @@ public class StringEditMotivation extends LearningEditMotivation {
 		this.motivation = motivation;
 	}
 
-	@Override public int compareTo(LearningEditMotivation edit) {
+	@Override public int compareTo(@NotNull LearningEditMotivation edit) {
 		return 0;
 	}
 
@@ -31,4 +35,16 @@ public class StringEditMotivation extends LearningEditMotivation {
 		return motivation;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		StringEditMotivation other = (StringEditMotivation) obj;
+		return Objects.equals(this.motivation, other.motivation);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(motivation);
+	}
 }
