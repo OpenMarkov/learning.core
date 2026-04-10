@@ -7,6 +7,8 @@
 
 package org.openmarkov.learning.core.algorithm;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openmarkov.core.exception.InvalidArgumentException;
 import org.openmarkov.plugin.PluginSearch;
@@ -19,7 +21,9 @@ import java.util.stream.Stream;
  * This class manages the learning algorithms.
  */
 public class LearningAlgorithmManager {
-    
+
+    private static final Logger logger = LogManager.getLogger(LearningAlgorithmManager.class);
+
     public static final LearningAlgorithmManager INSTANCE = new LearningAlgorithmManager();
     
     // Attributes
@@ -66,7 +70,9 @@ public class LearningAlgorithmManager {
                     try {
                         return (LearningAlgorithm) constructor.newInstance(parameters.toArray());
                     } catch (InstantiationException | IllegalAccessException |
-                             InvocationTargetException ignored) {
+                             InvocationTargetException e) {
+                        logger.warn("Failed to instantiate {} via constructor with {} parameters: {}",
+                                algorithmClass.getSimpleName(), parameters.size(), e.getMessage(), e);
                         return null;
                     }
                 })
