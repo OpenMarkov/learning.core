@@ -65,7 +65,7 @@ public class LearningAlgorithmManager {
     public final LearningAlgorithm instantiateByClass(Class<? extends LearningAlgorithm> algorithmClass, List<Object> parameters) {
         LearningAlgorithm instance = Arrays
                 .stream(algorithmClass.getConstructors())
-                .filter(constructor -> constructor.getParameterCount() == parameters.size())
+                .filter(constructor -> isTypeCompatible(constructor.getParameterTypes(), parameters))
                 .map(constructor -> {
                     try {
                         return (LearningAlgorithm) constructor.newInstance(parameters.toArray());
@@ -83,6 +83,34 @@ public class LearningAlgorithmManager {
             throw new InvalidArgumentException("there is no Learning Algorithm that can be constructed with these arguments: " + parameters);
         }
         return instance;
+    }
+
+    private static boolean isTypeCompatible(Class<?>[] paramTypes, List<Object> parameters) {
+        if (paramTypes.length != parameters.size()) return false;
+        for (int i = 0; i < paramTypes.length; i++) {
+            Object param = parameters.get(i);
+            if (param == null) continue;
+            Class<?> expected = wrap(paramTypes[i]);
+            if (!expected.isAssignableFrom(param.getClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = Map.of(
+            boolean.class, Boolean.class,
+            int.class, Integer.class,
+            long.class, Long.class,
+            double.class, Double.class,
+            float.class, Float.class,
+            byte.class, Byte.class,
+            short.class, Short.class,
+            char.class, Character.class
+    );
+
+    private static Class<?> wrap(Class<?> type) {
+        return type.isPrimitive() ? PRIMITIVE_TO_WRAPPER.get(type) : type;
     }
     
     
