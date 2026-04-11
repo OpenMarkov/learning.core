@@ -69,7 +69,10 @@ public class Util {
 		List<Node> nodes = probNet.getNodes(onlyParentVariables);
 		for (int i = 0; i < cases.length; i++) {
 			iCPT = 0;
-			for (int j = 0; j < nodes.size(); ++j) {
+			// Iterate parents in reverse so the last parent gets the largest
+			// multiplier, matching TablePotential's offset convention where
+			// variables[0] has offset 1 (least significant).
+			for (int j = nodes.size() - 1; j >= 0; --j) {
 				iParent = indexesOfParents[j];
 				iCPT = iCPT * nodes.get(j).getVariable().getNumStates() + cases[i][iParent];
 			}
