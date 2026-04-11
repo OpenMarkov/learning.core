@@ -22,12 +22,9 @@ import org.openmarkov.learning.core.algorithm.LearningAlgorithmType;
 import org.openmarkov.core.model.network.constraint.ModelNetworkConstraint;
 import org.openmarkov.learning.core.exception.EmptyModelNetException;
 import org.openmarkov.learning.core.exception.UnobservedVariablesException;
-import org.openmarkov.learning.core.util.LearningEditMotivation;
-import org.openmarkov.learning.core.util.LearningEditProposal;
 import org.openmarkov.learning.core.util.ModelNetUse;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * This class launches the learning algorithm and receives the results of
@@ -96,28 +93,6 @@ public class LearningManager {
     }
     
     /**
-     * Returns all registered generative (non-discriminative) learning algorithms.
-     *
-     * @return a stream of generative learning algorithm classes
-     */
-    public static Stream<Class<? extends LearningAlgorithm>> getGenerativeAlgorithms() {
-        return LearningAlgorithmManager.INSTANCE.getLearningAlgorithms()
-                                                .filter(a -> !LearningAlgorithmManager.info(a).discriminative());
-        
-    }
-    
-    /**
-     * Returns all registered discriminative learning algorithms.
-     *
-     * @return a stream of discriminative learning algorithm classes
-     */
-    public static Stream<Class<? extends LearningAlgorithm>> getDiscriminativeAlgorithms() {
-        return LearningAlgorithmManager.INSTANCE.getLearningAlgorithms()
-                                                .filter(a -> LearningAlgorithmManager.info(a).discriminative());
-        
-    }
-    
-    /**
      * Initialize the learning algorithm.
      */
     public void init(LearningAlgorithm learningAlgorithm) {
@@ -151,59 +126,6 @@ public class LearningManager {
     public LearningAlgorithm getLearningAlgorithm() {
         
         return learningAlgorithm;
-    }
-    
-    /**
-     * Scores the associated network with the given edition.
-     *
-     * @param edit {@code PNEdit}
-     *
-     * @return {@code double} score of the net with the given edition
-     */
-    public LearningEditMotivation getMotivation(PNEdit edit) {
-        
-        return learningAlgorithm.getMotivation(edit);
-    }
-    
-    /**
-     * Retrieves the best edition suggested by the learning algorithm.
-     *
-     * @param onlyAllowedEdits  if true, only constraint-compliant edits are returned
-     * @param onlyPositiveEdits if true, only edits with positive score are returned
-     * @return the best edit proposal, or null if none is available
-     */
-    public LearningEditProposal getBestEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits) {
-        
-        return this.learningAlgorithm.getBestEdit(onlyAllowedEdits, onlyPositiveEdits);
-    }
-    
-    /**
-     * Retrieves the next best edition suggested by the learning algorithm.
-     *
-     * @param onlyAllowedEdits  if true, only constraint-compliant edits are returned
-     * @param onlyPositiveEdits if true, only edits with positive score are returned
-     * @return the next best edit proposal, or null if none is available
-     */
-    public LearningEditProposal getNextEdit(boolean onlyAllowedEdits, boolean onlyPositiveEdits) {
-        
-        return this.learningAlgorithm.getNextEdit(onlyAllowedEdits, onlyPositiveEdits);
-    }
-    
-    /**
-     * Tells the learning algorithm to advance until the next phase
-     */
-    public void goToNextPhase() {
-        this.learningAlgorithm.runTillNextPhase();
-    }
-    
-    /**
-     * Retrieves whether the LearningAlgorithm is in the last phase.
-     *
-     * @return true if the algorithm is in its last phase
-     */
-    public boolean isLastPhase() {
-        
-        return this.learningAlgorithm.isLastPhase();
     }
     
     /**
@@ -317,33 +239,6 @@ public class LearningManager {
         }
     }
     
-    /**
-     * Blocks edit
-     *
-     * @param edit to block
-     */
-    public void blockEdit(LearningEditProposal edit) {
-        
-        learningAlgorithm.blockEdit(edit);
-    }
-    
-    /**
-     * Blocks edit
-     *
-     * @param edit to block
-     */
-    public void unblockEdit(LearningEditProposal edit) {
-        
-        learningAlgorithm.unblockEdit(edit);
-    }
-    
-    /**
-     * @return the blocked edits
-     */
-    public List<LearningEditProposal> getBlockedEdits() {
-        
-        return learningAlgorithm.getBlockedEdits();
-    }
     
     /**
      * Given a modelNet, applies the node positions and the order of the

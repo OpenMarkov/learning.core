@@ -52,6 +52,22 @@ public class LearningAlgorithmManager {
     public static LearningAlgorithmType info(Class<? extends LearningAlgorithm> plugin) {
         return plugin.getAnnotation(LearningAlgorithmType.class);
     }
+
+    /**
+     * Returns all registered generative (non-discriminative) learning algorithms.
+     */
+    public Stream<Class<? extends LearningAlgorithm>> getGenerativeAlgorithms() {
+        return learningAlgorithms.stream()
+                .filter(a -> !info(a).discriminative());
+    }
+
+    /**
+     * Returns all registered discriminative learning algorithms.
+     */
+    public Stream<Class<? extends LearningAlgorithm>> getDiscriminativeAlgorithms() {
+        return learningAlgorithms.stream()
+                .filter(a -> info(a).discriminative());
+    }
     
     /**
      * Instantiates a learning algorithm by its class, using reflection to find a constructor
