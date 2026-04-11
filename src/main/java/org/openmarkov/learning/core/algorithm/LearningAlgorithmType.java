@@ -13,11 +13,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.TYPE) public @interface LearningAlgorithmType {
-    
+
     String name(); // The name will be stored in the annotation of the algorithm.
-    
+
     boolean discriminative();
-    
+
     boolean supportsUnobservedVariables();
-    
+
+    /**
+     * Names of the metrics this algorithm uses, matching {@code @MetricType(name = ...)}.
+     * Order follows the algorithm constructor signature (first metric = first constructor arg).
+     * Empty (default) means the algorithm does not use scoring metrics.
+     */
+    String[] metrics() default {};
+
 }
