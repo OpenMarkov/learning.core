@@ -104,7 +104,7 @@ public class LearningManager {
     /**
      * Main method to launch the learning process.
      */
-    public void learn() {
+    public void learn() throws IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, CannotNormalizePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, ConstraintViolatedException {
         learningAlgorithm.run(modelNetUse);
     }
     
@@ -136,7 +136,7 @@ public class LearningManager {
      * @throws DoEditException if the edit cannot be executed
      */
     public void applyEdit(PNEdit edit)
-            throws DoEditException, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, NotEvaluableNetworkException.UnsatisfiedConstraints {
+            throws DoEditException, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, CannotNormalizePotentialException {
         edit.executeEdit();
         learningAlgorithm.parametricLearning();
     }
@@ -145,7 +145,7 @@ public class LearningManager {
      * Runs parametric learning on the current learned network structure.
      * Useful after interactive learning to ensure all nodes have potentials.
      */
-    public ProbNet runParametricLearning() {
+    public ProbNet runParametricLearning() throws IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, CannotNormalizePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, ConstraintViolatedException {
         return learningAlgorithm.parametricLearning();
     }
     

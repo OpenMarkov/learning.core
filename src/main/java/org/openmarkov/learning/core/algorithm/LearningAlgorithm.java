@@ -85,7 +85,7 @@ public abstract class LearningAlgorithm {
      *
      * @param modelNetUse ModelNetUse
      */
-    public void run(ModelNetUse modelNetUse) {
+    public void run(ModelNetUse modelNetUse) throws IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException, CannotNormalizePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, ConstraintViolatedException {
         init(modelNetUse);
         /* Main loop */
         LearningEditProposal bestEdition = getBestEdit(true, true);
@@ -169,7 +169,7 @@ public abstract class LearningAlgorithm {
      * normalizing the absolute frequencies of the configurations of
      * the parents.
      */
-    public ProbNet parametricLearning() {
+    public ProbNet parametricLearning() throws NotEvaluableNetworkException.NotApplicableNetwork, ConstraintViolatedException, CannotNormalizePotentialException, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, NonProjectablePotentialException {
         for (Node node : probNet.getNodes()) {
             if (node.getNumPotentials() > 0) {    // Remove all the potentials of the node if any exists.
                 probNet.removePotentials(node);
