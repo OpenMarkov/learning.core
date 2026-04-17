@@ -8,7 +8,6 @@
 package org.openmarkov.learning.core.util;
 
 import org.openmarkov.core.action.base.PNEdit;
-import org.openmarkov.core.action.base.linkEdits.BaseLinkEdit;
 
 import java.util.Objects;
 
@@ -30,13 +29,13 @@ public class LearningEditProposal implements Comparable<LearningEditProposal> {
 	protected final LearningEditMotivation motivation;
 
 	/**
-	 * Creates a score-based edit proposal for a link edit.
+	 * Creates a score-based edit proposal.
 	 *
-	 * @param edit  the link edit
+	 * @param edit  the network edit
 	 * @param score the score associated with this edit
 	 * @return a new LearningEditProposal with a ScoreEditMotivation
 	 */
-	public static LearningEditProposal of(BaseLinkEdit edit, double score) {
+	public static LearningEditProposal scored(PNEdit edit, double score) {
 		return new LearningEditProposal(edit, new ScoreEditMotivation(score));
 	}
 

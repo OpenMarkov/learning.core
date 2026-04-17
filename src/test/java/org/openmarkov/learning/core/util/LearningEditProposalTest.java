@@ -121,7 +121,7 @@ class LearningEditProposalTest {
     @Test
     void factoryMethodCreatesScoreBasedProposal() {
         var edit = new AddLinkEdit(probNet, vA, vB, true);
-        var proposal = LearningEditProposal.of(edit, 3.14);
+        var proposal = LearningEditProposal.scored(edit, 3.14);
 
         assertThat(proposal.getEdit()).isSameAs(edit);
         assertThat(proposal.getMotivation()).isInstanceOf(ScoreEditMotivation.class);
