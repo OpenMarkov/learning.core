@@ -6,7 +6,7 @@ package org.openmarkov.learning.core.preprocess;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.database.CaseDatabase;
 import org.openmarkov.core.model.network.Variable;
 
 import java.util.Arrays;

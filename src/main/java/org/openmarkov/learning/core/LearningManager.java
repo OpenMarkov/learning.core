@@ -9,7 +9,7 @@ package org.openmarkov.learning.core;
 
 import org.openmarkov.core.action.base.PNEdit;
 import org.openmarkov.core.exception.*;
-import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.database.CaseDatabase;
 import org.openmarkov.core.model.network.Node;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;

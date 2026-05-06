@@ -8,7 +8,7 @@
 package org.openmarkov.learning.core.preprocess;
 
 import org.junit.jupiter.api.*;
-import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.PartitionedInterval;
 import org.openmarkov.core.model.network.ProbNet;

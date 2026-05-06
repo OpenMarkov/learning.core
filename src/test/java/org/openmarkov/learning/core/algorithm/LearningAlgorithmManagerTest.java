@@ -6,7 +6,7 @@ package org.openmarkov.learning.core.algorithm;
 
 import org.junit.jupiter.api.Test;
 import org.openmarkov.core.exception.InvalidArgumentException;
-import org.openmarkov.core.io.database.CaseDatabase;
+import org.openmarkov.core.model.database.CaseDatabase;
 import org.openmarkov.core.model.network.NodeType;
 import org.openmarkov.core.model.network.ProbNet;
 import org.openmarkov.core.model.network.Variable;
