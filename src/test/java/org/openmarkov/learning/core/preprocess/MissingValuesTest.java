@@ -112,6 +112,56 @@ public class MissingValuesTest {
 		Assertions.assertEquals(2, result.getCases()[4][0]);
 	}
 
+	@Test public void testImputeKnnCategorical() {
+		// X states: a0 (0), ? (1), a1 (2). Y categorical: y0 (0), y1 (1).
+		// Cases: (a0,y0), (a0,y0), (a0,y1), (?,y1), (a1,y1).
+		// Row 3's nearest neighbours on Y are rows 2 and 4 (both y1), then rows 0,1 (y0).
+		// With k=5 all 4 neighbours vote: a0 → 3, a1 → 1; mode → a0.
+		Variable x = new Variable("X", "a0", "?", "a1");
+		Variable y = new Variable("Y", "y0", "y1");
+		List<Variable> vars = new ArrayList<>();
+		vars.add(x); vars.add(y);
+		int[][] cases = { { 0, 0 }, { 0, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 } };
+		CaseDatabase db = new CaseDatabase(vars, cases);
+
+		Map<String, MissingValues.Option> opts = new HashMap<>();
+		opts.put("X", MissingValues.Option.IMPUTE_KNN);
+		opts.put("Y", MissingValues.Option.KEEP);
+
+		CaseDatabase result = MissingValues.process(db, opts);
+
+		Assertions.assertEquals(5, result.getCases().length);
+		Variable newX = result.getVariable("X");
+		Assertions.assertEquals(2, newX.getStates().length);
+		Assertions.assertFalse(newX.containsState("?"));
+		// Imputed cell (row 3) was old idx 1 ("?"). After kNN it picks a0 (old idx 0 → new idx 0).
+		Assertions.assertEquals(0, result.getCases()[3][0]);
+		// Sanity: a1 (old idx 2) shifts to new idx 1.
+		Assertions.assertEquals(1, result.getCases()[4][0]);
+	}
+
+	@Test public void testImputeKnnFallsBackToModeWhenNoNeighbours() {
+		// Variable with a single observed value and a "?" — kNN has no usable neighbours
+		// (every potential neighbour would be itself or also "?"), so it falls back to mode.
+		Variable x = new Variable("X", "?", "a0", "a1");
+		Variable y = new Variable("Y", "y0", "y1");
+		List<Variable> vars = new ArrayList<>();
+		vars.add(x); vars.add(y);
+		int[][] cases = { { 0, 0 }, { 1, 1 }, { 2, 0 }, { 1, 1 } };
+		// X distribution excluding "?": a0×2, a1×1 → mode is a0 (old idx 1 → new idx 0).
+		CaseDatabase db = new CaseDatabase(vars, cases);
+
+		Map<String, MissingValues.Option> opts = new HashMap<>();
+		opts.put("X", MissingValues.Option.IMPUTE_KNN);
+		opts.put("Y", MissingValues.Option.KEEP);
+
+		CaseDatabase result = MissingValues.process(db, opts);
+		Variable newX = result.getVariable("X");
+		Assertions.assertFalse(newX.containsState("?"));
+		// Row 0 had "?", should be imputed (via kNN or fallback) to a0 (new idx 0).
+		Assertions.assertEquals(0, result.getCases()[0][0]);
+	}
+
 	@Test public void testImputeMedianNumeric() {
 		Variable varC = new Variable("C", "1.0", "2.0", "3.0", "100.0", "?");
 		Variable varD = new Variable("D", "d0", "d1");

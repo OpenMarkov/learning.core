@@ -205,6 +205,69 @@ public class DiscretizationTests {
 				() -> Discretization.process(database, opts, numIntervals, null, null));
 	}
 
+	@Test public void testDiscretizeChiMergeCleanSplit() {
+		// Same clean-signal pattern used for MDLP: X = 1..4 → c0, X = 5..8 → c1.
+		Variable varX = new Variable("X", "1", "2", "3", "4", "5", "6", "7", "8");
+		Variable varY = new Variable("Y", "c0", "c1");
+		List<Variable> variables = new ArrayList<>();
+		variables.add(varX);
+		variables.add(varY);
+		int[][] cases = {
+				{ 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 },
+				{ 4, 1 }, { 5, 1 }, { 6, 1 }, { 7, 1 }
+		};
+		CaseDatabase db = new CaseDatabase(variables, cases);
+
+		Map<String, Discretization.Option> opts = new HashMap<>();
+		opts.put("X", Discretization.Option.CHIMERGE);
+		opts.put("Y", Discretization.Option.NONE);
+		Map<String, Integer> numIntervals = new HashMap<>();
+		numIntervals.put("X", -1);
+		numIntervals.put("Y", -1);
+
+		CaseDatabase result = Discretization.process(db, opts, numIntervals, null, varY);
+		Variable newX = result.getVariable("X");
+		Assertions.assertEquals(2, newX.getStates().length);
+		double[] limits = newX.getPartitionedInterval().getLimits();
+		Assertions.assertEquals(1.0, limits[0], 1e-9);
+		Assertions.assertEquals(4.5, limits[1], 1e-9);
+		Assertions.assertEquals(8.0, limits[2], 1e-9);
+	}
+
+	@Test public void testDiscretizeChiMergeThrowsWithoutClassVariable() {
+		Map<String, Discretization.Option> opts = new HashMap<>();
+		opts.put("A", Discretization.Option.CHIMERGE);
+		opts.put("B", Discretization.Option.NONE);
+		Map<String, Integer> numIntervals = new HashMap<>();
+		numIntervals.put("A", -1);
+		numIntervals.put("B", -1);
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> Discretization.process(database, opts, numIntervals, null, null));
+	}
+
+	@Test public void testDiscretizeKMeansTwoClusters() {
+		// Two well-separated clusters of values.
+		Variable varX = new Variable("X", "1", "2", "3", "10", "11", "12");
+		List<Variable> variables = new ArrayList<>();
+		variables.add(varX);
+		int[][] cases = { { 0 }, { 1 }, { 2 }, { 3 }, { 4 }, { 5 } };
+		CaseDatabase db = new CaseDatabase(variables, cases);
+
+		Map<String, Discretization.Option> opts = new HashMap<>();
+		opts.put("X", Discretization.Option.KMEANS);
+		Map<String, Integer> numIntervals = new HashMap<>();
+		numIntervals.put("X", 2);
+
+		CaseDatabase result = Discretization.process(db, opts, numIntervals);
+		Variable newX = result.getVariable("X");
+		Assertions.assertEquals(2, newX.getStates().length);
+		double[] limits = newX.getPartitionedInterval().getLimits();
+		// Centroids should converge to ≈ 2 and 11; midpoint ≈ 6.5.
+		Assertions.assertEquals(1.0, limits[0], 1e-9);
+		Assertions.assertEquals(6.5, limits[1], 1e-6);
+		Assertions.assertEquals(12.0, limits[2], 1e-9);
+	}
+
 	@Test public void testDiscretizeModelNetFS() {
 
 		List<Variable> variables = new ArrayList<>();

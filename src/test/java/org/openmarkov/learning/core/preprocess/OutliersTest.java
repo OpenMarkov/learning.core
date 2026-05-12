@@ -81,6 +81,23 @@ public class OutliersTest {
 		Assertions.assertFalse(result.getVariable("X").containsState("?"));
 	}
 
+	@Test public void testIQRWinsorizeClampsOutlierToNearestInRangeState() {
+		// IQR bounds [-4, 16]; the value 100 is > 16. Nearest in-range max state is "10" (idx 9).
+		Map<String, Outliers.Option> opts = new HashMap<>();
+		opts.put("X", Outliers.Option.IQR_WINSORIZE);
+
+		CaseDatabase result = Outliers.process(database, opts);
+
+		Assertions.assertEquals(11, result.getCases().length);
+		Variable newX = result.getVariable("X");
+		Assertions.assertFalse(newX.containsState("?"));
+		// Outlier cell (originally index 10 = state "100") winsorized to index 9 = state "10".
+		Assertions.assertEquals(9, result.getCases()[10][0]);
+		Assertions.assertEquals(9, newX.getStateIndex("10"));
+		// Non-outlier rows preserved.
+		Assertions.assertEquals(0, result.getCases()[0][0]);
+	}
+
 	@Test public void testNonNumericVariableIsIgnored() {
 		Variable cat = new Variable("Cat", "a", "b", "c", "d", "e");
 		List<Variable> vars = new ArrayList<>();

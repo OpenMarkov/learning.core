@@ -47,6 +47,7 @@ public class Outliers {
 
 		List<Variable> newVariables = new ArrayList<>(n);
 		int[] missingIndexInNew = new int[n];
+		int[][] winsorIdx = new int[n][];
 		for (int j = 0; j < n; j++) {
 			Variable v = oldVariables.get(j);
 			Option opt = options.get(v.getName());
@@ -59,6 +60,9 @@ public class Outliers {
 			} else {
 				newVariables.add(v);
 				missingIndexInNew[j] = v.getStateIndex("?");
+			}
+			if (bounds[j] != null && isWinsorize(opt)) {
+				winsorIdx[j] = nearestInRangeStates(v, bounds[j]);
 			}
 		}
 
@@ -86,12 +90,46 @@ public class Outliers {
 						break;
 					} else if (isMarkMissing(opt)) {
 						newCase[j] = missingIndexInNew[j];
+					} else if (isWinsorize(opt) && winsorIdx[j] != null) {
+						if (value < bounds[j][0] && winsorIdx[j][0] >= 0) {
+							newCase[j] = winsorIdx[j][0];
+						} else if (value > bounds[j][1] && winsorIdx[j][1] >= 0) {
+							newCase[j] = winsorIdx[j][1];
+						}
 					}
 				}
 			}
 			if (!drop) kept.add(newCase);
 		}
 		return new CaseDatabase(newVariables, kept.toArray(new int[0][]));
+	}
+
+	/** Returns {lowIdx, highIdx}: the smallest and largest in-range state indices, or -1 if none. */
+	private static int[] nearestInRangeStates(Variable v, double[] bounds) {
+		State[] states = v.getStates();
+		int lowIdx = -1;
+		int highIdx = -1;
+		double lowVal = Double.POSITIVE_INFINITY;
+		double highVal = Double.NEGATIVE_INFINITY;
+		for (int s = 0; s < states.length; s++) {
+			String name = states[s].getName();
+			if (name.equals("?")) continue;
+			try {
+				double val = Double.parseDouble(name);
+				if (val >= bounds[0] && val <= bounds[1]) {
+					if (val < lowVal) {
+						lowVal = val;
+						lowIdx = s;
+					}
+					if (val > highVal) {
+						highVal = val;
+						highIdx = s;
+					}
+				}
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		return new int[] { lowIdx, highIdx };
 	}
 
 	private static double[] computeBounds(Variable v, int[][] cases, int j, Option opt) {
@@ -108,7 +146,7 @@ public class Outliers {
 		}
 		if (values.isEmpty()) return null;
 
-		if (opt == Option.IQR_REMOVE || opt == Option.IQR_MARK_MISSING) {
+		if (opt == Option.IQR_REMOVE || opt == Option.IQR_MARK_MISSING || opt == Option.IQR_WINSORIZE) {
 			Collections.sort(values);
 			double q1 = percentile(values, 0.25);
 			double q3 = percentile(values, 0.75);
@@ -144,12 +182,18 @@ public class Outliers {
 		return opt == Option.IQR_MARK_MISSING || opt == Option.ZSCORE_MARK_MISSING;
 	}
 
+	private static boolean isWinsorize(Option opt) {
+		return opt == Option.IQR_WINSORIZE || opt == Option.ZSCORE_WINSORIZE;
+	}
+
 	public static Option[] getOptions() {
 		return Option.values();
 	}
 
 	public enum Option implements Localizable {
-		NONE, IQR_REMOVE, IQR_MARK_MISSING, ZSCORE_REMOVE, ZSCORE_MARK_MISSING;
+		NONE,
+		IQR_REMOVE, IQR_MARK_MISSING, IQR_WINSORIZE,
+		ZSCORE_REMOVE, ZSCORE_MARK_MISSING, ZSCORE_WINSORIZE;
 
 		@Override public @NotNull String path() {
 			return "";
@@ -160,8 +204,10 @@ public class Outliers {
 				case NONE -> "Do not handle outliers";
 				case IQR_REMOVE -> "IQR rule: remove records with outliers";
 				case IQR_MARK_MISSING -> "IQR rule: mark outliers as missing values";
+				case IQR_WINSORIZE -> "IQR rule: winsorize outliers to nearest in-range state";
 				case ZSCORE_REMOVE -> "Z-score rule: remove records with outliers";
 				case ZSCORE_MARK_MISSING -> "Z-score rule: mark outliers as missing values";
+				case ZSCORE_WINSORIZE -> "Z-score rule: winsorize outliers to nearest in-range state";
 			};
 		}
 	}
