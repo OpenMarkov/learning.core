@@ -135,6 +135,76 @@ public class DiscretizationTests {
 		Assertions.assertEquals(1, newCases[7][1]);
 	}
 
+	@Test public void testDiscretizeMDLPCleanSplit() {
+		// X = 1..4 → class 0, X = 5..8 → class 1. MDLP should find a single cut at 4.5.
+		Variable varX = new Variable("X", "1", "2", "3", "4", "5", "6", "7", "8");
+		Variable varY = new Variable("Y", "c0", "c1");
+		List<Variable> variables = new ArrayList<>();
+		variables.add(varX);
+		variables.add(varY);
+		int[][] cases = {
+				{ 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 },
+				{ 4, 1 }, { 5, 1 }, { 6, 1 }, { 7, 1 }
+		};
+		CaseDatabase db = new CaseDatabase(variables, cases);
+
+		Map<String, Discretization.Option> opts = new HashMap<>();
+		opts.put("X", Discretization.Option.MDLP);
+		opts.put("Y", Discretization.Option.NONE);
+		Map<String, Integer> numIntervals = new HashMap<>();
+		numIntervals.put("X", -1);
+		numIntervals.put("Y", -1);
+
+		CaseDatabase result = Discretization.process(db, opts, numIntervals, null, varY);
+		Variable newX = result.getVariable("X");
+
+		Assertions.assertEquals(2, newX.getStates().length);
+		double[] limits = newX.getPartitionedInterval().getLimits();
+		Assertions.assertEquals(1.0, limits[0], 1e-9);
+		Assertions.assertEquals(4.5, limits[1], 1e-9);
+		Assertions.assertEquals(8.0, limits[2], 1e-9);
+
+		int[][] newCases = result.getCases();
+		Assertions.assertEquals(0, newCases[0][0]); // X=1 → bin 0
+		Assertions.assertEquals(0, newCases[3][0]); // X=4 → bin 0
+		Assertions.assertEquals(1, newCases[4][0]); // X=5 → bin 1
+		Assertions.assertEquals(1, newCases[7][0]); // X=8 → bin 1
+	}
+
+	@Test public void testDiscretizeMDLPNoSignalKeepsSingleInterval() {
+		// Class alternates with X: no informative cut survives the MDL criterion.
+		Variable varX = new Variable("X", "1", "2", "3", "4", "5");
+		Variable varY = new Variable("Y", "c0", "c1");
+		List<Variable> variables = new ArrayList<>();
+		variables.add(varX);
+		variables.add(varY);
+		int[][] cases = { { 0, 0 }, { 1, 1 }, { 2, 0 }, { 3, 1 }, { 4, 0 } };
+		CaseDatabase db = new CaseDatabase(variables, cases);
+
+		Map<String, Discretization.Option> opts = new HashMap<>();
+		opts.put("X", Discretization.Option.MDLP);
+		opts.put("Y", Discretization.Option.NONE);
+		Map<String, Integer> numIntervals = new HashMap<>();
+		numIntervals.put("X", -1);
+		numIntervals.put("Y", -1);
+
+		CaseDatabase result = Discretization.process(db, opts, numIntervals, null, varY);
+		Variable newX = result.getVariable("X");
+		Assertions.assertEquals(1, newX.getStates().length);
+	}
+
+	@Test public void testDiscretizeMDLPThrowsWithoutClassVariable() {
+		Map<String, Discretization.Option> opts = new HashMap<>();
+		opts.put("A", Discretization.Option.MDLP);
+		opts.put("B", Discretization.Option.NONE);
+		Map<String, Integer> numIntervals = new HashMap<>();
+		numIntervals.put("A", -1);
+		numIntervals.put("B", -1);
+
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> Discretization.process(database, opts, numIntervals, null, null));
+	}
+
 	@Test public void testDiscretizeModelNetFS() {
 
 		List<Variable> variables = new ArrayList<>();

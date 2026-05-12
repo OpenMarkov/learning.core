@@ -20,10 +20,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class implements the routines to manage the discretization of the
@@ -83,23 +86,42 @@ public class Discretization {
      */
     public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
                                        Map<String, Integer> numIntervalsPerVariable, ProbNet modelNet) {
-        
+        return process(database, discretizeOptions, numIntervalsPerVariable, modelNet, null);
+    }
+
+    /**
+     * Discretizes the database. Supervised discretization options (MDLP) require
+     * a class variable.
+     *
+     * @param database                 the case database to discretize
+     * @param discretizeOptions        discretization option per variable name
+     * @param numIntervalsPerVariable  number of intervals per variable name (ignored for MDLP/MODEL_NET)
+     * @param modelNet                 optional model network for MODEL_NET discretization
+     * @param classVariable            class variable used by supervised discretization (MDLP); may be null otherwise
+     * @return {@code CaseDatabase} updated database
+     */
+    public static CaseDatabase process(CaseDatabase database, Map<String, Option> discretizeOptions,
+                                       Map<String, Integer> numIntervalsPerVariable, ProbNet modelNet,
+                                       Variable classVariable) {
+
         List<Variable> newVariables = new ArrayList<>();
-        
+
         for (Variable variable : database.getVariables()) {
             int numIntervals = numIntervalsPerVariable.get(variable.getName());
-            Variable newVariable = switch (discretizeOptions.get(variable.getName())) {
+            Option opt = discretizeOptions.get(variable.getName());
+            Variable newVariable = switch (opt) {
                 case EQUAL_WIDTH -> discretizeEqualWidth(variable, numIntervals);
                 case EQUAL_FREQ -> discretizeEqualFreq(variable, database, numIntervals);
                 case MODEL_NET -> discretizeFromModelNet(variable, modelNet);
+                case MDLP -> discretizeMDLP(variable, database, classVariable);
                 default -> variable;
             };
             newVariables.add(newVariable);
         }
-        
+
         /* construct the new cases array */
         int[][] newCases = discretizeCases(database, newVariables, discretizeOptions);
-        
+
         return new CaseDatabase(newVariables, newCases);
     }
     
@@ -326,6 +348,170 @@ public class Discretization {
     }
     
     /**
+     * Supervised discretization using the Fayyad &amp; Irani MDLP criterion
+     * (Multi-Interval Discretization, 1993). Recursively splits the value range
+     * of the variable at the cut point that maximizes the information gain
+     * w.r.t. the class variable, accepting the cut only when the MDL stopping
+     * criterion is satisfied.
+     *
+     * @param variable      the numeric variable to discretize
+     * @param database      case database providing the joint observations
+     * @param classVariable the class (target) variable; must belong to the database
+     */
+    private static Variable discretizeMDLP(Variable variable, CaseDatabase database, Variable classVariable) {
+        if (classVariable == null) {
+            throw new IllegalArgumentException(
+                    "MDLP discretization requires a class variable; none was provided for " + variable.getName());
+        }
+        if (variable.getName().equals(classVariable.getName())) {
+            throw new IllegalArgumentException(
+                    "MDLP class variable cannot be the variable being discretized: " + variable.getName());
+        }
+
+        int varIdx = -1;
+        int classIdx = -1;
+        List<Variable> vars = database.getVariables();
+        for (int j = 0; j < vars.size(); j++) {
+            if (vars.get(j).getName().equals(variable.getName())) varIdx = j;
+            if (vars.get(j).getName().equals(classVariable.getName())) classIdx = j;
+        }
+        if (varIdx < 0 || classIdx < 0) {
+            throw new IllegalArgumentException("Variable or class variable not found in database");
+        }
+
+        int[][] cases = database.getCases();
+        int missingIdx = variable.getStateIndex("?");
+        int classMissingIdx = classVariable.getStateIndex("?");
+
+        // Gather (value, classState) pairs, skipping cases with missing value on either variable.
+        List<double[]> pairs = new ArrayList<>();
+        State[] states = variable.getStates();
+        for (int[] c : cases) {
+            int vIdx = c[varIdx];
+            int cIdx = c[classIdx];
+            if (missingIdx >= 0 && vIdx == missingIdx) continue;
+            if (classMissingIdx >= 0 && cIdx == classMissingIdx) continue;
+            try {
+                double value = Double.parseDouble(states[vIdx].getName());
+                pairs.add(new double[] { value, cIdx });
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        boolean containsMissingValues = variable.containsState("?");
+        if (pairs.isEmpty()) {
+            return variable; // Nothing observable; leave the variable untouched.
+        }
+
+        pairs.sort(Comparator.comparingDouble(a -> a[0]));
+        int n = pairs.size();
+        double[] values = new double[n];
+        int[] classesArr = new int[n];
+        for (int i = 0; i < n; i++) {
+            values[i] = pairs.get(i)[0];
+            classesArr[i] = (int) pairs.get(i)[1];
+        }
+
+        List<Double> cuts = new ArrayList<>();
+        mdlpRecurse(values, classesArr, 0, n, cuts);
+        Collections.sort(cuts);
+
+        double min = values[0];
+        double max = values[n - 1];
+        int numIntervals = cuts.size() + 1;
+        int numStates = containsMissingValues ? numIntervals + 1 : numIntervals;
+
+        State[] newStates = new State[numStates];
+        double[] limits = new double[numIntervals + 1];
+        boolean[] belongsToLeftSide = new boolean[numIntervals + 1];
+
+        limits[0] = min;
+        for (int i = 0; i < cuts.size(); i++) limits[i + 1] = cuts.get(i);
+        limits[numIntervals] = max;
+
+        for (int i = 0; i < numIntervals; i++) {
+            newStates[i] = new State("(" + limits[i] + " , " + limits[i + 1] + "]");
+            belongsToLeftSide[i] = true;
+        }
+        newStates[0].setName(newStates[0].getName().replace('(', '['));
+        belongsToLeftSide[0] = false;
+        belongsToLeftSide[numIntervals] = true;
+        if (containsMissingValues) {
+            newStates[numStates - 1] = new State("?");
+        }
+
+        return new Variable(variable.getName(), newStates,
+                new PartitionedInterval(limits, belongsToLeftSide), 0.001);
+    }
+
+    private static void mdlpRecurse(double[] values, int[] classesArr, int from, int to, List<Double> cuts) {
+        int n = to - from;
+        if (n < 2) return;
+
+        double entS = entropy(classesArr, from, to);
+        int bestIdx = -1;
+        double bestGain = Double.NEGATIVE_INFINITY;
+        double bestEnt1 = 0;
+        double bestEnt2 = 0;
+
+        for (int i = from; i < to - 1; i++) {
+            if (values[i] == values[i + 1]) continue;
+            int n1 = i + 1 - from;
+            int n2 = to - (i + 1);
+            double ent1 = entropy(classesArr, from, i + 1);
+            double ent2 = entropy(classesArr, i + 1, to);
+            double weighted = ((double) n1 / n) * ent1 + ((double) n2 / n) * ent2;
+            double gain = entS - weighted;
+            if (gain > bestGain) {
+                bestGain = gain;
+                bestIdx = i;
+                bestEnt1 = ent1;
+                bestEnt2 = ent2;
+            }
+        }
+
+        if (bestIdx < 0 || bestGain <= 0) return;
+
+        int k = distinctClasses(classesArr, from, to);
+        int k1 = distinctClasses(classesArr, from, bestIdx + 1);
+        int k2 = distinctClasses(classesArr, bestIdx + 1, to);
+        double log2 = Math.log(2);
+        double delta = Math.log(Math.pow(3, k) - 2) / log2
+                - (k * entS - k1 * bestEnt1 - k2 * bestEnt2);
+        double threshold = Math.log(n - 1) / log2 / n + delta / n;
+
+        if (bestGain <= threshold) return;
+
+        double cutPoint = (values[bestIdx] + values[bestIdx + 1]) / 2.0;
+        cuts.add(cutPoint);
+
+        mdlpRecurse(values, classesArr, from, bestIdx + 1, cuts);
+        mdlpRecurse(values, classesArr, bestIdx + 1, to, cuts);
+    }
+
+    private static double entropy(int[] classesArr, int from, int to) {
+        int n = to - from;
+        if (n == 0) return 0;
+        Map<Integer, Integer> hist = new HashMap<>();
+        for (int i = from; i < to; i++) {
+            hist.merge(classesArr[i], 1, Integer::sum);
+        }
+        double h = 0;
+        double log2 = Math.log(2);
+        for (int count : hist.values()) {
+            double p = (double) count / n;
+            h -= p * Math.log(p) / log2;
+        }
+        return h;
+    }
+
+    private static int distinctClasses(int[] classesArr, int from, int to) {
+        Set<Integer> seen = new HashSet<>();
+        for (int i = from; i < to; i++) seen.add(classesArr[i]);
+        return seen.size();
+    }
+
+    /**
      * This function updates the database cases to adapt them to the new
      * states of the discretized variables.
      *
@@ -430,19 +616,20 @@ public class Discretization {
     }
     
     public enum Option implements Localizable {
-        NONE, EQUAL_FREQ, EQUAL_WIDTH, MODEL_NET;
-        
-        
+        NONE, EQUAL_FREQ, EQUAL_WIDTH, MODEL_NET, MDLP;
+
+
         @Override public @NotNull String path() {
             return "";
         }
-        
+
         @Override public @NotNull String localize(LocalizationFormatter formatter) {
             return switch (this){
                 case NONE -> "Do not discretize";
                 case EQUAL_FREQ -> "Equal frequency intervals";
                 case EQUAL_WIDTH -> "Equal width intervals";
                 case MODEL_NET -> "Use model network";
+                case MDLP -> "MDLP (Fayyad-Irani, supervised)";
             };
         }
     }
