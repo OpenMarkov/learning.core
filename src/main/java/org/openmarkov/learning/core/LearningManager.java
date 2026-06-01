@@ -136,7 +136,7 @@ public class LearningManager {
      * @throws DoEditException if the edit cannot be executed
      */
     public void applyEdit(PNEdit edit)
-            throws DoEditException, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, CannotNormalizePotentialException {
+            throws DoEditException, NonProjectablePotentialException, NotEvaluableNetworkException.NotApplicableNetwork, IncompatibleEvidenceException.EvidenceIsIncompatibleWithOther, CannotNormalizePotentialException, ConstraintViolatedException {
         edit.executeEdit();
         learningAlgorithm.parametricLearning();
     }
