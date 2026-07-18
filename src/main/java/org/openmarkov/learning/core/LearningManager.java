@@ -169,9 +169,10 @@ public class LearningManager {
         List<Variable> missingVariables = getMissingVariables(database.getVariables(), modelNet.getVariables());
         if (!algorithmClass.getAnnotation(LearningAlgorithmType.class)
                            .supportsUnobservedVariables() && !missingVariables.isEmpty()) {
-            List<Variable> latentVariables = new ArrayList<>(modelNet.getVariables());
-            latentVariables.removeAll(database.getVariables());
-            throw new UnobservedVariablesException(algorithmClass, latentVariables);
+            // missingVariables is already the model-net variables absent from the database,
+            // computed by name (Variable has no equals, so a removeAll here would compare by
+            // identity and, with distinct instances, remove nothing and report every variable).
+            throw new UnobservedVariablesException(algorithmClass, missingVariables);
         }
         
         if (modelNetUse.isUseNodePositions()) {
