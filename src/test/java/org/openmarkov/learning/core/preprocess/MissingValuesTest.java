@@ -63,6 +63,55 @@ public class MissingValuesTest {
 
 	}
 
+	/**
+	 * Regression for B-Missing: a variable marked ELIMINATE must remove a case only when
+	 * that variable is itself missing. Here A is ELIMINATE but never missing (it has no
+	 * "?" state) and B is KEEP with a missing value in one case; that case must survive
+	 * and B must keep its "?" state.
+	 */
+	@Test public void testEliminateDoesNotRemoveRowsMissingOnlyInKeptVariable() {
+		List<Variable> variables = new ArrayList<>();
+		Variable a = new Variable("A", "a0", "a1");        // no "?" -> A is never missing
+		Variable b = new Variable("B", "b0", "?", "b1");   // "?" at index 1
+		variables.add(a);
+		variables.add(b);
+		int[][] cases = { { 0, 0 }, { 1, 1 }, { 0, 2 } };  // row 1: B missing, A present
+		CaseDatabase db = new CaseDatabase(variables, cases);
+
+		Map<String, MissingValues.Option> preprocessOption = new HashMap<>();
+		preprocessOption.put("A", MissingValues.Option.ELIMINATE);
+		preprocessOption.put("B", MissingValues.Option.KEEP);
+
+		CaseDatabase newDatabase = MissingValues.process(db, preprocessOption);
+
+		Assertions.assertEquals(3, newDatabase.getCases().length);
+		Assertions.assertTrue(newDatabase.getVariables().get(1).containsState("?"));
+	}
+
+	/**
+	 * Regression for B-Missing: with A ELIMINATE and B KEEP (both able to be missing), a
+	 * case is removed only when A is missing. A row missing in A is dropped; a row missing
+	 * only in B is kept.
+	 */
+	@Test public void testEliminateRemovesOnlyWhenEliminatedVariableIsMissing() {
+		List<Variable> variables = new ArrayList<>();
+		Variable a = new Variable("A", "a0", "?", "a1");   // "?" at index 1
+		Variable b = new Variable("B", "b0", "?", "b1");   // "?" at index 1
+		variables.add(a);
+		variables.add(b);
+		int[][] cases = { { 0, 0 }, { 1, 0 }, { 0, 1 } };  // row 1: A missing; row 2: only B missing
+		CaseDatabase db = new CaseDatabase(variables, cases);
+
+		Map<String, MissingValues.Option> preprocessOption = new HashMap<>();
+		preprocessOption.put("A", MissingValues.Option.ELIMINATE);
+		preprocessOption.put("B", MissingValues.Option.KEEP);
+
+		CaseDatabase newDatabase = MissingValues.process(db, preprocessOption);
+
+		// row 0 kept, row 1 (A missing) removed, row 2 (only B missing) kept
+		Assertions.assertEquals(2, newDatabase.getCases().length);
+	}
+
 	@Test public void testImputeModeCategorical() {
 		// varA has states {a1 (idx 0), ? (idx 1), a0 (idx 2)}; cases: a1, a1, ?, a0, ?
 		// Mode of A excluding ? is a1 (count 2 vs a0 count 1).

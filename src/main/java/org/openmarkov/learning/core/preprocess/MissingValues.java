@@ -57,11 +57,9 @@ public class MissingValues {
 		boolean[] keepCase = new boolean[oldCases.length];
 		int numCasesToKeep = 0;
 		for (int i = 0; i < oldCases.length; i++) {
-			keepCase[i] = true;
-			for (int j = 0; j < oldVariables.size(); j++) {
-				keepCase[i] &= preprocessOption.get(oldVariables.get(j).getName()) != Option.ELIMINATE
-						|| !containsMissingValues(oldVariables, oldCases[i]);
-			}
+			// Keep the case unless a variable marked ELIMINATE is itself missing in it.
+			keepCase[i] = !hasMissingValueToEliminate(oldVariables, oldCases[i],
+					missingStatesIndices, preprocessOption);
 			if (keepCase[i]) {
 				++numCasesToKeep;
 			}
@@ -102,20 +100,26 @@ public class MissingValues {
 	}
 
 	/**
-	 * This function checks if a case contains missing values
+	 * Returns {@code true} if the case has a missing value in some variable whose option
+	 * is {@link Option#ELIMINATE}. Only such a case is removed; a missing value in a
+	 * variable to be kept or imputed does not, on its own, remove the case.
 	 *
-     * @param variables {@code List} variables to preprocess
-     * @param caseData  {@code int[]} case we want to verify
-     * @return {@code boolean} true if the case contains missing values
+	 * @param variables            the variables of the database
+	 * @param caseData             the case, one state index per variable
+	 * @param missingStatesIndices the "?" state index per variable, or -1 if it has none
+	 * @param options              the preprocess option per variable name
+	 * @return {@code true} if the case must be removed
 	 */
-	private static boolean containsMissingValues(List<Variable> variables, int[] caseData) {
-		boolean containsMissingValues = false;
-
-		for (int i = 0; i < caseData.length; ++i) {
-			containsMissingValues |= variables.get(i).getStateName(caseData[i]).equals("?");
+	private static boolean hasMissingValueToEliminate(List<Variable> variables, int[] caseData,
+			int[] missingStatesIndices, Map<String, Option> options) {
+		for (int j = 0; j < variables.size(); j++) {
+			boolean toEliminate = options.get(variables.get(j).getName()) == Option.ELIMINATE;
+			boolean missing = missingStatesIndices[j] >= 0 && caseData[j] == missingStatesIndices[j];
+			if (toEliminate && missing) {
+				return true;
+			}
 		}
-
-		return containsMissingValues;
+		return false;
 	}
 
 	/**
