@@ -58,22 +58,22 @@ public class Discretization {
      * @return true if the variable is numeric
      */
     public static boolean isNumeric(Variable variable) {
-        
-        State[] states = variable.getStates();
-        boolean hasMissingValues = false;
-        for (int i = 0; i < states.length; i++) {
+        // A variable read from a case database is FINITE_STATES with the values as state
+        // names, so numeric-ness cannot be read from its VariableType; it is decided by
+        // whether every state name (other than the "?" missing marker) parses as a number.
+        boolean hasNumericState = false;
+        for (State state : variable.getStates()) {
+            if (state.getName().equals("?")) {
+                continue;
+            }
             try {
-                if (!states[i].getName().equals("?")) {
-                    Double.parseDouble(states[i].getName());
-                } else {
-                    hasMissingValues = true;
-                }
+                Double.parseDouble(state.getName());
+                hasNumericState = true;
             } catch (NumberFormatException e) {
                 return false;
             }
         }
-        
-        return states.length > 4 || (!hasMissingValues && states.length == 3);
+        return hasNumericState;
     }
     
     /**

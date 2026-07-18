@@ -160,6 +160,45 @@ public class DiscretizationTests {
 		Assertions.assertEquals("(4.0 , Infinity)", newVarX.getStates()[2].getName());
 	}
 
+	/**
+	 * Regression for B-isNumeric: numeric-ness must depend only on whether the state names
+	 * parse as numbers (ignoring the "?" marker), not on how many states there are. Numeric
+	 * variables with exactly 2 or 4 states used to be misclassified as non-numeric.
+	 */
+	@Test public void testIsNumericIgnoresStateCount() {
+		Assertions.assertTrue(Discretization.isNumeric(new Variable("X", "1.0", "2.0")));               // 2 states
+		Assertions.assertTrue(Discretization.isNumeric(new Variable("X", "1.0", "2.0", "3.0", "4.0"))); // 4 states
+		Assertions.assertTrue(Discretization.isNumeric(new Variable("X", "1.0", "2.0", "3.0")));        // 3 states
+		Assertions.assertTrue(Discretization.isNumeric(new Variable("X", "1.0", "?", "2.0")));          // numeric + missing
+		Assertions.assertFalse(Discretization.isNumeric(new Variable("X", "low", "high")));             // categorical
+		Assertions.assertFalse(Discretization.isNumeric(new Variable("X", "?")));                       // only missing
+	}
+
+	/**
+	 * Regression for B-isNumeric (end to end): discretizing a 2-state numeric variable used
+	 * to route it through the non-numeric branch of discretizeCases, mapping every case to
+	 * state 0. The cases must instead be mapped to their real intervals.
+	 */
+	@Test public void testDiscretizeTwoStateNumericDoesNotCollapse() {
+		Variable x = new Variable("X", "1.0", "2.0");
+		int[][] cases = { { 0 }, { 1 }, { 0 }, { 1 } };  // values 1.0, 2.0, 1.0, 2.0
+		CaseDatabase db = new CaseDatabase(List.of(x), cases);
+
+		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
+		discretizeOptions.put("X", Discretization.Option.EQUAL_WIDTH);
+		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
+		numIntervalsPerVariable.put("X", 2);
+
+		CaseDatabase newDatabase = Discretization.process(db, discretizeOptions, numIntervalsPerVariable);
+
+		Assertions.assertEquals(2, newDatabase.getVariable("X").getStates().length);
+		int[][] newCases = newDatabase.getCases();
+		Assertions.assertEquals(0, newCases[0][0]);
+		Assertions.assertEquals(1, newCases[1][0]);
+		Assertions.assertEquals(0, newCases[2][0]);
+		Assertions.assertEquals(1, newCases[3][0]);
+	}
+
 	@Tag(TestSpeed.SLOW)
 	@Test public void testDiscretizeModelNet() {
 
