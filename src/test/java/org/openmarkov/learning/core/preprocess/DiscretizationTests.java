@@ -103,7 +103,63 @@ public class DiscretizationTests {
 		Assertions.assertEquals(2, newCases[7][0]);
 		Assertions.assertEquals(1, newCases[7][1]);
 	}
-	
+
+	/**
+	 * Regression for B-Discretize (too few cut points). A skewed distribution
+	 * (values 1,2,3 with counts 98,1,1) yields fewer cut points than
+	 * {@code numIntervals-1}, which used to overrun {@code intervalLimits} with an
+	 * {@code IndexOutOfBoundsException}. The result must instead honour the cuts
+	 * actually produced: the dominant value gets its own interval and the rest
+	 * collapse into one, giving two intervals.
+	 */
+	@Test public void testDiscretizeEqualFreqSkewedDoesNotCrash() {
+		Variable x = new Variable("X", "1", "2", "3");
+		int[][] cases = new int[100][1];
+		for (int i = 0; i < 98; i++) cases[i][0] = 0;
+		cases[98][0] = 1;
+		cases[99][0] = 2;
+		CaseDatabase db = new CaseDatabase(List.of(x), cases);
+
+		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
+		discretizeOptions.put("X", Discretization.Option.EQUAL_FREQ);
+		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
+		numIntervalsPerVariable.put("X", 3);
+
+		CaseDatabase newDatabase = Discretization.process(db, discretizeOptions, numIntervalsPerVariable);
+		Variable newVarX = newDatabase.getVariable("X");
+		Assertions.assertEquals(2, newVarX.getStates().length);
+		Assertions.assertEquals("(-Infinity , 1.0]", newVarX.getStates()[0].getName());
+		Assertions.assertEquals("(1.0 , Infinity)", newVarX.getStates()[1].getName());
+	}
+
+	/**
+	 * Regression for B-Discretize (too many cut points). When the split produces
+	 * more boundaries than {@code numIntervals} (values 1,2,3,4 uniformly, asking
+	 * for 2 intervals), the trailing interval used to be dropped and the last bound
+	 * clamped to a finite value instead of {@code +Infinity}. The natural boundaries
+	 * are 2.0 and 4.0, so three intervals must survive with the last open to infinity.
+	 */
+	@Test public void testDiscretizeEqualFreqDoesNotDropTail() {
+		Variable x = new Variable("X", "1", "2", "3", "4");
+		int[][] cases = new int[120][1];
+		int row = 0;
+		for (int s = 0; s < 4; s++)
+			for (int c = 0; c < 30; c++) cases[row++][0] = s;
+		CaseDatabase db = new CaseDatabase(List.of(x), cases);
+
+		Map<String, Discretization.Option> discretizeOptions = new HashMap<>();
+		discretizeOptions.put("X", Discretization.Option.EQUAL_FREQ);
+		Map<String, Integer> numIntervalsPerVariable = new HashMap<>();
+		numIntervalsPerVariable.put("X", 2);
+
+		CaseDatabase newDatabase = Discretization.process(db, discretizeOptions, numIntervalsPerVariable);
+		Variable newVarX = newDatabase.getVariable("X");
+		Assertions.assertEquals(3, newVarX.getStates().length);
+		Assertions.assertEquals("(-Infinity , 2.0]", newVarX.getStates()[0].getName());
+		Assertions.assertEquals("(2.0 , 4.0]", newVarX.getStates()[1].getName());
+		Assertions.assertEquals("(4.0 , Infinity)", newVarX.getStates()[2].getName());
+	}
+
 	@Tag(TestSpeed.SLOW)
 	@Test public void testDiscretizeModelNet() {
 
